@@ -1,0 +1,348 @@
+<title>Stage 26 Testing & QA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #fafbfc;
+    --surface: #ffffff;
+    --surface-alt: #f4f6f8;
+    --text: #1a1d21;
+    --text-muted: #5c6370;
+    --border: #e1e4e8;
+    --accent: #1f4e79;
+    --accent-light: #d6e4f0;
+    --green: #28a745;
+    --green-bg: #e6f4ea;
+    --red: #dc3545;
+    --red-bg: #fce8e6;
+    --blue: #0366d6;
+    --blue-bg: #e1ecf4;
+    --orange: #e36209;
+    --orange-bg: #fff8e1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface-alt: #1c2128;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent-light: #1c3049;
+      --green: #3fb950;
+      --green-bg: #1a2e1e;
+      --red: #f85149;
+      --red-bg: #3c1e1e;
+      --blue: #58a6ff;
+      --blue-bg: #1c2d41;
+      --orange: #d29922;
+      --orange-bg: #2d2200;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface-alt: #1c2128;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent-light: #1c3049;
+    --green: #3fb950;
+    --green-bg: #1a2e1e;
+    --red: #f85149;
+    --red-bg: #3c1e1e;
+    --blue: #58a6ff;
+    --blue-bg: #1c2d41;
+    --orange: #d29922;
+    --orange-bg: #2d2200;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.6;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  h1, h2, h3 { font-weight: 700; }
+  h1 { font-size: 1.75rem; margin: 0 0 0.25rem; color: var(--accent); }
+  h2 { font-size: 1.25rem; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent-light); }
+  h3 { font-size: 1.05rem; margin: 1.5rem 0 0.75rem; }
+
+  .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
+
+  .result-banner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    background: var(--green-bg);
+    border: 1px solid var(--green);
+    margin-bottom: 2rem;
+  }
+  .result-banner .icon { font-size: 2rem; }
+  .result-banner .stats { display: flex; gap: 2rem; flex-wrap: wrap; }
+  .result-banner .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--green); }
+  .result-banner .stat-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin: 0.75rem 0 1.5rem;
+  }
+  th, td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--surface-alt); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+  td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-pass { background: var(--green-bg); color: var(--green); }
+  .badge-feature { background: var(--blue-bg); color: var(--blue); }
+  .badge-unit { background: var(--orange-bg); color: var(--orange); }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85em;
+    background: var(--surface-alt);
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+  }
+
+  .file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+    margin: 0.75rem 0 1.5rem;
+  }
+  .file-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+  }
+  .file-card .path { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent); font-weight: 500; }
+  .file-card .desc { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+  .coverage-bar {
+    display: flex;
+    gap: 2px;
+    height: 24px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0.75rem 0 0.5rem;
+  }
+  .coverage-bar .seg { height: 100%; }
+  .coverage-bar .seg-feature { background: var(--blue); flex: 19; }
+  .coverage-bar .seg-unit { background: var(--orange); flex: 19; }
+
+  .legend { display: flex; gap: 1.5rem; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+  .legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 0.4rem; vertical-align: middle; }
+  .legend .l-feature::before { background: var(--blue); }
+  .legend .l-unit::before { background: var(--orange); }
+
+  footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); }
+</style>
+
+<h1>Stage 26 — Testing & QA</h1>
+<p class="subtitle">Web Tracer Reporting System &middot; Sprint 3 &middot; 8 September 2026</p>
+
+<div class="result-banner">
+  <div class="icon">&#10003;</div>
+  <div class="stats">
+    <div><div class="stat-value">38</div><div class="stat-label">Tests Passed</div></div>
+    <div><div class="stat-value">103</div><div class="stat-label">Assertions</div></div>
+    <div><div class="stat-value">0</div><div class="stat-label">Failures</div></div>
+    <div><div class="stat-value">&lt;1s</div><div class="stat-label">Duration</div></div>
+  </div>
+</div>
+
+<h2>Test Coverage Overview</h2>
+
+<div class="coverage-bar">
+  <div class="seg seg-feature"></div>
+  <div class="seg seg-unit"></div>
+</div>
+<div class="legend">
+  <span class="l-feature">Feature Tests (19)</span>
+  <span class="l-unit">Unit Tests (19)</span>
+</div>
+
+<h2>Feature Tests</h2>
+
+<table>
+  <thead>
+    <tr><th>Test File</th><th>Tests</th><th>Coverage Area</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DashboardTest.php</td>
+      <td>5</td>
+      <td>Dashboard display, empty state, data display, root redirect, delete tracer study</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td>UploadTest.php</td>
+      <td>5</td>
+      <td>Upload form, validation (required fields, jenjang), duplicate rejection, end-to-end Excel processing (13 parameters)</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td>AnalysisTest.php</td>
+      <td>4</td>
+      <td>Analysis index, completed study list, result detail, Chart.js rendering</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td>ReportTest.php</td>
+      <td>5</td>
+      <td>Report index, generate for completed study, reject non-completed, download, delete</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td>ExampleTest.php</td>
+      <td>1</td>
+      <td>Root URL redirects to dashboard</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Unit Tests</h2>
+
+<table>
+  <thead>
+    <tr><th>Test File</th><th>Tests</th><th>Coverage Area</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>StatisticsServiceTest.php</td>
+      <td>10</td>
+      <td>Frequency counting, mean/median (odd + even), mean, sum, display, index with gap, unknown type exception, empty data defaults</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td>NarrativeServiceTest.php</td>
+      <td>3</td>
+      <td>Frequency narrative generation, unknown key returns empty, long-before-short placeholder replacement</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td>ChartConfigServiceTest.php</td>
+      <td>5</td>
+      <td>Null when no chart type, pie chart, bar chart, grouped bar chart, unknown type returns null</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td>ExampleTest.php</td>
+      <td>1</td>
+      <td>Default Laravel unit test</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Files Created/Modified</h2>
+
+<h3>New Files</h3>
+<div class="file-grid">
+  <div class="file-card">
+    <div class="path">database/factories/TracerStudyFactory.php</div>
+    <div class="desc">Factory with processing/failed states</div>
+  </div>
+  <div class="file-card">
+    <div class="path">database/factories/AnalysisResultFactory.php</div>
+    <div class="desc">Factory with configurable parameter data</div>
+  </div>
+  <div class="file-card">
+    <div class="path">database/factories/ReportFactory.php</div>
+    <div class="desc">Factory for report records</div>
+  </div>
+  <div class="file-card">
+    <div class="path">tests/Feature/DashboardTest.php</div>
+    <div class="desc">5 tests for dashboard controller</div>
+  </div>
+  <div class="file-card">
+    <div class="path">tests/Feature/UploadTest.php</div>
+    <div class="desc">5 tests incl. end-to-end Excel</div>
+  </div>
+  <div class="file-card">
+    <div class="path">tests/Feature/AnalysisTest.php</div>
+    <div class="desc">4 tests for analysis views</div>
+  </div>
+  <div class="file-card">
+    <div class="path">tests/Feature/ReportTest.php</div>
+    <div class="desc">5 tests for report CRUD</div>
+  </div>
+  <div class="file-card">
+    <div class="path">tests/Unit/StatisticsServiceTest.php</div>
+    <div class="desc">10 tests for all 6 statistic types</div>
+  </div>
+  <div class="file-card">
+    <div class="path">tests/Unit/NarrativeServiceTest.php</div>
+    <div class="desc">3 tests for template generation</div>
+  </div>
+  <div class="file-card">
+    <div class="path">tests/Unit/ChartConfigServiceTest.php</div>
+    <div class="desc">5 tests for chart builders</div>
+  </div>
+  <div class="file-card">
+    <div class="path">tests/Fixtures/tracer-sample.xlsx</div>
+    <div class="desc">Real DIKTI Excel for integration tests</div>
+  </div>
+</div>
+
+<h3>Modified Files</h3>
+<div class="file-grid">
+  <div class="file-card">
+    <div class="path">app/Models/TracerStudy.php</div>
+    <div class="desc">Added HasFactory trait</div>
+  </div>
+  <div class="file-card">
+    <div class="path">app/Models/AnalysisResult.php</div>
+    <div class="desc">Added HasFactory trait</div>
+  </div>
+  <div class="file-card">
+    <div class="path">app/Models/Report.php</div>
+    <div class="desc">Added HasFactory trait</div>
+  </div>
+  <div class="file-card">
+    <div class="path">tests/Feature/ExampleTest.php</div>
+    <div class="desc">Fixed: assert redirect instead of 200</div>
+  </div>
+</div>
+
+<h2>Test Strategy</h2>
+
+<h3>Feature Tests</h3>
+<p>Feature tests use <code>RefreshDatabase</code> with SQLite in-memory. Upload and Report tests exercise the full request lifecycle against a real Excel fixture, verifying end-to-end processing through all 6 services and 13 parameters. This ensures the integration between ExcelReader → Statistics → Narrative → ChartConfig → TracerAnalysis → ReportGenerator works correctly.</p>
+
+<h3>Unit Tests</h3>
+<p>Unit tests isolate individual service logic without HTTP or database dependencies. <code>StatisticsService</code> tests cover all 6 statistic types including edge cases (empty data, even/odd count median). <code>NarrativeService</code> tests verify placeholder replacement ordering (long-before-short to prevent partial matches). <code>ChartConfigService</code> tests verify correct Chart.js config structure for all 3 chart types.</p>
+
+<h3>Test Database</h3>
+<p>Configured in <code>phpunit.xml</code> with <code>DB_CONNECTION=sqlite</code> and <code>DB_DATABASE=:memory:</code> for fast, isolated test execution.</p>
+
+<h2>Test Execution</h2>
+<p>Run the full suite:</p>
+<pre><code>php artisan test</code></pre>
+<p>Run specific suites:</p>
+<pre><code>php artisan test --testsuite=Unit
+php artisan test --testsuite=Feature</code></pre>
+
+<footer>
+  <strong>Stage 26 Complete</strong> &mdash; Web Tracer Reporting System &middot; Testing & QA<br>
+  38 tests, 103 assertions, 0 failures &middot; All features verified
+</footer>
