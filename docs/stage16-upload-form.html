@@ -1,0 +1,220 @@
+<title>Upload Form & Validation</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #64748b;
+    --accent: #2563eb; --accent-light: #eff6ff;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --danger: #dc2626; --danger-light: #fef2f2;
+    --border: #e2e8f0; --card-bg: #ffffff;
+    --code-bg: #f1f5f9; --code-fg: #334155;
+    --table-stripe: #f8fafc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --accent: #60a5fa; --accent-light: #1e293b;
+      --success: #4ade80; --success-light: #0f2a1a;
+      --danger: #f87171; --danger-light: #2a0f0f;
+      --border: #334155; --card-bg: #1e293b;
+      --code-bg: #1e293b; --code-fg: #cbd5e1;
+      --table-stripe: #1a2536;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+    --accent: #60a5fa; --accent-light: #1e293b;
+    --success: #4ade80; --success-light: #0f2a1a;
+    --danger: #f87171; --danger-light: #2a0f0f;
+    --border: #334155; --card-bg: #1e293b;
+    --code-bg: #1e293b; --code-fg: #cbd5e1;
+    --table-stripe: #1a2536;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-blue { background: var(--accent-light); color: var(--accent); }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .badge-red { background: var(--danger-light); color: var(--danger); }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .meta-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; margin-top: 0.15rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+  code { background: var(--code-bg); color: var(--code-fg); padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 0; }
+  .file-tree { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.8; }
+  .file-tree .new { color: var(--success); font-weight: 600; }
+  .file-tree .mod { color: var(--accent); font-weight: 600; }
+  .check { color: var(--success); }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  @media (max-width: 600px) { body { padding: 1rem; } .meta-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<h1>Tahap 16 — Upload Form & Validation</h1>
+<p class="subtitle">Sprint 2 &middot; US-06: Form upload data tracer &middot; <span class="badge badge-green">Selesai</span></p>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Stage</div>
+    <div class="meta-value">16 / 27</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Sprint</div>
+    <div class="meta-value">Sprint 2</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">User Story</div>
+    <div class="meta-value">US-06</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Commit</div>
+    <div class="meta-value"><code>1535bed</code></div>
+  </div>
+</div>
+
+<h2>1. Ringkasan</h2>
+<p>Tahap ini mengimplementasikan form upload data tracer study dengan 6 field meta informasi institusi, drag-and-drop file dropzone untuk file Excel (.xlsx), validasi server-side menggunakan FormRequest dengan pesan error Bahasa Indonesia, pengecekan duplikasi data, dan preservasi input setelah validasi gagal.</p>
+
+<h2>2. File yang Dibuat/Dimodifikasi</h2>
+<div class="file-tree card">
+  <span class="new">+ app/Http/Requests/UploadTracerRequest.php</span> — Form Request (7 rules)<br>
+  <span class="mod">~ app/Http/Controllers/UploadController.php</span> — DI + duplicate check<br>
+  <span class="mod">~ resources/views/upload.blade.php</span> — Full form + dropzone UI<br>
+  <span class="mod">~ resources/css/app.css</span> — Bootstrap Icons import<br>
+  <span class="mod">~ package.json</span> — bootstrap-icons dependency
+</div>
+
+<h2>3. Form Request — Aturan Validasi</h2>
+<p>File: <code>app/Http/Requests/UploadTracerRequest.php</code></p>
+
+<table>
+  <thead>
+    <tr><th>Field</th><th>Type</th><th>Rules</th><th>Error Message (ID)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>nama_institusi</code></td><td>text</td><td>required|string|max:255</td><td>Nama institusi wajib diisi.</td></tr>
+    <tr><td><code>nama_prodi</code></td><td>text</td><td>required|string|max:255</td><td>Nama program studi wajib diisi.</td></tr>
+    <tr><td><code>jenjang</code></td><td>select</td><td>required|string|in:D3,D4,S1,S2,S3</td><td>Jenjang pendidikan wajib dipilih.</td></tr>
+    <tr><td><code>tahun_lulusan</code></td><td>text</td><td>required|string|digits:4</td><td>Tahun lulusan harus 4 digit.</td></tr>
+    <tr><td><code>tahun_tracer</code></td><td>text</td><td>required|string|digits:4</td><td>Tahun tracer harus 4 digit.</td></tr>
+    <tr><td><code>total_lulusan</code></td><td>number</td><td>required|integer|min:1</td><td>Total lulusan minimal 1.</td></tr>
+    <tr><td><code>file</code></td><td>file</td><td>required|file|mimes:xlsx|max:10240</td><td>File harus berformat .xlsx / maks 10 MB.</td></tr>
+  </tbody>
+</table>
+
+<h2>4. Controller Logic</h2>
+<p>File: <code>app/Http/Controllers/UploadController.php</code></p>
+
+<h3>4.1 Dependency Injection</h3>
+<pre><code>public function __construct(
+    private TracerStudyRepositoryInterface $tracerStudyRepository,
+) {}</code></pre>
+
+<h3>4.2 Duplicate Check</h3>
+<pre><code>$existing = $this->tracerStudyRepository->findByProdiAndTahun(
+    $request->nama_prodi,
+    $request->tahun_lulusan,
+    $request->tahun_tracer,
+);
+
+if ($existing) {
+    return back()->withInput()->with('error',
+        'Data tracer untuk prodi, tahun lulusan, dan tahun tracer ini sudah ada.'
+    );
+}</code></pre>
+<p>Pengecekan duplikasi menggunakan 3 kolom: <code>nama_prodi</code>, <code>tahun_lulusan</code>, <code>tahun_tracer</code> — sesuai composite unique index di database.</p>
+
+<h3>4.3 Store Flow (Stub)</h3>
+<p>Saat ini <code>store()</code> hanya melakukan validasi dan redirect. Integrasi dengan <code>TracerAnalysisService</code> akan ditambahkan di Stage 21 (Service Integration).</p>
+
+<h2>5. Upload Form UI</h2>
+<p>File: <code>resources/views/upload.blade.php</code></p>
+
+<h3>5.1 Struktur Form</h3>
+<div class="card">
+  <strong>Card 1 — Informasi Institusi</strong>
+  <ul>
+    <li>Row 1: Nama Institusi (col-12)</li>
+    <li>Row 2: Program Studi (col-md-8) + Jenjang select (col-md-4)</li>
+    <li>Row 3: Tahun Lulusan (col-md-4) + Tahun Tracer (col-md-4) + Total Lulusan (col-md-4)</li>
+  </ul>
+  <strong>Card 2 — File Excel Tracer Study</strong>
+  <ul>
+    <li>Drag &amp; drop dropzone area</li>
+    <li>Click-to-browse fallback</li>
+    <li>File preview (nama, ukuran, tombol hapus)</li>
+    <li>Accept: .xlsx only, max 10 MB</li>
+  </ul>
+  <strong>Action Bar</strong>
+  <ul>
+    <li>Kembali (link ke dashboard)</li>
+    <li>Upload &amp; Proses (submit button)</li>
+  </ul>
+</div>
+
+<h3>5.2 Fitur Dropzone</h3>
+<table>
+  <thead><tr><th>Fitur</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>Drag &amp; drop</td><td>Highlight border biru saat drag-over, accept hanya .xlsx</td></tr>
+    <tr><td>Click to browse</td><td>Klik area dropzone atau link "klik untuk browse"</td></tr>
+    <tr><td>File preview</td><td>Tampilkan ikon, nama file, ukuran (KB/MB), tombol hapus</td></tr>
+    <tr><td>Visual states</td><td>Default (dashed grey) → Hover (blue) → Has file (solid green) → Error (red)</td></tr>
+    <tr><td>Remove file</td><td>Reset ke state awal</td></tr>
+  </tbody>
+</table>
+
+<h3>5.3 Error Handling</h3>
+<ul>
+  <li><span class="check">&#10003;</span> Per-field <code>@error</code> directive dengan <code>is-invalid</code> class</li>
+  <li><span class="check">&#10003;</span> <code>invalid-feedback</code> div per field</li>
+  <li><span class="check">&#10003;</span> File error ditampilkan di bawah dropzone area</li>
+  <li><span class="check">&#10003;</span> Flash message <code>session('error')</code> untuk duplicate check</li>
+  <li><span class="check">&#10003;</span> <code>old()</code> helper untuk semua text/select fields</li>
+</ul>
+
+<h2>6. Dependencies Ditambahkan</h2>
+<table>
+  <thead><tr><th>Package</th><th>Alasan</th></tr></thead>
+  <tbody>
+    <tr><td><code>bootstrap-icons</code></td><td>Icon library untuk UI — digunakan di sidebar, navbar, form, dan dropzone</td></tr>
+  </tbody>
+</table>
+<p>Import ditambahkan di <code>resources/css/app.css</code>:</p>
+<pre><code>@import 'bootstrap-icons/font/bootstrap-icons.css';</code></pre>
+
+<h2>7. Acceptance Criteria</h2>
+<table>
+  <thead><tr><th>#</th><th>Kriteria</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Form 6 field meta + file upload</td><td><span class="check">&#10003;</span></td></tr>
+    <tr><td>2</td><td>Drag &amp; drop dropzone dengan fallback click</td><td><span class="check">&#10003;</span></td></tr>
+    <tr><td>3</td><td>Validasi server-side via FormRequest</td><td><span class="check">&#10003;</span></td></tr>
+    <tr><td>4</td><td>Pesan error Bahasa Indonesia per field</td><td><span class="check">&#10003;</span></td></tr>
+    <tr><td>5</td><td>Old input preservation setelah validasi gagal</td><td><span class="check">&#10003;</span></td></tr>
+    <tr><td>6</td><td>Cek duplikasi (prodi + tahun_lulusan + tahun_tracer)</td><td><span class="check">&#10003;</span></td></tr>
+    <tr><td>7</td><td>File hanya .xlsx, maks 10 MB</td><td><span class="check">&#10003;</span></td></tr>
+    <tr><td>8</td><td>Navigasi kembali ke dashboard</td><td><span class="check">&#10003;</span></td></tr>
+  </tbody>
+</table>
+
+<h2>8. Screenshot</h2>
+<div class="card" style="text-align:center; color: var(--muted);">
+  <p><em>Form upload — 2 card layout: Informasi Institusi (6 fields) + File Excel Tracer Study (dropzone)</em></p>
+  <p><em>Validasi error — semua field menampilkan pesan error Bahasa Indonesia dengan border merah</em></p>
+</div>
+
+<h2>9. Tahap Selanjutnya</h2>
+<p><strong>Stage 17 — ExcelReaderService</strong>: Implementasi service untuk membaca file Excel (.xlsx) menggunakan PhpSpreadsheet, mapping kolom berdasarkan <code>config/tracer.php</code>, dan ekstraksi data mentah dari sheet "data tracer".</p>
