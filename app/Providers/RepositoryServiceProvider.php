@@ -10,6 +10,8 @@ use App\Repositories\Interfaces\ReportRepositoryInterface;
 use App\Repositories\Interfaces\TracerStudyRepositoryInterface;
 use App\Services\ExcelReaderService;
 use App\Services\Interfaces\ExcelReaderServiceInterface;
+use App\Services\Interfaces\StatisticsServiceInterface;
+use App\Services\StatisticsService;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -21,5 +23,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ReportRepositoryInterface::class, EloquentReportRepository::class);
 
         $this->app->bind(ExcelReaderServiceInterface::class, ExcelReaderService::class);
+        $this->app->bind(StatisticsServiceInterface::class, StatisticsService::class);
     }
 }
