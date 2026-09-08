@@ -1,0 +1,506 @@
+<title>Sequence Diagram</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --seq-user: #1a1d26; --seq-ctrl: #2d5be3; --seq-svc: #7c3aed; --seq-repo: #059669; --seq-db: #d97706;
+    --seq-user-bg: #eef0f4; --seq-ctrl-bg: #e8eefb; --seq-svc-bg: #f5f3ff; --seq-repo-bg: #ecfdf5; --seq-db-bg: #fffbeb;
+    --seq-call: #5a6070; --seq-return: #8890a0;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --seq-user: #e4e6ec; --seq-ctrl: #6b8de8; --seq-svc: #a78bfa; --seq-repo: #34d399; --seq-db: #fbbf24;
+      --seq-user-bg: #22262f; --seq-ctrl-bg: #1e2a4a; --seq-svc-bg: #1e1838; --seq-repo-bg: #0d2818; --seq-db-bg: #2a2010;
+      --seq-call: #9ba0b0; --seq-return: #6b7080;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --seq-user: #e4e6ec; --seq-ctrl: #6b8de8; --seq-svc: #a78bfa; --seq-repo: #34d399; --seq-db: #fbbf24;
+    --seq-user-bg: #22262f; --seq-ctrl-bg: #1e2a4a; --seq-svc-bg: #1e1838; --seq-repo-bg: #0d2818; --seq-db-bg: #2a2010;
+    --seq-call: #9ba0b0; --seq-return: #6b7080;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--text-secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  .diagram-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 0.5rem; box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; overflow-x: auto; }
+  .diagram-wrap svg { display: block; margin: 0 auto; }
+
+  /* Sequence step list */
+  .seq-steps { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); }
+  .seq-steps-title { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; }
+  .seq-list { list-style: none; padding: 0; margin: 0; }
+  .seq-list li { display: grid; grid-template-columns: 24px 1fr; gap: 0.5rem; margin-bottom: 0.4rem; font-size: 0.78rem; color: var(--text-secondary); align-items: start; }
+  .seq-num { width: 22px; height: 22px; border-radius: 50%; font-size: 0.62rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sn-call { background: var(--seq-ctrl-bg); color: var(--seq-ctrl); }
+  .sn-sys { background: var(--seq-svc-bg); color: var(--seq-svc); }
+  .sn-db { background: var(--seq-repo-bg); color: var(--seq-repo); }
+  .sn-ret { background: var(--surface-dim); color: var(--text-tertiary); }
+  .seq-list .method { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-muted); font-weight: 500; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  tbody td { padding: 0.45rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .legend { flex-direction: column; gap: 0.35rem; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Sequence Diagram</h1>
+  <p class="doc-subtitle">Diagram sekuens UML untuk 3 proses utama: interaksi antar komponen dari Browser hingga Database.</p>
+  <div class="doc-meta">
+    <span>Tahap 9 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>9</strong> / 27 &mdash; Sequence</span>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background: var(--seq-user);"></div>Browser / Pengguna</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--seq-ctrl);"></div>Controller</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--seq-svc);"></div>Service</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--seq-repo);"></div>Repository</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--seq-db);"></div>Database / Storage</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 1. UPLOAD & ANALISIS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">9.1</span>
+    <h2>Sequence 1: Upload &amp; Analisis Data</h2>
+  </div>
+
+  <p>Interaksi paling kompleks. Melibatkan 8 partisipan: Browser, UploadController, TracerAnalysisService, ExcelReaderService, StatisticsService, ChartConfigService, NarrativeService, dan Repository/DB.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 900 780" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;">
+      <defs>
+        <marker id="arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="var(--seq-call)"/></marker>
+        <marker id="arr-ret" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5Z" fill="var(--seq-return)"/></marker>
+      </defs>
+
+      <!-- Participants -->
+      <rect x="20" y="10" width="90" height="32" rx="5" fill="var(--seq-user-bg)" stroke="var(--seq-user)" stroke-width="1.5"/>
+      <text x="65" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-user)">Browser</text>
+
+      <rect x="148" y="10" width="120" height="32" rx="5" fill="var(--seq-ctrl-bg)" stroke="var(--seq-ctrl)" stroke-width="1.5"/>
+      <text x="208" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-ctrl)">UploadController</text>
+
+      <rect x="305" y="10" width="135" height="32" rx="5" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="1.5"/>
+      <text x="372" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-svc)">TracerAnalysis</text>
+
+      <rect x="478" y="10" width="110" height="32" rx="5" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="1.5"/>
+      <text x="533" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-svc)">ExcelReader</text>
+
+      <rect x="618" y="10" width="100" height="32" rx="5" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="1.5"/>
+      <text x="668" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-svc)">Statistics</text>
+
+      <rect x="750" y="10" width="110" height="32" rx="5" fill="var(--seq-repo-bg)" stroke="var(--seq-repo)" stroke-width="1.5"/>
+      <text x="805" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-repo)">Repository</text>
+
+      <!-- Lifelines -->
+      <line x1="65" y1="42" x2="65" y2="760" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="208" y1="42" x2="208" y2="760" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="372" y1="42" x2="372" y2="760" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="533" y1="42" x2="533" y2="760" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="668" y1="42" x2="668" y2="760" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="805" y1="42" x2="805" y2="760" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+
+      <!-- 1. POST /upload -->
+      <line x1="65" y1="70" x2="200" y2="70" stroke="var(--seq-call)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="132" y="64" text-anchor="middle" font-size="8" font-weight="600" fill="var(--seq-call)">1. POST /upload</text>
+
+      <!-- Activation boxes -->
+      <rect x="203" y="70" width="10" height="60" rx="2" fill="var(--seq-ctrl-bg)" stroke="var(--seq-ctrl)" stroke-width="1"/>
+
+      <!-- 2. validate -->
+      <text x="170" y="94" text-anchor="middle" font-size="7.5" fill="var(--text-tertiary)">2. validate(request)</text>
+      <rect x="160" y="98" width="96" height="16" rx="3" fill="var(--seq-ctrl-bg)" stroke="var(--seq-ctrl)" stroke-width="0.8" stroke-dasharray="3 2"/>
+      <text x="208" y="110" text-anchor="middle" font-size="7" fill="var(--seq-ctrl)">FormRequest OK</text>
+
+      <!-- 3. analyze() -->
+      <line x1="213" y1="130" x2="365" y2="130" stroke="var(--seq-call)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="289" y="124" text-anchor="middle" font-size="8" font-weight="600" fill="var(--seq-call)">3. analyze(file, meta)</text>
+      <rect x="367" y="130" width="10" height="530" rx="2" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="1"/>
+
+      <!-- 4. Store file -->
+      <line x1="377" y1="155" x2="798" y2="155" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="587" y="149" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--seq-call)">4. create(tracerStudy) — status: processing</text>
+      <rect x="800" y="155" width="10" height="20" rx="2" fill="var(--seq-repo-bg)" stroke="var(--seq-repo)" stroke-width="1"/>
+      <line x1="800" y1="175" x2="377" y2="175" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="587" y="186" text-anchor="middle" font-size="7" fill="var(--seq-return)">TracerStudy model</text>
+
+      <!-- 5. readExcel -->
+      <line x1="377" y1="200" x2="526" y2="200" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="451" y="194" text-anchor="middle" font-size="8" font-weight="600" fill="var(--seq-call)">5. read(filePath)</text>
+      <rect x="528" y="200" width="10" height="45" rx="2" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="1"/>
+      <text x="533" y="222" text-anchor="start" font-size="7" fill="var(--text-tertiary)" dx="16">PhpSpreadsheet</text>
+      <line x1="528" y1="245" x2="377" y2="245" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="451" y="256" text-anchor="middle" font-size="7" fill="var(--seq-return)">array $respondents</text>
+
+      <!-- 6. Hitung response rate -->
+      <rect x="340" y="270" width="64" height="24" rx="3" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="0.8" stroke-dasharray="3 2"/>
+      <text x="372" y="286" text-anchor="middle" font-size="7" fill="var(--seq-svc)">calc rates</text>
+
+      <!-- LOOP frame -->
+      <rect x="345" y="305" width="480" height="310" rx="6" fill="none" stroke="var(--border)" stroke-width="1.2"/>
+      <rect x="345" y="305" width="90" height="18" rx="4" fill="var(--surface-dim)" stroke="var(--border)" stroke-width="0.8"/>
+      <text x="390" y="317" text-anchor="middle" font-size="8" font-weight="700" fill="var(--accent)">loop [1..13]</text>
+      <text x="440" y="317" font-size="7" fill="var(--text-tertiary)">per parameter</text>
+
+      <!-- 7. calculate -->
+      <line x1="377" y1="340" x2="661" y2="340" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="519" y="334" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--seq-call)">7. calculate(data, paramConfig)</text>
+      <rect x="663" y="340" width="10" height="30" rx="2" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="1"/>
+      <line x1="663" y1="370" x2="377" y2="370" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="519" y="381" text-anchor="middle" font-size="7" fill="var(--seq-return)">$resultData (JSON)</text>
+
+      <!-- 8. buildChartConfig (self-call) -->
+      <rect x="350" y="395" width="44" height="28" rx="3" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="0.8" stroke-dasharray="3 2"/>
+      <text x="372" y="413" text-anchor="middle" font-size="6.5" fill="var(--seq-svc)">chart</text>
+      <text x="400" y="404" font-size="7" fill="var(--text-tertiary)">8. ChartConfigService</text>
+
+      <!-- 9. generateNarrative (self-call) -->
+      <rect x="350" y="430" width="44" height="28" rx="3" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="0.8" stroke-dasharray="3 2"/>
+      <text x="372" y="448" text-anchor="middle" font-size="6.5" fill="var(--seq-svc)">narr</text>
+      <text x="400" y="440" font-size="7" fill="var(--text-tertiary)">9. NarrativeService</text>
+
+      <!-- 10. save result -->
+      <line x1="377" y1="475" x2="798" y2="475" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="587" y="469" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--seq-call)">10. createMany(analysisResults)</text>
+      <rect x="800" y="475" width="10" height="20" rx="2" fill="var(--seq-repo-bg)" stroke="var(--seq-repo)" stroke-width="1"/>
+      <line x1="800" y1="495" x2="377" y2="495" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+
+      <!-- Loop end text -->
+      <text x="587" y="510" text-anchor="middle" font-size="7" fill="var(--text-tertiary)">repeat for all 13 parameters</text>
+
+      <!-- 11. delete file -->
+      <rect x="345" y="630" width="54" height="24" rx="3" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="0.8" stroke-dasharray="3 2"/>
+      <text x="372" y="646" text-anchor="middle" font-size="6.5" fill="var(--seq-svc)">del file</text>
+      <text x="405" y="638" font-size="7" fill="var(--text-tertiary)">11. Storage::delete()</text>
+
+      <!-- 12. updateStatus -->
+      <line x1="377" y1="660" x2="798" y2="660" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="587" y="654" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--seq-call)">12. updateStatus(id, 'completed')</text>
+      <rect x="800" y="660" width="10" height="20" rx="2" fill="var(--seq-repo-bg)" stroke="var(--seq-repo)" stroke-width="1"/>
+
+      <!-- Return to controller -->
+      <line x1="367" y1="700" x2="213" y2="700" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="290" y="694" text-anchor="middle" font-size="7" fill="var(--seq-return)">13. TracerStudy (completed)</text>
+
+      <!-- Return to browser -->
+      <line x1="203" y1="730" x2="72" y2="730" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="137" y="724" text-anchor="middle" font-size="7.5" fill="var(--seq-return)">14. redirect(/analysis/{id})</text>
+    </svg>
+  </div>
+
+  <div class="seq-steps">
+    <div class="seq-steps-title">Langkah Interaksi Detail</div>
+    <ol class="seq-list">
+      <li><span class="seq-num sn-call">1</span><span>Browser → <strong>UploadController</strong>: <span class="method">store(UploadTracerRequest $request)</span> — HTTP POST /upload dengan file + meta</span></li>
+      <li><span class="seq-num sn-call">2</span><span>UploadController: UploadTracerRequest otomatis memvalidasi file (.xlsx, ≤10MB) dan 5 field wajib</span></li>
+      <li><span class="seq-num sn-sys">3</span><span>UploadController → <strong>TracerAnalysisService</strong>: <span class="method">analyze($file, $meta)</span> — delegasi seluruh proses</span></li>
+      <li><span class="seq-num sn-db">4</span><span>TracerAnalysisService → <strong>TracerStudyRepository</strong>: <span class="method">create([...meta, status: 'processing'])</span> — simpan record awal</span></li>
+      <li><span class="seq-num sn-sys">5</span><span>TracerAnalysisService → <strong>ExcelReaderService</strong>: <span class="method">read($filePath)</span> — baca sheet "data tracer" via PhpSpreadsheet → return array of respondents</span></li>
+      <li><span class="seq-num sn-sys">6</span><span>TracerAnalysisService: hitung total_responden, response_rate_pt, response_rate_prodi</span></li>
+      <li><span class="seq-num sn-sys">7</span><span><strong>Loop [1..13]:</strong> TracerAnalysisService → <strong>StatisticsService</strong>: <span class="method">calculate($data, $paramConfig)</span> — hitung sesuai statistic_type</span></li>
+      <li><span class="seq-num sn-sys">8</span><span>TracerAnalysisService → <strong>ChartConfigService</strong>: <span class="method">build($resultData, $paramConfig)</span> — build JSON konfigurasi Chart.js</span></li>
+      <li><span class="seq-num sn-sys">9</span><span>TracerAnalysisService → <strong>NarrativeService</strong>: <span class="method">generate($resultData, $paramConfig)</span> — generate paragraf dari template</span></li>
+      <li><span class="seq-num sn-db">10</span><span>TracerAnalysisService → <strong>AnalysisResultRepository</strong>: <span class="method">createMany($results)</span> — simpan 13 records analysis_results</span></li>
+      <li><span class="seq-num sn-sys">11</span><span>TracerAnalysisService: <span class="method">Storage::delete($filePath)</span> — hapus file Excel sementara</span></li>
+      <li><span class="seq-num sn-db">12</span><span>TracerAnalysisService → <strong>TracerStudyRepository</strong>: <span class="method">updateStatus($id, 'completed')</span></span></li>
+      <li><span class="seq-num sn-ret">13</span><span>TracerAnalysisService → UploadController: return TracerStudy model (completed)</span></li>
+      <li><span class="seq-num sn-ret">14</span><span>UploadController → Browser: <span class="method">redirect('/analysis/{id}')</span> + flash message sukses</span></li>
+    </ol>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 2. GENERATE LAPORAN -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">9.2</span>
+    <h2>Sequence 2: Generate Laporan Word</h2>
+  </div>
+
+  <p>Interaksi 5 partisipan: Browser, ReportController, ReportGeneratorService, Repository, dan Storage.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 820 440" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;">
+      <use href="#arr"/><use href="#arr-ret"/>
+      <!-- Participants -->
+      <rect x="20" y="10" width="90" height="32" rx="5" fill="var(--seq-user-bg)" stroke="var(--seq-user)" stroke-width="1.5"/>
+      <text x="65" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-user)">Browser</text>
+
+      <rect x="160" y="10" width="120" height="32" rx="5" fill="var(--seq-ctrl-bg)" stroke="var(--seq-ctrl)" stroke-width="1.5"/>
+      <text x="220" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-ctrl)">ReportController</text>
+
+      <rect x="340" y="10" width="140" height="32" rx="5" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="1.5"/>
+      <text x="410" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-svc)">ReportGenerator</text>
+
+      <rect x="535" y="10" width="100" height="32" rx="5" fill="var(--seq-repo-bg)" stroke="var(--seq-repo)" stroke-width="1.5"/>
+      <text x="585" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-repo)">Repository</text>
+
+      <rect x="695" y="10" width="90" height="32" rx="5" fill="var(--seq-db-bg)" stroke="var(--seq-db)" stroke-width="1.5"/>
+      <text x="740" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-db)">Storage</text>
+
+      <!-- Lifelines -->
+      <line x1="65" y1="42" x2="65" y2="420" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="220" y1="42" x2="220" y2="420" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="410" y1="42" x2="410" y2="420" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="585" y1="42" x2="585" y2="420" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="740" y1="42" x2="740" y2="420" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+
+      <!-- 1. POST generate -->
+      <line x1="65" y1="70" x2="213" y2="70" stroke="var(--seq-call)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="139" y="64" text-anchor="middle" font-size="8" font-weight="600" fill="var(--seq-call)">1. POST /reports/{id}/generate</text>
+      <rect x="215" y="70" width="10" height="30" rx="2" fill="var(--seq-ctrl-bg)" stroke="var(--seq-ctrl)" stroke-width="1"/>
+
+      <!-- 2. generate -->
+      <line x1="225" y1="100" x2="403" y2="100" stroke="var(--seq-call)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="314" y="94" text-anchor="middle" font-size="8" font-weight="600" fill="var(--seq-call)">2. generate($tracerStudyId)</text>
+      <rect x="405" y="100" width="10" height="220" rx="2" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="1"/>
+
+      <!-- 3. Ambil data -->
+      <line x1="415" y1="130" x2="578" y2="130" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="496" y="124" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--seq-call)">3. find($id) + findByTracerStudy($id)</text>
+      <rect x="580" y="130" width="10" height="25" rx="2" fill="var(--seq-repo-bg)" stroke="var(--seq-repo)" stroke-width="1"/>
+      <line x1="580" y1="155" x2="415" y2="155" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="496" y="167" text-anchor="middle" font-size="7" fill="var(--seq-return)">TracerStudy + 13 AnalysisResults</text>
+
+      <!-- 4. Build PHPWord -->
+      <rect x="385" y="180" width="50" height="28" rx="3" fill="var(--seq-svc-bg)" stroke="var(--seq-svc)" stroke-width="0.8" stroke-dasharray="3 2"/>
+      <text x="410" y="198" text-anchor="middle" font-size="6.5" fill="var(--seq-svc)">PHPWord</text>
+      <text x="440" y="192" font-size="7" fill="var(--text-tertiary)">4. Build .docx (cover, TOC, 13 bab)</text>
+
+      <!-- 5. Save file -->
+      <line x1="415" y1="225" x2="733" y2="225" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="574" y="219" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--seq-call)">5. Storage::put(reports/xxx.docx)</text>
+      <rect x="735" y="225" width="10" height="20" rx="2" fill="var(--seq-db-bg)" stroke="var(--seq-db)" stroke-width="1"/>
+      <line x1="735" y1="245" x2="415" y2="245" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="574" y="257" text-anchor="middle" font-size="7" fill="var(--seq-return)">file path</text>
+
+      <!-- 6. Create report record -->
+      <line x1="415" y1="275" x2="578" y2="275" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="496" y="269" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--seq-call)">6. create(filename, path, size)</text>
+      <rect x="580" y="275" width="10" height="20" rx="2" fill="var(--seq-repo-bg)" stroke="var(--seq-repo)" stroke-width="1"/>
+      <line x1="580" y1="295" x2="415" y2="295" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="496" y="307" text-anchor="middle" font-size="7" fill="var(--seq-return)">Report model</text>
+
+      <!-- Return to controller -->
+      <line x1="405" y1="330" x2="225" y2="330" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="315" y="324" text-anchor="middle" font-size="7" fill="var(--seq-return)">7. Report model</text>
+
+      <!-- Return to browser -->
+      <line x1="215" y1="365" x2="72" y2="365" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="143" y="359" text-anchor="middle" font-size="7.5" fill="var(--seq-return)">8. redirect(/reports) + flash</text>
+    </svg>
+  </div>
+
+  <div class="seq-steps">
+    <div class="seq-steps-title">Langkah Interaksi Detail</div>
+    <ol class="seq-list">
+      <li><span class="seq-num sn-call">1</span><span>Browser → <strong>ReportController</strong>: <span class="method">generate($id)</span> — POST /reports/{id}/generate</span></li>
+      <li><span class="seq-num sn-sys">2</span><span>ReportController → <strong>ReportGeneratorService</strong>: <span class="method">generate($tracerStudyId)</span></span></li>
+      <li><span class="seq-num sn-db">3</span><span>ReportGeneratorService → <strong>Repository</strong>: ambil TracerStudy + 13 AnalysisResults via <span class="method">find()</span> dan <span class="method">findByTracerStudy()</span></span></li>
+      <li><span class="seq-num sn-sys">4</span><span>ReportGeneratorService: build dokumen PHPWord — cover page, daftar isi, ringkasan, 13 bab (tabel + narasi)</span></li>
+      <li><span class="seq-num sn-db">5</span><span>ReportGeneratorService → <strong>Storage</strong>: <span class="method">Storage::put('reports/xxx.docx', $content)</span></span></li>
+      <li><span class="seq-num sn-db">6</span><span>ReportGeneratorService → <strong>ReportRepository</strong>: <span class="method">create([filename, file_path, file_size])</span></span></li>
+      <li><span class="seq-num sn-ret">7</span><span>ReportGeneratorService → ReportController: return Report model</span></li>
+      <li><span class="seq-num sn-ret">8</span><span>ReportController → Browser: <span class="method">redirect('/reports')</span> + flash message</span></li>
+    </ol>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 3. LIHAT ANALISIS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">9.3</span>
+    <h2>Sequence 3: Lihat Analisis Parameter</h2>
+  </div>
+
+  <p>Interaksi read-only paling sering diakses. 4 partisipan: Browser, AnalysisController, Repository, dan Blade View.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;">
+      <use href="#arr"/><use href="#arr-ret"/>
+
+      <rect x="20" y="10" width="90" height="32" rx="5" fill="var(--seq-user-bg)" stroke="var(--seq-user)" stroke-width="1.5"/>
+      <text x="65" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-user)">Browser</text>
+
+      <rect x="170" y="10" width="130" height="32" rx="5" fill="var(--seq-ctrl-bg)" stroke="var(--seq-ctrl)" stroke-width="1.5"/>
+      <text x="235" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-ctrl)">AnalysisController</text>
+
+      <rect x="380" y="10" width="100" height="32" rx="5" fill="var(--seq-repo-bg)" stroke="var(--seq-repo)" stroke-width="1.5"/>
+      <text x="430" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-repo)">Repository</text>
+
+      <rect x="560" y="10" width="120" height="32" rx="5" fill="var(--seq-db-bg)" stroke="var(--seq-db)" stroke-width="1.5"/>
+      <text x="620" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="var(--seq-db)">Blade View</text>
+
+      <line x1="65" y1="42" x2="65" y2="320" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="235" y1="42" x2="235" y2="320" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="430" y1="42" x2="430" y2="320" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="620" y1="42" x2="620" y2="320" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+
+      <!-- 1. GET -->
+      <line x1="65" y1="70" x2="228" y2="70" stroke="var(--seq-call)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="146" y="64" text-anchor="middle" font-size="8" font-weight="600" fill="var(--seq-call)">1. GET /analysis/{id}</text>
+      <rect x="230" y="70" width="10" height="60" rx="2" fill="var(--seq-ctrl-bg)" stroke="var(--seq-ctrl)" stroke-width="1"/>
+
+      <!-- 2. find tracerStudy -->
+      <line x1="240" y1="95" x2="423" y2="95" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="331" y="89" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--seq-call)">2. find($id)</text>
+      <rect x="425" y="95" width="10" height="20" rx="2" fill="var(--seq-repo-bg)" stroke="var(--seq-repo)" stroke-width="1"/>
+      <line x1="425" y1="115" x2="240" y2="115" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+
+      <!-- 3. findByTracerStudy -->
+      <line x1="240" y1="145" x2="423" y2="145" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="331" y="139" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--seq-call)">3. findByTracerStudy($id)</text>
+      <rect x="425" y="145" width="10" height="20" rx="2" fill="var(--seq-repo-bg)" stroke="var(--seq-repo)" stroke-width="1"/>
+      <line x1="425" y1="165" x2="240" y2="165" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="331" y="177" text-anchor="middle" font-size="7" fill="var(--seq-return)">Collection of 13 AnalysisResults</text>
+
+      <!-- 4. Render view -->
+      <line x1="240" y1="200" x2="613" y2="200" stroke="var(--seq-call)" stroke-width="1.2" marker-end="url(#arr)"/>
+      <text x="426" y="194" text-anchor="middle" font-size="7.5" font-weight="600" fill="var(--seq-call)">4. view('pages.analysis', compact('study', 'results'))</text>
+      <rect x="615" y="200" width="10" height="50" rx="2" fill="var(--seq-db-bg)" stroke="var(--seq-db)" stroke-width="1"/>
+      <text x="620" y="228" text-anchor="start" font-size="7" fill="var(--text-tertiary)" dx="16">13× parameter-card</text>
+      <text x="620" y="240" text-anchor="start" font-size="7" fill="var(--text-tertiary)" dx="16">Chart.js init</text>
+
+      <!-- 5. Return HTML -->
+      <line x1="615" y1="260" x2="240" y2="260" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="427" y="254" text-anchor="middle" font-size="7" fill="var(--seq-return)">5. rendered HTML</text>
+
+      <!-- 6. Return to browser -->
+      <line x1="230" y1="290" x2="72" y2="290" stroke="var(--seq-return)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arr-ret)"/>
+      <text x="151" y="284" text-anchor="middle" font-size="7.5" fill="var(--seq-return)">6. HTTP 200 (HTML)</text>
+    </svg>
+  </div>
+
+  <div class="seq-steps">
+    <div class="seq-steps-title">Langkah Interaksi Detail</div>
+    <ol class="seq-list">
+      <li><span class="seq-num sn-call">1</span><span>Browser → <strong>AnalysisController</strong>: <span class="method">show($id)</span> — GET /analysis/{id}</span></li>
+      <li><span class="seq-num sn-db">2</span><span>AnalysisController → <strong>TracerStudyRepository</strong>: <span class="method">find($id)</span> → TracerStudy model (atau 404)</span></li>
+      <li><span class="seq-num sn-db">3</span><span>AnalysisController → <strong>AnalysisResultRepository</strong>: <span class="method">findByTracerStudy($id)</span> → Collection of 13 results</span></li>
+      <li><span class="seq-num sn-sys">4</span><span>AnalysisController → <strong>Blade View</strong>: render analysis.blade.php dengan $study + $results, 13× <code>&lt;x-parameter-card&gt;</code></span></li>
+      <li><span class="seq-num sn-ret">5</span><span>Blade → AnalysisController: rendered HTML dengan Chart.js JSON inline</span></li>
+      <li><span class="seq-num sn-ret">6</span><span>AnalysisController → Browser: HTTP 200, browser render chart via Chart.js</span></li>
+    </ol>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 4. MAPPING TABLE -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">9.4</span>
+    <h2>Ringkasan Partisipan per Sequence</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Sequence Diagram</th><th>Partisipan</th><th>Messages</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;">1. Upload & Analisis</td>
+          <td>Browser, UploadController, TracerAnalysisService, ExcelReaderService, StatisticsService, ChartConfigService, NarrativeService, Repository</td>
+          <td style="text-align:center; font-variant-numeric: tabular-nums;">14</td>
+          <td>UC-02, UC-03, UC-04</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">2. Generate Laporan</td>
+          <td>Browser, ReportController, ReportGeneratorService, Repository, Storage</td>
+          <td style="text-align:center; font-variant-numeric: tabular-nums;">8</td>
+          <td>UC-06</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">3. Lihat Analisis</td>
+          <td>Browser, AnalysisController, Repository, Blade View</td>
+          <td style="text-align:center; font-variant-numeric: tabular-nums;">6</td>
+          <td>UC-05</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Sequence untuk UC-01 (Dashboard) dan UC-07 (Download) tidak dibuatkan diagram terpisah karena polanya identik dengan Sequence 3: Controller → Repository → View/Response, tanpa service layer.</p>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 9 &mdash; Sequence Diagram: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 10: Class Diagram</span>
+</div>

@@ -1,0 +1,651 @@
+<title>Product Backlog</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --pri-critical: #dc2626; --pri-critical-bg: #fef2f2;
+    --pri-high: #d97706; --pri-high-bg: #fffbeb;
+    --pri-medium: #2d5be3; --pri-medium-bg: #e8eefb;
+    --pri-low: #059669; --pri-low-bg: #ecfdf5;
+    --sprint-1: #7c3aed; --sprint-1-bg: #f5f3ff;
+    --sprint-2: #0891b2; --sprint-2-bg: #ecfeff;
+    --sprint-3: #d97706; --sprint-3-bg: #fffbeb;
+    --sprint-4: #059669; --sprint-4-bg: #ecfdf5;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --pri-critical: #f87171; --pri-critical-bg: #2a1010;
+      --pri-high: #fbbf24; --pri-high-bg: #2a2010;
+      --pri-medium: #6b8de8; --pri-medium-bg: #1e2a4a;
+      --pri-low: #34d399; --pri-low-bg: #0d2818;
+      --sprint-1: #a78bfa; --sprint-1-bg: #1e1838;
+      --sprint-2: #22d3ee; --sprint-2-bg: #0a2028;
+      --sprint-3: #fbbf24; --sprint-3-bg: #2a2010;
+      --sprint-4: #34d399; --sprint-4-bg: #0d2818;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --pri-critical: #f87171; --pri-critical-bg: #2a1010;
+    --pri-high: #fbbf24; --pri-high-bg: #2a2010;
+    --pri-medium: #6b8de8; --pri-medium-bg: #1e2a4a;
+    --pri-low: #34d399; --pri-low-bg: #0d2818;
+    --sprint-1: #a78bfa; --sprint-1-bg: #1e1838;
+    --sprint-2: #22d3ee; --sprint-2-bg: #0a2028;
+    --sprint-3: #fbbf24; --sprint-3-bg: #2a2010;
+    --sprint-4: #34d399; --sprint-4-bg: #0d2818;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  h3 { font-size: 0.92rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text); }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  .tag { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 3px; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+  .tag-critical { color: var(--pri-critical); background: var(--pri-critical-bg); }
+  .tag-high { color: var(--pri-high); background: var(--pri-high-bg); }
+  .tag-medium { color: var(--pri-medium); background: var(--pri-medium-bg); }
+  .tag-low { color: var(--pri-low); background: var(--pri-low-bg); }
+  .tag-s1 { color: var(--sprint-1); background: var(--sprint-1-bg); }
+  .tag-s2 { color: var(--sprint-2); background: var(--sprint-2-bg); }
+  .tag-s3 { color: var(--sprint-3); background: var(--sprint-3-bg); }
+  .tag-s4 { color: var(--sprint-4); background: var(--sprint-4-bg); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.5rem 0.65rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 0.5rem 0.65rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.id { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; color: var(--accent-muted); white-space: nowrap; }
+  td.story { color: var(--text); font-size: 0.78rem; }
+  td.story strong { font-weight: 700; }
+  td.pts { text-align: center; font-weight: 700; color: var(--text); }
+  td.map { font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-tertiary); }
+  .ac { font-size: 0.72rem; color: var(--text-tertiary); margin-top: 0.3rem; line-height: 1.5; }
+  .ac span { display: block; padding-left: 0.75rem; text-indent: -0.75rem; }
+
+  .sprint-header { display: flex; align-items: center; gap: 0.65rem; padding: 0.75rem 0.85rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px 8px 0 0; border-bottom: 2px solid var(--accent); }
+  .sprint-title { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+  .sprint-meta { font-size: 0.72rem; color: var(--text-tertiary); margin-left: auto; }
+  .sprint-pts { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; margin-bottom: 1.25rem; }
+  .summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem; text-align: center; box-shadow: var(--shadow-sm); }
+  .summary-card .num { font-size: 1.5rem; font-weight: 800; line-height: 1; margin-bottom: 0.2rem; font-variant-numeric: tabular-nums; }
+  .summary-card .label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-tertiary); }
+
+  .note-box { padding: 0.85rem 1rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.25rem; }
+  .note-box strong { color: var(--accent); }
+
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (max-width: 700px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Product Backlog</h1>
+  <p class="doc-subtitle">User stories lengkap dengan acceptance criteria, prioritas, story points, dan sprint mapping ke tahap implementasi (Tahap 12–27).</p>
+  <div class="doc-meta">
+    <span>Tahap 11 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>11</strong> / 27 &mdash; Backlog</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SUMMARY -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">11.1</span>
+    <h2>Ringkasan Backlog</h2>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="num" style="color: var(--text);">16</div>
+      <div class="label">User Stories</div>
+    </div>
+    <div class="summary-card">
+      <div class="num" style="color: var(--accent);">73</div>
+      <div class="label">Story Points</div>
+    </div>
+    <div class="summary-card">
+      <div class="num" style="color: var(--sprint-1);">4</div>
+      <div class="label">Sprint Phases</div>
+    </div>
+    <div class="summary-card">
+      <div class="num" style="color: var(--pri-critical);">16</div>
+      <div class="label">Tahap Implementasi</div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    <strong>Konvensi Story Points:</strong> 1 = trivial (~1 jam), 2 = kecil (~2–3 jam), 3 = sedang (~setengah hari), 5 = besar (~1 hari), 8 = sangat besar (~2 hari), 13 = epic (~3+ hari). Fibonacci scale. Estimasi untuk satu developer.
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- SPRINT 1: FOUNDATION -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">11.2</span>
+    <h2>Sprint 1: Foundation</h2>
+  </div>
+
+  <div class="sprint-header">
+    <span class="tag tag-s1">Sprint 1</span>
+    <span class="sprint-title">Foundation — Setup, Database, Config</span>
+    <span class="sprint-meta">Tahap 12–15 &bull; <span class="sprint-pts">18 pts</span></span>
+  </div>
+  <div class="table-wrap" style="border-top: none; border-radius: 0 0 8px 8px;">
+    <table>
+      <thead><tr><th>ID</th><th>User Story</th><th>Prioritas</th><th>SP</th><th>Tahap</th><th>Mapping</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="id">US-01</td>
+          <td class="story">
+            <strong>Inisialisasi proyek Laravel 12</strong><br>
+            Sebagai developer, saya ingin proyek Laravel 12 tersetup lengkap dengan dependensi, agar fondasi pengembangan siap.
+            <div class="ac">
+              <span>✓ Laravel 12 fresh install di tracer-reporting/</span>
+              <span>✓ Composer require: phpoffice/phpspreadsheet, phpoffice/phpword</span>
+              <span>✓ AdminLTE 4 + Bootstrap 5 + Chart.js terintegrasi</span>
+              <span>✓ .env terkonfigurasi untuk MySQL lokal</span>
+              <span>✓ Git init + .gitignore + initial commit</span>
+            </div>
+          </td>
+          <td><span class="tag tag-critical">Critical</span></td>
+          <td class="pts">3</td>
+          <td><span class="tag tag-s1">T-12</span></td>
+          <td class="map">—</td>
+        </tr>
+        <tr>
+          <td class="id">US-02</td>
+          <td class="story">
+            <strong>Database migration &amp; model</strong><br>
+            Sebagai developer, saya ingin 3 tabel database + Eloquent models siap, agar data bisa disimpan dan direlasikan.
+            <div class="ac">
+              <span>✓ Migration: tracer_studies, analysis_results, reports</span>
+              <span>✓ Model: TracerStudy, AnalysisResult, Report dengan relasi + casts</span>
+              <span>✓ php artisan migrate berjalan tanpa error</span>
+              <span>✓ Foreign key + cascade delete berfungsi</span>
+            </div>
+          </td>
+          <td><span class="tag tag-critical">Critical</span></td>
+          <td class="pts">3</td>
+          <td><span class="tag tag-s1">T-13</span></td>
+          <td class="map">FR-02</td>
+        </tr>
+        <tr>
+          <td class="id">US-03</td>
+          <td class="story">
+            <strong>Repository pattern + Service Provider</strong><br>
+            Sebagai developer, saya ingin repository interfaces dan Eloquent implementations terdaftar via DI, agar service layer bisa mengakses DB tanpa coupling langsung.
+            <div class="ac">
+              <span>✓ 3 Interface + 3 Eloquent Repository</span>
+              <span>✓ RepositoryServiceProvider binding Interface → Implementation</span>
+              <span>✓ Provider terdaftar di config/app.php</span>
+              <span>✓ Constructor injection berfungsi di controller/service</span>
+            </div>
+          </td>
+          <td><span class="tag tag-critical">Critical</span></td>
+          <td class="pts">5</td>
+          <td><span class="tag tag-s1">T-14</span></td>
+          <td class="map">—</td>
+        </tr>
+        <tr>
+          <td class="id">US-04</td>
+          <td class="story">
+            <strong>Config parameter mapping</strong><br>
+            Sebagai developer, saya ingin config/tracer.php dan config/narratives.php berisi mapping lengkap 13 parameter, agar semua service punya single source of truth.
+            <div class="ac">
+              <span>✓ config/tracer.php: 13 parameter dengan nama, f-code, tipe statistik, chart type, label kategori</span>
+              <span>✓ config/narratives.php: 13 template narasi dengan placeholder</span>
+              <span>✓ Parameter #13 (Penilaian Kemampuan Diri): 7 kompetensi × 2 dimensi mapped</span>
+              <span>✓ config('tracer.parameters') accessible dari service</span>
+            </div>
+          </td>
+          <td><span class="tag tag-high">High</span></td>
+          <td class="pts">5</td>
+          <td><span class="tag tag-s1">T-15</span></td>
+          <td class="map">BR-01</td>
+        </tr>
+        <tr>
+          <td class="id">US-05</td>
+          <td class="story">
+            <strong>Layout &amp; routing</strong><br>
+            Sebagai developer, saya ingin AdminLTE master layout + 8 route definitions siap, agar halaman bisa diakses.
+            <div class="ac">
+              <span>✓ app.blade.php: AdminLTE 4 layout dengan sidebar (4 menu), topbar, content area</span>
+              <span>✓ sidebar.blade.php + navbar.blade.php partials</span>
+              <span>✓ web.php: 8 routes terdefinisi</span>
+              <span>✓ Navigasi sidebar active state berfungsi</span>
+              <span>✓ Buka / langsung ke dashboard (tanpa login)</span>
+            </div>
+          </td>
+          <td><span class="tag tag-high">High</span></td>
+          <td class="pts">2</td>
+          <td><span class="tag tag-s1">T-15</span></td>
+          <td class="map">FR-01</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- SPRINT 2: CORE -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">11.3</span>
+    <h2>Sprint 2: Core Features</h2>
+  </div>
+
+  <div class="sprint-header">
+    <span class="tag tag-s2">Sprint 2</span>
+    <span class="sprint-title">Core — Upload, Excel, Analisis</span>
+    <span class="sprint-meta">Tahap 16–21 &bull; <span class="sprint-pts">30 pts</span></span>
+  </div>
+  <div class="table-wrap" style="border-top: none; border-radius: 0 0 8px 8px;">
+    <table>
+      <thead><tr><th>ID</th><th>User Story</th><th>Prioritas</th><th>SP</th><th>Tahap</th><th>Mapping</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="id">US-06</td>
+          <td class="story">
+            <strong>Form upload data tracer</strong><br>
+            Sebagai pengguna, saya ingin mengupload file Excel dan mengisi info institusi, agar data tracer bisa diproses.
+            <div class="ac">
+              <span>✓ Halaman upload: 5 field meta + dropzone file</span>
+              <span>✓ UploadTracerRequest: validasi file (.xlsx, ≤10MB) + field wajib</span>
+              <span>✓ Drag-and-drop + fallback klik browse</span>
+              <span>✓ Error messages tampil per field</span>
+              <span>✓ Old input tetap terisi setelah validasi gagal</span>
+            </div>
+          </td>
+          <td><span class="tag tag-critical">Critical</span></td>
+          <td class="pts">3</td>
+          <td><span class="tag tag-s2">T-16</span></td>
+          <td class="map">FR-02, FR-03</td>
+        </tr>
+        <tr>
+          <td class="id">US-07</td>
+          <td class="story">
+            <strong>Excel reader service</strong><br>
+            Sebagai sistem, saya ingin membaca sheet "data tracer" dari file Excel, agar data responden tersedia untuk analisis.
+            <div class="ac">
+              <span>✓ ExcelReaderService.read() → array of respondents</span>
+              <span>✓ Header detection di baris 3, data mulai baris 4</span>
+              <span>✓ Mapping kolom Excel → f-code via config/tracer.php</span>
+              <span>✓ Return associative array: key = f-code, value = cell value</span>
+              <span>✓ Hitung total baris data (total_responden)</span>
+            </div>
+          </td>
+          <td><span class="tag tag-critical">Critical</span></td>
+          <td class="pts">5</td>
+          <td><span class="tag tag-s2">T-17</span></td>
+          <td class="map">FR-04</td>
+        </tr>
+        <tr>
+          <td class="id">US-08</td>
+          <td class="story">
+            <strong>Statistics service</strong><br>
+            Sebagai sistem, saya ingin menghitung statistik per parameter (frequency, mean, median, sum, index), agar hasil analisis akurat.
+            <div class="ac">
+              <span>✓ StatisticsService.calculate() dengan Strategy Pattern internal</span>
+              <span>✓ Tipe frequency: count + percentage per kategori</span>
+              <span>✓ Tipe mean_median: mean, median, min, max</span>
+              <span>✓ Tipe mean: rata-rata sederhana</span>
+              <span>✓ Tipe sum: total akumulasi</span>
+              <span>✓ Tipe index: 7 kompetensi × dimensi A/B × distribusi + gap</span>
+              <span>✓ Output sesuai JSON structure dari Tahap 4</span>
+            </div>
+          </td>
+          <td><span class="tag tag-critical">Critical</span></td>
+          <td class="pts">8</td>
+          <td><span class="tag tag-s2">T-18</span></td>
+          <td class="map">FR-05, FR-06</td>
+        </tr>
+        <tr>
+          <td class="id">US-09</td>
+          <td class="story">
+            <strong>Chart config service</strong><br>
+            Sebagai sistem, saya ingin membangun konfigurasi Chart.js JSON per parameter, agar chart bisa dirender di browser.
+            <div class="ac">
+              <span>✓ ChartConfigService.build() → JSON chart config</span>
+              <span>✓ Pie chart untuk parameter frequency</span>
+              <span>✓ Bar chart untuk distribusi penghasilan</span>
+              <span>✓ Grouped bar chart untuk Penilaian Kemampuan Diri (A vs B)</span>
+              <span>✓ Color palette konsisten, label readable</span>
+            </div>
+          </td>
+          <td><span class="tag tag-high">High</span></td>
+          <td class="pts">3</td>
+          <td><span class="tag tag-s2">T-19</span></td>
+          <td class="map">FR-07</td>
+        </tr>
+        <tr>
+          <td class="id">US-10</td>
+          <td class="story">
+            <strong>Narrative service</strong><br>
+            Sebagai sistem, saya ingin menghasilkan paragraf narasi otomatis per parameter, agar laporan memiliki penjelasan tekstual.
+            <div class="ac">
+              <span>✓ NarrativeService.generate() → string paragraf</span>
+              <span>✓ Template dari config/narratives.php</span>
+              <span>✓ Placeholder replacement: :total, :top_category, :percentage, :mean, dll</span>
+              <span>✓ 13 narasi berbeda sesuai tipe parameter</span>
+            </div>
+          </td>
+          <td><span class="tag tag-high">High</span></td>
+          <td class="pts">3</td>
+          <td><span class="tag tag-s2">T-20</span></td>
+          <td class="map">FR-08</td>
+        </tr>
+        <tr>
+          <td class="id">US-11</td>
+          <td class="story">
+            <strong>Tracer analysis orchestrator</strong><br>
+            Sebagai sistem, saya ingin TracerAnalysisService mengoordinasi seluruh proses (baca → hitung → narasi → simpan), agar upload menghasilkan analisis lengkap.
+            <div class="ac">
+              <span>✓ TracerAnalysisService.analyze() orchestrates all services</span>
+              <span>✓ Create tracer_studies record (processing → completed)</span>
+              <span>✓ Loop 13 parameter: statistics + chart + narrative</span>
+              <span>✓ Simpan 13 analysis_results records</span>
+              <span>✓ Hapus file Excel sementara setelah selesai</span>
+              <span>✓ Response rate calculated and saved</span>
+              <span>✓ Error handling: status → failed jika gagal</span>
+              <span>✓ Proses &lt;30 detik untuk ≤5000 baris</span>
+            </div>
+          </td>
+          <td><span class="tag tag-critical">Critical</span></td>
+          <td class="pts">8</td>
+          <td><span class="tag tag-s2">T-21</span></td>
+          <td class="map">FR-04–09</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- SPRINT 3: PRESENTATION -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">11.4</span>
+    <h2>Sprint 3: Presentation &amp; Report</h2>
+  </div>
+
+  <div class="sprint-header">
+    <span class="tag tag-s3">Sprint 3</span>
+    <span class="sprint-title">Presentation — Dashboard, Analisis View, Report Generator</span>
+    <span class="sprint-meta">Tahap 22–25 &bull; <span class="sprint-pts">18 pts</span></span>
+  </div>
+  <div class="table-wrap" style="border-top: none; border-radius: 0 0 8px 8px;">
+    <table>
+      <thead><tr><th>ID</th><th>User Story</th><th>Prioritas</th><th>SP</th><th>Tahap</th><th>Mapping</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="id">US-12</td>
+          <td class="story">
+            <strong>Dashboard halaman utama</strong><br>
+            Sebagai pengguna, saya ingin melihat ringkasan semua tracer study di dashboard, agar saya tahu status keseluruhan data.
+            <div class="ac">
+              <span>✓ 4 stat widgets: total study, total responden, total laporan, upload terakhir</span>
+              <span>✓ Tabel daftar tracer study: prodi, tahun, responden, status, aksi</span>
+              <span>✓ Status badge warna (completed/processing/failed)</span>
+              <span>✓ Tombol "Upload Baru" shortcut</span>
+              <span>✓ Empty state saat belum ada data</span>
+            </div>
+          </td>
+          <td><span class="tag tag-high">High</span></td>
+          <td class="pts">3</td>
+          <td><span class="tag tag-s3">T-22</span></td>
+          <td class="map">FR-01</td>
+        </tr>
+        <tr>
+          <td class="id">US-13</td>
+          <td class="story">
+            <strong>Halaman analisis parameter</strong><br>
+            Sebagai pengguna, saya ingin melihat 13 parameter cards dengan tabel, chart, dan narasi, agar saya bisa memahami hasil tracer study.
+            <div class="ac">
+              <span>✓ Header: nama prodi, tahun, responden, response rate</span>
+              <span>✓ 13 parameter cards berurutan (scrollable)</span>
+              <span>✓ x-parameter-card component: tabel + chart + narasi per tipe</span>
+              <span>✓ Chart.js render: pie, bar, grouped bar dari chart_config JSON</span>
+              <span>✓ Tombol "Generate Laporan Word"</span>
+              <span>✓ Responsive layout: stack di mobile</span>
+            </div>
+          </td>
+          <td><span class="tag tag-critical">Critical</span></td>
+          <td class="pts">5</td>
+          <td><span class="tag tag-s3">T-23</span></td>
+          <td class="map">FR-04, FR-07</td>
+        </tr>
+        <tr>
+          <td class="id">US-14</td>
+          <td class="story">
+            <strong>Report generator (Word)</strong><br>
+            Sebagai pengguna, saya ingin men-generate laporan .docx lengkap dari hasil analisis, agar saya punya dokumen formal yang siap cetak.
+            <div class="ac">
+              <span>✓ ReportGeneratorService.generate() → file .docx</span>
+              <span>✓ Cover page: nama PT, prodi, tahun tracer</span>
+              <span>✓ Daftar isi otomatis</span>
+              <span>✓ Ringkasan: total responden, response rate</span>
+              <span>✓ 13 bab parameter: tabel data + paragraf narasi</span>
+              <span>✓ File disimpan di storage/app/reports/</span>
+              <span>✓ Record reports tersimpan di DB</span>
+            </div>
+          </td>
+          <td><span class="tag tag-critical">Critical</span></td>
+          <td class="pts">8</td>
+          <td><span class="tag tag-s3">T-24</span></td>
+          <td class="map">FR-10</td>
+        </tr>
+        <tr>
+          <td class="id">US-15</td>
+          <td class="story">
+            <strong>Halaman daftar laporan + download</strong><br>
+            Sebagai pengguna, saya ingin melihat daftar laporan dan mendownload file .docx, agar saya bisa mendapatkan dokumen.
+            <div class="ac">
+              <span>✓ Tabel laporan: filename, tracer study, ukuran, tanggal, aksi</span>
+              <span>✓ Download: response binary file .docx</span>
+              <span>✓ Hapus: modal konfirmasi → delete record + file fisik</span>
+              <span>✓ Hint text mengarahkan ke halaman Analisis untuk generate baru</span>
+            </div>
+          </td>
+          <td><span class="tag tag-high">High</span></td>
+          <td class="pts">2</td>
+          <td><span class="tag tag-s3">T-25</span></td>
+          <td class="map">FR-11, FR-13</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- SPRINT 4: POLISH -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">11.5</span>
+    <h2>Sprint 4: Polish &amp; Delivery</h2>
+  </div>
+
+  <div class="sprint-header">
+    <span class="tag tag-s4">Sprint 4</span>
+    <span class="sprint-title">Polish — Testing, Optimization, Deployment</span>
+    <span class="sprint-meta">Tahap 26–27 &bull; <span class="sprint-pts">7 pts</span></span>
+  </div>
+  <div class="table-wrap" style="border-top: none; border-radius: 0 0 8px 8px;">
+    <table>
+      <thead><tr><th>ID</th><th>User Story</th><th>Prioritas</th><th>SP</th><th>Tahap</th><th>Mapping</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="id">US-16</td>
+          <td class="story">
+            <strong>Testing &amp; final polish</strong><br>
+            Sebagai developer, saya ingin memastikan semua fitur berjalan end-to-end tanpa bug, agar aplikasi siap digunakan.
+            <div class="ac">
+              <span>✓ Upload → analisis → view → generate → download: end-to-end OK</span>
+              <span>✓ Hapus tracer study: cascade delete analysis_results + reports + file</span>
+              <span>✓ Edge case: file kosong, kolom tidak lengkap, angka 0</span>
+              <span>✓ Responsive: mobile + tablet + desktop</span>
+              <span>✓ Loading state saat upload processing</span>
+              <span>✓ Flash messages tampil dengan benar</span>
+              <span>✓ Performance: ≤5000 baris Excel &lt;30 detik</span>
+            </div>
+          </td>
+          <td><span class="tag tag-high">High</span></td>
+          <td class="pts">5</td>
+          <td><span class="tag tag-s4">T-26</span></td>
+          <td class="map">NFR-01–07</td>
+        </tr>
+        <tr>
+          <td class="id">US-17</td>
+          <td class="story">
+            <strong>Deployment preparation</strong><br>
+            Sebagai developer, saya ingin aplikasi siap deploy ke environment production/lokal, agar bisa langsung digunakan.
+            <div class="ac">
+              <span>✓ .env.example terkonfigurasi lengkap</span>
+              <span>✓ Storage link: php artisan storage:link</span>
+              <span>✓ Optimisasi: config:cache, route:cache, view:cache</span>
+              <span>✓ README dengan instruksi instalasi</span>
+            </div>
+          </td>
+          <td><span class="tag tag-medium">Medium</span></td>
+          <td class="pts">2</td>
+          <td><span class="tag tag-s4">T-27</span></td>
+          <td class="map">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- SPRINT OVERVIEW -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">11.6</span>
+    <h2>Sprint Velocity Overview</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Sprint</th><th>Fokus</th><th>Stories</th><th>Points</th><th>Tahap</th><th>Deliverable</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-s1">Sprint 1</span></td>
+          <td style="font-weight:600;">Foundation</td>
+          <td style="text-align:center;">5</td>
+          <td style="text-align:center; font-weight:700;">18</td>
+          <td>12–15</td>
+          <td>Project setup, DB, repositories, config, layout, routes</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-s2">Sprint 2</span></td>
+          <td style="font-weight:600;">Core Features</td>
+          <td style="text-align:center;">6</td>
+          <td style="text-align:center; font-weight:700;">30</td>
+          <td>16–21</td>
+          <td>Upload form, Excel reader, statistics, charts, narrative, orchestrator</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-s3">Sprint 3</span></td>
+          <td style="font-weight:600;">Presentation</td>
+          <td style="text-align:center;">4</td>
+          <td style="text-align:center; font-weight:700;">18</td>
+          <td>22–25</td>
+          <td>Dashboard, analysis view, Word report generator, report list</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-s4">Sprint 4</span></td>
+          <td style="font-weight:600;">Polish</td>
+          <td style="text-align:center;">2</td>
+          <td style="text-align:center; font-weight:700;">7</td>
+          <td>26–27</td>
+          <td>End-to-end testing, deployment prep</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="font-weight:800;">Total</td>
+          <td style="text-align:center; font-weight:800;">17</td>
+          <td style="text-align:center; font-weight:800;">73</td>
+          <td style="font-weight:700;">12–27</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 11 &mdash; Product Backlog: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 12: Implementasi — Inisialisasi Proyek Laravel</span>
+</div>

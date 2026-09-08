@@ -1,0 +1,507 @@
+<title>Activity Diagram</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --act-start: #1a1d26; --act-action: #2d5be3; --act-action-bg: #e8eefb;
+    --act-decision: #d97706; --act-decision-bg: #fffbeb;
+    --act-fork: #1a1d26;
+    --act-system: #7c3aed; --act-system-bg: #f5f3ff;
+    --act-end: #dc2626;
+    --act-line: #8890a0;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --act-start: #e4e6ec; --act-action: #6b8de8; --act-action-bg: #1e2a4a;
+      --act-decision: #fbbf24; --act-decision-bg: #2a2010;
+      --act-fork: #e4e6ec;
+      --act-system: #a78bfa; --act-system-bg: #1e1838;
+      --act-end: #f87171;
+      --act-line: #556070;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --act-start: #e4e6ec; --act-action: #6b8de8; --act-action-bg: #1e2a4a;
+    --act-decision: #fbbf24; --act-decision-bg: #2a2010;
+    --act-fork: #e4e6ec;
+    --act-system: #a78bfa; --act-system-bg: #1e1838;
+    --act-end: #f87171;
+    --act-line: #556070;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 920px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; color: var(--text); margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  .diagram-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1rem; box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; overflow-x: auto; }
+  .diagram-wrap svg { display: block; margin: 0 auto; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--text-secondary); }
+  .legend-shape { width: 16px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Flow steps textual */
+  .flow-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: var(--shadow-sm); }
+  .flow-title { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+  .flow-tag { font-size: 0.6rem; font-weight: 600; padding: 0.1rem 0.4rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .ft-user { color: var(--act-action); background: var(--act-action-bg); }
+  .ft-sys { color: var(--act-system); background: var(--act-system-bg); }
+  .ft-decision { color: var(--act-decision); background: var(--act-decision-bg); }
+
+  .flow-steps { list-style: none; padding: 0; margin: 0; }
+  .flow-steps li { position: relative; padding: 0.35rem 0 0.35rem 2rem; font-size: 0.78rem; color: var(--text-secondary); border-left: 2px solid var(--border); margin-left: 0.5rem; }
+  .flow-steps li:last-child { border-left-color: transparent; }
+  .flow-steps li::before { content: ''; position: absolute; left: -5px; top: 0.55rem; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-muted); }
+  .flow-steps li.decision::before { background: var(--act-decision); border-radius: 1px; transform: rotate(45deg); width: 8px; height: 8px; }
+  .flow-steps li.sys::before { background: var(--act-system); }
+  .flow-steps li.end-node::before { background: var(--act-end); }
+  .flow-steps .branch { margin-left: 1rem; padding: 0.25rem 0 0.25rem 0.75rem; border-left: 2px dashed var(--border); font-size: 0.74rem; color: var(--text-tertiary); }
+  .flow-steps .branch-label { font-weight: 600; color: var(--act-decision); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+  .swim-label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.68rem; font-weight: 600; color: var(--text-tertiary); margin-bottom: 0.1rem; }
+  .swim-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  tbody td { padding: 0.45rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .legend { flex-direction: column; gap: 0.35rem; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Activity Diagram</h1>
+  <p class="doc-subtitle">Diagram aktivitas UML untuk 3 proses utama: Upload & Analisis, Generate Laporan, dan Hapus Data. Setiap diagram menunjukkan swimlane Pengguna vs Sistem.</p>
+  <div class="doc-meta">
+    <span>Tahap 8 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>8</strong> / 27 &mdash; Activity</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- LEGEND -->
+<!-- ============================================================ -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-shape" style="background: var(--act-start); border-radius: 50%;"></div>Start / End</div>
+  <div class="legend-item"><div class="legend-shape" style="background: var(--act-action-bg); border: 1.5px solid var(--act-action); border-radius: 4px;"></div>Aksi Pengguna</div>
+  <div class="legend-item"><div class="legend-shape" style="background: var(--act-system-bg); border: 1.5px solid var(--act-system); border-radius: 4px;"></div>Aksi Sistem</div>
+  <div class="legend-item"><div class="legend-shape" style="background: var(--act-decision-bg); border: 1.5px solid var(--act-decision); transform: rotate(45deg); border-radius: 1px;"></div>Decision</div>
+  <div class="legend-item"><div class="legend-shape" style="background: var(--act-fork); height: 3px; border-radius: 2px; align-self: center;"></div>Fork / Join</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 1. UPLOAD & ANALISIS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">8.1</span>
+    <h2>Activity 1: Upload &amp; Analisis Data Tracer</h2>
+  </div>
+
+  <p>Proses utama dan paling kompleks. Mencakup UC-02, UC-03, UC-04. Dua swimlane: Pengguna (interaksi UI) dan Sistem (proses backend).</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 700 920" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;">
+      <!-- Swimlanes -->
+      <rect x="20" y="40" width="310" height="860" rx="8" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="175" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--act-action)">Pengguna</text>
+      <rect x="350" y="40" width="330" height="860" rx="8" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="515" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--act-system)">Sistem</text>
+
+      <!-- Start -->
+      <circle cx="175" cy="95" r="10" fill="var(--act-start)"/>
+      <line x1="175" y1="105" x2="175" y2="130" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- A1: Buka halaman upload -->
+      <rect x="65" y="130" width="220" height="36" rx="6" fill="var(--act-action-bg)" stroke="var(--act-action)" stroke-width="1.5"/>
+      <text x="175" y="152" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-action)">Buka Halaman Upload</text>
+      <line x1="175" y1="166" x2="175" y2="190" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- A2: Isi meta institusi -->
+      <rect x="55" y="190" width="240" height="36" rx="6" fill="var(--act-action-bg)" stroke="var(--act-action)" stroke-width="1.5"/>
+      <text x="175" y="212" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-action)">Isi Informasi Institusi (5 field)</text>
+      <line x1="175" y1="226" x2="175" y2="250" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- A3: Pilih file Excel -->
+      <rect x="55" y="250" width="240" height="36" rx="6" fill="var(--act-action-bg)" stroke="var(--act-action)" stroke-width="1.5"/>
+      <text x="175" y="272" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-action)">Pilih File Excel (.xlsx)</text>
+      <line x1="175" y1="286" x2="175" y2="310" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- A4: Klik Upload -->
+      <rect x="65" y="310" width="220" height="36" rx="6" fill="var(--act-action-bg)" stroke="var(--act-action)" stroke-width="1.5"/>
+      <text x="175" y="332" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-action)">Klik "Upload &amp; Proses"</text>
+      <line x1="285" y1="328" x2="380" y2="328" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S1: Validasi input -->
+      <rect x="380" y="310" width="240" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="500" y="332" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">Validasi Input (FormRequest)</text>
+      <line x1="500" y1="346" x2="500" y2="380" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- D1: Valid? -->
+      <polygon points="500,380 540,405 500,430 460,405" fill="var(--act-decision-bg)" stroke="var(--act-decision)" stroke-width="1.5"/>
+      <text x="500" y="409" text-anchor="middle" font-size="9" font-weight="600" fill="var(--act-decision)">Valid?</text>
+
+      <!-- D1 No: kembali ke form -->
+      <line x1="460" y1="405" x2="285" y2="270" stroke="var(--act-decision)" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="350" y="330" font-size="8" font-weight="600" fill="var(--act-decision)">Tidak</text>
+      <text x="350" y="342" font-size="7.5" fill="var(--text-tertiary)">(tampil error)</text>
+
+      <!-- D1 Yes: continue -->
+      <line x1="500" y1="430" x2="500" y2="460" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <text x="544" y="445" font-size="8" font-weight="600" fill="var(--act-decision)">Ya</text>
+
+      <!-- S2: Simpan file + create record -->
+      <rect x="380" y="460" width="240" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="500" y="475" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--act-system)">Simpan File + Create Record</text>
+      <text x="500" y="488" text-anchor="middle" font-size="8" fill="var(--text-tertiary)">status: processing</text>
+      <line x1="500" y1="496" x2="500" y2="520" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S3: Baca Excel -->
+      <rect x="380" y="520" width="240" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="500" y="542" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">ExcelReaderService: Baca Data</text>
+      <line x1="500" y1="556" x2="500" y2="580" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S4: Hitung response rate -->
+      <rect x="380" y="580" width="240" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="500" y="602" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">Hitung Response Rate</text>
+      <line x1="500" y1="616" x2="500" y2="640" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S5: Loop 13 parameter -->
+      <rect x="370" y="640" width="260" height="50" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="2" stroke-dasharray="6 2"/>
+      <text x="500" y="658" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--act-system)">Loop 13 Parameter:</text>
+      <text x="500" y="673" text-anchor="middle" font-size="8.5" fill="var(--act-system)">Statistik → Chart Config → Narasi → Simpan</text>
+      <line x1="500" y1="690" x2="500" y2="720" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S6: Hapus file Excel -->
+      <rect x="380" y="720" width="240" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="500" y="742" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">Hapus File Excel Sementara</text>
+      <line x1="500" y1="756" x2="500" y2="780" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S7: Update status -->
+      <rect x="380" y="780" width="240" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="500" y="795" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--act-system)">Update Status → completed</text>
+      <text x="500" y="808" text-anchor="middle" font-size="8" fill="var(--text-tertiary)">redirect + flash success</text>
+      <line x1="380" y1="798" x2="285" y2="840" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- A5: Lihat hasil -->
+      <rect x="55" y="825" width="240" height="36" rx="6" fill="var(--act-action-bg)" stroke="var(--act-action)" stroke-width="1.5"/>
+      <text x="175" y="847" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-action)">Lihat Halaman Analisis</text>
+      <line x1="175" y1="861" x2="175" y2="885" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- End -->
+      <circle cx="175" cy="892" r="8" fill="none" stroke="var(--act-end)" stroke-width="2.5"/>
+      <circle cx="175" cy="892" r="4" fill="var(--act-end)"/>
+
+      <!-- Arrow marker -->
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--act-line)"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="flow-card">
+    <div class="flow-title">Alur Langkah Detail</div>
+    <ol class="flow-steps">
+      <li><span class="swim-label"><span class="swim-dot" style="background: var(--act-action);"></span> Pengguna</span> — Buka halaman Upload (<code>GET /upload</code>)</li>
+      <li><span class="swim-label"><span class="swim-dot" style="background: var(--act-action);"></span> Pengguna</span> — Isi 5 field meta institusi: nama PT, nama prodi, tahun, total lulusan PT, total lulusan prodi</li>
+      <li><span class="swim-label"><span class="swim-dot" style="background: var(--act-action);"></span> Pengguna</span> — Pilih file Excel (.xlsx) via drag-and-drop atau file browser</li>
+      <li><span class="swim-label"><span class="swim-dot" style="background: var(--act-action);"></span> Pengguna</span> — Klik tombol "Upload & Proses" (<code>POST /upload</code>)</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — UploadTracerRequest memvalidasi: file (.xlsx, ≤10MB), field wajib terisi, tahun valid
+        <div class="branch"><span class="branch-label">Gagal:</span> Redirect kembali ke form dengan pesan error, input tetap terisi (old input)</div>
+      </li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Simpan file Excel ke <code>storage/app/uploads/</code>, buat record tracer_studies (status: processing)</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — ExcelReaderService membaca sheet "data tracer" → array responden (f-code keys)</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Hitung total_responden, response_rate_pt, response_rate_prodi</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — <strong>Loop 13 parameter</strong> (dari config/tracer.php):
+        <div class="branch">a. StatisticsService → hitung sesuai statistic_type</div>
+        <div class="branch">b. ChartConfigService → build JSON konfigurasi Chart.js</div>
+        <div class="branch">c. NarrativeService → generate paragraf dari template</div>
+        <div class="branch">d. Simpan record analysis_results</div>
+      </li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Hapus file Excel sementara dari storage</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Update status → "completed", redirect ke <code>/analysis/{id}</code> dengan flash message</li>
+      <li><span class="swim-label"><span class="swim-dot" style="background: var(--act-action);"></span> Pengguna</span> — Melihat halaman analisis dengan 13 parameter cards</li>
+    </ol>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 2. GENERATE LAPORAN -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">8.2</span>
+    <h2>Activity 2: Generate Laporan Word</h2>
+  </div>
+
+  <p>Proses pembuatan file .docx dari data analisis yang sudah ada. Mencakup UC-06.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;">
+      <use href="#arrow"/>
+      <!-- Swimlanes -->
+      <rect x="20" y="40" width="310" height="460" rx="8" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="175" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--act-action)">Pengguna</text>
+      <rect x="350" y="40" width="330" height="460" rx="8" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="515" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--act-system)">Sistem</text>
+
+      <!-- Start -->
+      <circle cx="175" cy="95" r="10" fill="var(--act-start)"/>
+      <line x1="175" y1="105" x2="175" y2="130" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- A1 -->
+      <rect x="45" y="130" width="260" height="36" rx="6" fill="var(--act-action-bg)" stroke="var(--act-action)" stroke-width="1.5"/>
+      <text x="175" y="152" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-action)">Buka Halaman Analisis</text>
+      <line x1="175" y1="166" x2="175" y2="195" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- A2 -->
+      <rect x="35" y="195" width="280" height="36" rx="6" fill="var(--act-action-bg)" stroke="var(--act-action)" stroke-width="1.5"/>
+      <text x="175" y="217" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-action)">Klik "Generate Laporan Word"</text>
+      <line x1="315" y1="213" x2="380" y2="213" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S1 -->
+      <rect x="380" y="195" width="260" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="510" y="217" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">Ambil Data Tracer + 13 Results</text>
+      <line x1="510" y1="231" x2="510" y2="260" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S2 -->
+      <rect x="380" y="260" width="260" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="510" y="282" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">PHPWord: Buat Dokumen .docx</text>
+      <line x1="510" y1="296" x2="510" y2="325" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S3 -->
+      <rect x="380" y="325" width="260" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="510" y="340" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--act-system)">Simpan File + Create Record</text>
+      <text x="510" y="353" text-anchor="middle" font-size="8" fill="var(--text-tertiary)">storage/app/reports/</text>
+      <line x1="510" y1="361" x2="510" y2="390" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S4 -->
+      <rect x="380" y="390" width="260" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="510" y="412" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">Redirect + Flash Success</text>
+      <line x1="380" y1="408" x2="285" y2="445" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- A3 -->
+      <rect x="55" y="440" width="240" height="36" rx="6" fill="var(--act-action-bg)" stroke="var(--act-action)" stroke-width="1.5"/>
+      <text x="175" y="462" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-action)">Lihat Daftar Laporan</text>
+      <line x1="175" y1="476" x2="175" y2="495" stroke="var(--act-line)" stroke-width="1.5"/>
+
+      <!-- End -->
+      <circle cx="175" cy="490" r="8" fill="none" stroke="var(--act-end)" stroke-width="2.5"/>
+      <circle cx="175" cy="490" r="4" fill="var(--act-end)"/>
+    </svg>
+  </div>
+
+  <div class="flow-card">
+    <div class="flow-title">Alur Langkah Detail</div>
+    <ol class="flow-steps">
+      <li><span class="swim-label"><span class="swim-dot" style="background: var(--act-action);"></span> Pengguna</span> — Buka halaman analisis tracer study yang sudah completed</li>
+      <li><span class="swim-label"><span class="swim-dot" style="background: var(--act-action);"></span> Pengguna</span> — Klik "Generate Laporan Word" (<code>POST /reports/{id}/generate</code>)</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Ambil data tracer_studies + 13 analysis_results dari DB</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — ReportGeneratorService membangun dokumen PHPWord:
+        <div class="branch">• Cover page (nama PT, prodi, tahun)</div>
+        <div class="branch">• Daftar isi otomatis</div>
+        <div class="branch">• Ringkasan (response rate, total responden)</div>
+        <div class="branch">• 13 bab parameter (tabel + narasi)</div>
+      </li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Simpan .docx ke <code>storage/app/reports/</code>, create record reports</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Redirect ke <code>/reports</code> dengan flash message sukses</li>
+      <li><span class="swim-label"><span class="swim-dot" style="background: var(--act-action);"></span> Pengguna</span> — Melihat daftar laporan dengan entry baru, siap download</li>
+    </ol>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 3. HAPUS DATA -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">8.3</span>
+    <h2>Activity 3: Hapus Data</h2>
+  </div>
+
+  <p>Proses penghapusan tracer study atau individual report. Mencakup UC-08. Decision point pada konfirmasi modal.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;">
+      <use href="#arrow"/>
+      <!-- Swimlanes -->
+      <rect x="20" y="40" width="310" height="420" rx="8" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="175" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--act-action)">Pengguna</text>
+      <rect x="350" y="40" width="330" height="420" rx="8" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="515" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="var(--act-system)">Sistem</text>
+
+      <!-- Start -->
+      <circle cx="175" cy="95" r="10" fill="var(--act-start)"/>
+      <line x1="175" y1="105" x2="175" y2="130" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- A1 -->
+      <rect x="55" y="130" width="240" height="36" rx="6" fill="var(--act-action-bg)" stroke="var(--act-action)" stroke-width="1.5"/>
+      <text x="175" y="152" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-action)">Klik Tombol "Hapus"</text>
+      <line x1="295" y1="148" x2="380" y2="148" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S1: Show modal -->
+      <rect x="380" y="130" width="260" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="510" y="152" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">Tampilkan Modal Konfirmasi</text>
+      <line x1="380" y1="148" x2="295" y2="200" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- D1: Konfirmasi? -->
+      <polygon points="175,200 225,230 175,260 125,230" fill="var(--act-decision-bg)" stroke="var(--act-decision)" stroke-width="1.5"/>
+      <text x="175" y="234" text-anchor="middle" font-size="9" font-weight="600" fill="var(--act-decision)">Yakin?</text>
+
+      <!-- D1 No -->
+      <line x1="125" y1="230" x2="60" y2="230" stroke="var(--act-decision)" stroke-width="1" stroke-dasharray="4 2"/>
+      <text x="85" y="222" font-size="8" font-weight="600" fill="var(--act-decision)">Batal</text>
+      <line x1="60" y1="230" x2="60" y2="445" stroke="var(--act-decision)" stroke-width="1" stroke-dasharray="4 2"/>
+      <line x1="60" y1="445" x2="168" y2="445" stroke="var(--act-decision)" stroke-width="1" stroke-dasharray="4 2" marker-end="url(#arrow)"/>
+
+      <!-- D1 Yes -->
+      <line x1="175" y1="260" x2="175" y2="290" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <text x="190" y="278" font-size="8" font-weight="600" fill="var(--act-decision)">Ya</text>
+
+      <!-- A2: Konfirmasi -->
+      <rect x="55" y="290" width="240" height="36" rx="6" fill="var(--act-action-bg)" stroke="var(--act-action)" stroke-width="1.5"/>
+      <text x="175" y="312" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-action)">Konfirmasi Penghapusan</text>
+      <line x1="295" y1="308" x2="380" y2="308" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S2: Delete -->
+      <rect x="380" y="290" width="260" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="510" y="312" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">Hapus Record (CASCADE)</text>
+      <line x1="510" y1="326" x2="510" y2="355" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S3: Delete files -->
+      <rect x="380" y="355" width="260" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="510" y="377" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">Hapus File .docx (Model Event)</text>
+      <line x1="510" y1="391" x2="510" y2="420" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- S4: Flash -->
+      <rect x="380" y="420" width="260" height="36" rx="6" fill="var(--act-system-bg)" stroke="var(--act-system)" stroke-width="1.5"/>
+      <text x="510" y="442" text-anchor="middle" font-size="10" font-weight="600" fill="var(--act-system)">Redirect + Flash Success</text>
+      <line x1="380" y1="438" x2="190" y2="438" stroke="var(--act-line)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- End -->
+      <circle cx="175" cy="445" r="8" fill="none" stroke="var(--act-end)" stroke-width="2.5"/>
+      <circle cx="175" cy="445" r="4" fill="var(--act-end)"/>
+    </svg>
+  </div>
+
+  <div class="flow-card">
+    <div class="flow-title">Alur Langkah Detail</div>
+    <ol class="flow-steps">
+      <li><span class="swim-label"><span class="swim-dot" style="background: var(--act-action);"></span> Pengguna</span> — Klik tombol "Hapus" pada item (tracer study atau laporan)</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Tampilkan modal konfirmasi: "Yakin ingin menghapus [nama]?"</li>
+      <li class="decision"><span class="swim-label"><span class="swim-dot" style="background: var(--act-decision);"></span> Decision</span> — Pengguna konfirmasi atau batal?
+        <div class="branch"><span class="branch-label">Batal:</span> Modal ditutup, tidak ada perubahan → End</div>
+      </li>
+      <li><span class="swim-label"><span class="swim-dot" style="background: var(--act-action);"></span> Pengguna</span> — Klik "Ya, Hapus" pada modal</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Hapus record dari DB. CASCADE: analysis_results + reports ikut terhapus</li>
+      <li class="sys"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Model event (deleting): hapus file .docx fisik dari storage</li>
+      <li class="sys end-node"><span class="swim-label"><span class="swim-dot" style="background: var(--act-system);"></span> Sistem</span> — Redirect ke halaman sebelumnya dengan flash message sukses</li>
+    </ol>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 4. SUMMARY -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">8.4</span>
+    <h2>Ringkasan Activity &rarr; Use Case Mapping</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Activity Diagram</th><th>Use Case</th><th>Decision Points</th><th>Jumlah Steps</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;">1. Upload & Analisis</td>
+          <td>UC-02, UC-03, UC-04</td>
+          <td>1 (validasi input)</td>
+          <td style="font-variant-numeric: tabular-nums; text-align: center;">12</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">2. Generate Laporan</td>
+          <td>UC-06</td>
+          <td>0</td>
+          <td style="font-variant-numeric: tabular-nums; text-align: center;">7</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;">3. Hapus Data</td>
+          <td>UC-08</td>
+          <td>1 (konfirmasi modal)</td>
+          <td style="font-variant-numeric: tabular-nums; text-align: center;">7</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Activity untuk UC-01 (Lihat Dashboard), UC-05 (Lihat Analisis), dan UC-07 (Download Laporan) tidak dibuatkan diagram terpisah karena alurnya linear tanpa decision point: pengguna navigasi → sistem tampilkan/kirim data.</p>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 8 &mdash; Activity Diagram: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 9: Sequence Diagram</span>
+</div>

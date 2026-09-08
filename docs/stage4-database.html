@@ -1,0 +1,544 @@
+<title>Struktur Database</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --pk: #c93c37; --pk-bg: #fde8e8;
+    --fk: #7c3aed; --fk-bg: #f5f3ff;
+    --idx: #d97706; --idx-bg: #fffbeb;
+    --nullable: #6b7080; --nullable-bg: #f0f1f4;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --pk: #f06060; --pk-bg: #301818;
+      --fk: #a78bfa; --fk-bg: #1e1838;
+      --idx: #fbbf24; --idx-bg: #2a2010;
+      --nullable: #6b7080; --nullable-bg: #22262f;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --pk: #f06060; --pk-bg: #301818;
+    --fk: #a78bfa; --fk-bg: #1e1838;
+    --idx: #fbbf24; --idx-bg: #2a2010;
+    --nullable: #6b7080; --nullable-bg: #22262f;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; color: var(--text); margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  h3 { font-size: 0.92rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text); }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  /* Tags */
+  .tag { display: inline-flex; align-items: center; font-size: 0.62rem; font-weight: 600; padding: 0.1rem 0.4rem; border-radius: 3px; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; vertical-align: middle; margin-left: 0.3rem; }
+  .tag-pk { color: var(--pk); background: var(--pk-bg); }
+  .tag-fk { color: var(--fk); background: var(--fk-bg); }
+  .tag-idx { color: var(--idx); background: var(--idx-bg); }
+  .tag-null { color: var(--nullable); background: var(--nullable-bg); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 0.45rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.col-name { font-family: var(--font-mono); font-size: 0.76rem; color: var(--text); font-weight: 500; white-space: nowrap; }
+  td.col-type { font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent-muted); white-space: nowrap; }
+  td.desc { color: var(--text-secondary); font-size: 0.78rem; }
+
+  /* ERD */
+  .erd { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); }
+  .erd-row { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .erd-entity { background: var(--surface-dim); border: 2px solid var(--border); border-radius: 8px; padding: 0.75rem 1.15rem; text-align: center; min-width: 160px; }
+  .erd-entity-name { font-weight: 700; font-size: 0.88rem; color: var(--text); margin-bottom: 0.2rem; }
+  .erd-entity-desc { font-size: 0.72rem; color: var(--text-tertiary); }
+  .erd-rel { display: flex; flex-direction: column; align-items: center; gap: 0.1rem; color: var(--text-tertiary); flex-shrink: 0; }
+  .erd-rel .line { font-size: 1.2rem; line-height: 1; }
+  .erd-rel .label { font-size: 0.64rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* Migration code block */
+  .migration-block { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.25rem; overflow: hidden; }
+  .migration-header { background: var(--surface-dim); padding: 0.5rem 0.85rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+  .migration-header .filename { font-family: var(--font-mono); font-size: 0.74rem; font-weight: 500; color: var(--accent-muted); }
+  .migration-code { padding: 0.85rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.74rem; line-height: 1.65; color: var(--text-secondary); white-space: pre; }
+  .migration-code .kw { color: var(--accent); font-weight: 500; }
+  .migration-code .fn { color: var(--fk); }
+  .migration-code .str { color: var(--pk); }
+  .migration-code .cm { color: var(--text-tertiary); font-style: italic; }
+
+  /* JSON sample */
+  .json-block { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.25rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.73rem; line-height: 1.6; color: var(--text-secondary); white-space: pre; }
+  .json-block .jk { color: var(--accent); }
+  .json-block .jv { color: var(--pk); }
+  .json-block .jn { color: var(--fk); }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .erd-row { flex-direction: column; }
+    .erd-rel .line { transform: rotate(90deg); }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Struktur Database</h1>
+  <p class="doc-subtitle">Entity Relationship Diagram, skema tabel lengkap, strategi indeks, contoh JSON result_data, dan kode migration Laravel.</p>
+  <div class="doc-meta">
+    <span>Tahap 4 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>4</strong> / 27 &mdash; Database</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- 1. ERD -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">4.1</span>
+    <h2>Entity Relationship Diagram</h2>
+  </div>
+
+  <div class="erd">
+    <div class="erd-row">
+      <div class="erd-entity">
+        <div class="erd-entity-name">tracer_studies</div>
+        <div class="erd-entity-desc">Record utama per upload</div>
+      </div>
+      <div class="erd-rel">
+        <span class="line">1 &mdash;&mdash;&#9666; N</span>
+        <span class="label">has many</span>
+      </div>
+      <div class="erd-entity">
+        <div class="erd-entity-name">analysis_results</div>
+        <div class="erd-entity-desc">Hasil analisis per parameter</div>
+      </div>
+    </div>
+    <div style="height: 1rem;"></div>
+    <div class="erd-row">
+      <div class="erd-entity">
+        <div class="erd-entity-name">tracer_studies</div>
+        <div class="erd-entity-desc">Record utama per upload</div>
+      </div>
+      <div class="erd-rel">
+        <span class="line">1 &mdash;&mdash;&#9666; N</span>
+        <span class="label">has many</span>
+      </div>
+      <div class="erd-entity">
+        <div class="erd-entity-name">reports</div>
+        <div class="erd-entity-desc">File laporan .docx</div>
+      </div>
+    </div>
+  </div>
+
+  <p>Relasi sederhana: <strong>tracer_studies</strong> sebagai entitas induk, dengan dua child: <strong>analysis_results</strong> (13 record per tracer study) dan <strong>reports</strong> (1+ record per tracer study, setiap kali generate ulang).</p>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 2. TRACER_STUDIES -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">4.2</span>
+    <h2>Tabel: tracer_studies</h2>
+  </div>
+
+  <p>Menyimpan satu record per sesi upload. Berisi meta informasi institusi dan status pengolahan.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kolom</th><th>Tipe MySQL</th><th>Constraint</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">id <span class="tag tag-pk">PK</span></td><td class="col-type">BIGINT UNSIGNED</td><td>AUTO_INCREMENT</td><td class="desc">Primary key</td></tr>
+        <tr><td class="col-name">nama_pt</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td class="desc">Nama Perguruan Tinggi</td></tr>
+        <tr><td class="col-name">nama_prodi</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td class="desc">Nama Program Studi</td></tr>
+        <tr><td class="col-name">tahun_tracer <span class="tag tag-idx">IDX</span></td><td class="col-type">YEAR</td><td>NOT NULL</td><td class="desc">Tahun pelaksanaan tracer</td></tr>
+        <tr><td class="col-name">total_lulusan_pt</td><td class="col-type">INT UNSIGNED</td><td>NOT NULL</td><td class="desc">Total lulusan universitas (input manual)</td></tr>
+        <tr><td class="col-name">total_lulusan_prodi</td><td class="col-type">INT UNSIGNED</td><td>NOT NULL</td><td class="desc">Total lulusan prodi (input manual)</td></tr>
+        <tr><td class="col-name">total_responden</td><td class="col-type">INT UNSIGNED</td><td>NOT NULL, DEFAULT 0</td><td class="desc">Jumlah baris data valid di Excel (dihitung otomatis)</td></tr>
+        <tr><td class="col-name">response_rate_pt</td><td class="col-type">DECIMAL(5,2)</td><td>NULLABLE</td><td class="desc">% mengisi level universitas</td></tr>
+        <tr><td class="col-name">response_rate_prodi</td><td class="col-type">DECIMAL(5,2)</td><td>NULLABLE</td><td class="desc">% mengisi level prodi</td></tr>
+        <tr><td class="col-name">status <span class="tag tag-idx">IDX</span></td><td class="col-type">ENUM('pending', 'processing', 'completed', 'failed')</td><td>NOT NULL, DEFAULT 'pending'</td><td class="desc">Status pengolahan data</td></tr>
+        <tr><td class="col-name">original_filename</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td class="desc">Nama file asli yang diupload</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td class="desc">Laravel timestamp</td></tr>
+        <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td class="desc">Laravel timestamp</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Indeks</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Nama</th><th>Kolom</th><th>Tipe</th><th>Alasan</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">PRIMARY</td><td class="col-type">id</td><td>Primary</td><td class="desc">Identifikasi unik</td></tr>
+        <tr><td class="col-name">idx_tahun_tracer</td><td class="col-type">tahun_tracer</td><td>Index</td><td class="desc">Dashboard query: filter/sort by tahun</td></tr>
+        <tr><td class="col-name">idx_status</td><td class="col-type">status</td><td>Index</td><td class="desc">Filter record by status pengolahan</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 3. ANALYSIS_RESULTS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">4.3</span>
+    <h2>Tabel: analysis_results</h2>
+  </div>
+
+  <p>Menyimpan hasil analisis per parameter. Setiap tracer study menghasilkan 13 record (satu per parameter). Kolom <code>result_data</code> berformat JSON untuk mengakomodasi struktur data yang berbeda per tipe parameter.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kolom</th><th>Tipe MySQL</th><th>Constraint</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">id <span class="tag tag-pk">PK</span></td><td class="col-type">BIGINT UNSIGNED</td><td>AUTO_INCREMENT</td><td class="desc">Primary key</td></tr>
+        <tr><td class="col-name">tracer_study_id <span class="tag tag-fk">FK</span></td><td class="col-type">BIGINT UNSIGNED</td><td>NOT NULL</td><td class="desc">Relasi ke tracer_studies</td></tr>
+        <tr><td class="col-name">parameter_number</td><td class="col-type">TINYINT UNSIGNED</td><td>NOT NULL</td><td class="desc">Nomor parameter (1&ndash;13)</td></tr>
+        <tr><td class="col-name">parameter_name</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td class="desc">Nama parameter</td></tr>
+        <tr><td class="col-name">parameter_group</td><td class="col-type">VARCHAR(100)</td><td>NOT NULL</td><td class="desc">Grup: status_alumni, bekerja, mencari_kerja, studi_lanjut, kompetensi</td></tr>
+        <tr><td class="col-name">statistic_type</td><td class="col-type">VARCHAR(50)</td><td>NOT NULL</td><td class="desc">frequency, mean_median, mean, sum, index, display</td></tr>
+        <tr><td class="col-name">result_data</td><td class="col-type">JSON</td><td>NOT NULL</td><td class="desc">Hasil statistik lengkap (struktur bervariasi per tipe)</td></tr>
+        <tr><td class="col-name">chart_type</td><td class="col-type">VARCHAR(30)</td><td>NULLABLE</td><td class="desc">pie, bar, grouped_bar, atau null</td></tr>
+        <tr><td class="col-name">chart_config</td><td class="col-type">JSON</td><td>NULLABLE</td><td class="desc">Konfigurasi Chart.js (labels, datasets, options)</td></tr>
+        <tr><td class="col-name">narrative</td><td class="col-type">TEXT</td><td>NULLABLE</td><td class="desc">Paragraf narasi otomatis</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td class="desc">Laravel timestamp</td></tr>
+        <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td class="desc">Laravel timestamp</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Indeks</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Nama</th><th>Kolom</th><th>Tipe</th><th>Alasan</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">PRIMARY</td><td class="col-type">id</td><td>Primary</td><td class="desc">Identifikasi unik</td></tr>
+        <tr><td class="col-name">idx_tracer_param</td><td class="col-type">tracer_study_id, parameter_number</td><td>Unique Composite</td><td class="desc">Satu parameter hanya boleh ada satu record per tracer study. Query utama: ambil semua parameter untuk satu tracer study.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Foreign Key</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kolom</th><th>Referensi</th><th>On Delete</th><th>Alasan</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">tracer_study_id</td><td class="col-type">tracer_studies(id)</td><td>CASCADE</td><td class="desc">Hapus tracer study &rarr; hapus semua analysis_results terkait</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 4. REPORTS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">4.4</span>
+    <h2>Tabel: reports</h2>
+  </div>
+
+  <p>Menyimpan metadata file laporan Word yang telah di-generate. File .docx aktual disimpan di <code>storage/app/reports/</code>.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kolom</th><th>Tipe MySQL</th><th>Constraint</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">id <span class="tag tag-pk">PK</span></td><td class="col-type">BIGINT UNSIGNED</td><td>AUTO_INCREMENT</td><td class="desc">Primary key</td></tr>
+        <tr><td class="col-name">tracer_study_id <span class="tag tag-fk">FK</span></td><td class="col-type">BIGINT UNSIGNED</td><td>NOT NULL</td><td class="desc">Relasi ke tracer_studies</td></tr>
+        <tr><td class="col-name">filename</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td class="desc">Nama file tampilan, misal: "Laporan_Tracer_PAI_2024.docx"</td></tr>
+        <tr><td class="col-name">file_path</td><td class="col-type">VARCHAR(500)</td><td>NOT NULL</td><td class="desc">Path relatif di storage: "reports/abc123.docx"</td></tr>
+        <tr><td class="col-name">file_size</td><td class="col-type">BIGINT UNSIGNED</td><td>NOT NULL</td><td class="desc">Ukuran file dalam bytes</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td class="desc">Laravel timestamp</td></tr>
+        <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td class="desc">Laravel timestamp</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Indeks &amp; Foreign Key</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Nama</th><th>Kolom</th><th>Tipe</th><th>Alasan</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">PRIMARY</td><td class="col-type">id</td><td>Primary</td><td class="desc">Identifikasi unik</td></tr>
+        <tr><td class="col-name">idx_tracer_study_id</td><td class="col-type">tracer_study_id</td><td>Index (FK)</td><td class="desc">Query: ambil reports untuk satu tracer study</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kolom</th><th>Referensi</th><th>On Delete</th><th>Alasan</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">tracer_study_id</td><td class="col-type">tracer_studies(id)</td><td>CASCADE</td><td class="desc">Hapus tracer study &rarr; hapus semua reports terkait (file fisik juga dihapus via model event)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 5. JSON STRUCTURE -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">4.5</span>
+    <h2>Struktur JSON: result_data</h2>
+  </div>
+
+  <p>Kolom <code>result_data</code> pada <code>analysis_results</code> memiliki struktur berbeda tergantung <code>statistic_type</code>. Berikut contoh untuk setiap tipe:</p>
+
+  <h3>Tipe: frequency (Parameter #1, #2, #3, #4, #5, #6, #8)</h3>
+<div class="json-block">{
+  <span class="jk">"total_respondents"</span>: <span class="jn">89</span>,
+  <span class="jk">"categories"</span>: [
+    { <span class="jk">"value"</span>: <span class="jn">1</span>, <span class="jk">"label"</span>: <span class="jv">"Bekerja"</span>, <span class="jk">"count"</span>: <span class="jn">79</span>, <span class="jk">"percentage"</span>: <span class="jn">88.76</span> },
+    { <span class="jk">"value"</span>: <span class="jn">2</span>, <span class="jk">"label"</span>: <span class="jv">"Belum Memungkinkan Bekerja"</span>, <span class="jk">"count"</span>: <span class="jn">1</span>, <span class="jk">"percentage"</span>: <span class="jn">1.12</span> },
+    { <span class="jk">"value"</span>: <span class="jn">3</span>, <span class="jk">"label"</span>: <span class="jv">"Wiraswasta"</span>, <span class="jk">"count"</span>: <span class="jn">6</span>, <span class="jk">"percentage"</span>: <span class="jn">6.74</span> },
+    { <span class="jk">"value"</span>: <span class="jn">4</span>, <span class="jk">"label"</span>: <span class="jv">"Melanjutkan Pendidikan"</span>, <span class="jk">"count"</span>: <span class="jn">3</span>, <span class="jk">"percentage"</span>: <span class="jn">3.37</span> },
+    { <span class="jk">"value"</span>: <span class="jn">5</span>, <span class="jk">"label"</span>: <span class="jv">"Sedang Mencari Kerja"</span>, <span class="jk">"count"</span>: <span class="jn">0</span>, <span class="jk">"percentage"</span>: <span class="jn">0.00</span> }
+  ]
+}</div>
+
+  <h3>Tipe: mean_median (Parameter #7)</h3>
+<div class="json-block">{
+  <span class="jk">"total_respondents"</span>: <span class="jn">88</span>,
+  <span class="jk">"mean"</span>: <span class="jn">2742545</span>,
+  <span class="jk">"median"</span>: <span class="jn">2500000</span>,
+  <span class="jk">"min"</span>: <span class="jn">500000</span>,
+  <span class="jk">"max"</span>: <span class="jn">10000000</span>
+}</div>
+
+  <h3>Tipe: mean (Parameter #9)</h3>
+<div class="json-block">{
+  <span class="jk">"total_respondents"</span>: <span class="jn">89</span>,
+  <span class="jk">"mean"</span>: <span class="jn">1.72</span>,
+  <span class="jk">"unit"</span>: <span class="jv">"bulan"</span>
+}</div>
+
+  <h3>Tipe: sum (Parameter #10, #11)</h3>
+<div class="json-block">{
+  <span class="jk">"total_respondents"</span>: <span class="jn">89</span>,
+  <span class="jk">"sum"</span>: <span class="jn">87</span>,
+  <span class="jk">"unit"</span>: <span class="jv">"lamaran"</span>
+}</div>
+
+  <h3>Tipe: display (Parameter #12)</h3>
+<div class="json-block">{
+  <span class="jk">"total_respondents"</span>: <span class="jn">3</span>,
+  <span class="jk">"items"</span>: [
+    { <span class="jk">"universitas"</span>: <span class="jv">"UMSIDA"</span>, <span class="jk">"prodi"</span>: <span class="jv">"Ilmu Komunikasi"</span> },
+    { <span class="jk">"universitas"</span>: <span class="jv">"Universitas Muhammadiyah Sidoarjo"</span>, <span class="jk">"prodi"</span>: <span class="jv">"Magister Manajemen"</span> },
+    { <span class="jk">"universitas"</span>: <span class="jv">"UNAIR"</span>, <span class="jk">"prodi"</span>: <span class="jv">"Profesi"</span> }
+  ]
+}</div>
+
+  <h3>Tipe: index (Parameter #13 &mdash; Penilaian Kemampuan Diri)</h3>
+<div class="json-block">{
+  <span class="jk">"total_respondents"</span>: <span class="jn">79</span>,
+  <span class="jk">"competencies"</span>: [
+    {
+      <span class="jk">"name"</span>: <span class="jv">"Etika"</span>,
+      <span class="jk">"a"</span>: {
+        <span class="jk">"distribution"</span>: [<span class="jn">1</span>, <span class="jn">0</span>, <span class="jn">9</span>, <span class="jn">37</span>, <span class="jn">31</span>],
+        <span class="jk">"total"</span>: <span class="jn">78</span>,
+        <span class="jk">"index"</span>: <span class="jn">4.24</span>
+      },
+      <span class="jk">"b"</span>: {
+        <span class="jk">"distribution"</span>: [<span class="jn">1</span>, <span class="jn">0</span>, <span class="jn">9</span>, <span class="jn">34</span>, <span class="jn">31</span>],
+        <span class="jk">"total"</span>: <span class="jn">75</span>,
+        <span class="jk">"index"</span>: <span class="jn">4.25</span>
+      },
+      <span class="jk">"gap"</span>: <span class="jn">0.01</span>
+    },
+    <span class="cm">// ... 6 kompetensi lainnya</span>
+  ]
+}</div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 6. MIGRATION CODE -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">4.6</span>
+    <h2>Laravel Migration</h2>
+  </div>
+
+  <p>Berikut kode migration yang akan diimplementasikan pada Tahap 12. Ditampilkan di sini sebagai referensi skema.</p>
+
+  <div class="migration-block">
+    <div class="migration-header">
+      <span class="filename">create_tracer_studies_table.php</span>
+    </div>
+<div class="migration-code">Schema::<span class="fn">create</span>(<span class="str">'tracer_studies'</span>, <span class="kw">function</span> (Blueprint $table) {
+    $table-><span class="fn">id</span>();
+    $table-><span class="fn">string</span>(<span class="str">'nama_pt'</span>);
+    $table-><span class="fn">string</span>(<span class="str">'nama_prodi'</span>);
+    $table-><span class="fn">year</span>(<span class="str">'tahun_tracer'</span>);
+    $table-><span class="fn">unsignedInteger</span>(<span class="str">'total_lulusan_pt'</span>);
+    $table-><span class="fn">unsignedInteger</span>(<span class="str">'total_lulusan_prodi'</span>);
+    $table-><span class="fn">unsignedInteger</span>(<span class="str">'total_responden'</span>)-><span class="fn">default</span>(<span class="jn">0</span>);
+    $table-><span class="fn">decimal</span>(<span class="str">'response_rate_pt'</span>, <span class="jn">5</span>, <span class="jn">2</span>)-><span class="fn">nullable</span>();
+    $table-><span class="fn">decimal</span>(<span class="str">'response_rate_prodi'</span>, <span class="jn">5</span>, <span class="jn">2</span>)-><span class="fn">nullable</span>();
+    $table-><span class="fn">enum</span>(<span class="str">'status'</span>, [<span class="str">'pending'</span>, <span class="str">'processing'</span>, <span class="str">'completed'</span>, <span class="str">'failed'</span>])
+          -><span class="fn">default</span>(<span class="str">'pending'</span>);
+    $table-><span class="fn">string</span>(<span class="str">'original_filename'</span>);
+    $table-><span class="fn">timestamps</span>();
+
+    $table-><span class="fn">index</span>(<span class="str">'tahun_tracer'</span>);
+    $table-><span class="fn">index</span>(<span class="str">'status'</span>);
+});</div>
+  </div>
+
+  <div class="migration-block">
+    <div class="migration-header">
+      <span class="filename">create_analysis_results_table.php</span>
+    </div>
+<div class="migration-code">Schema::<span class="fn">create</span>(<span class="str">'analysis_results'</span>, <span class="kw">function</span> (Blueprint $table) {
+    $table-><span class="fn">id</span>();
+    $table-><span class="fn">foreignId</span>(<span class="str">'tracer_study_id'</span>)
+          -><span class="fn">constrained</span>()
+          -><span class="fn">cascadeOnDelete</span>();
+    $table-><span class="fn">unsignedTinyInteger</span>(<span class="str">'parameter_number'</span>);
+    $table-><span class="fn">string</span>(<span class="str">'parameter_name'</span>);
+    $table-><span class="fn">string</span>(<span class="str">'parameter_group'</span>, <span class="jn">100</span>);
+    $table-><span class="fn">string</span>(<span class="str">'statistic_type'</span>, <span class="jn">50</span>);
+    $table-><span class="fn">json</span>(<span class="str">'result_data'</span>);
+    $table-><span class="fn">string</span>(<span class="str">'chart_type'</span>, <span class="jn">30</span>)-><span class="fn">nullable</span>();
+    $table-><span class="fn">json</span>(<span class="str">'chart_config'</span>)-><span class="fn">nullable</span>();
+    $table-><span class="fn">text</span>(<span class="str">'narrative'</span>)-><span class="fn">nullable</span>();
+    $table-><span class="fn">timestamps</span>();
+
+    $table-><span class="fn">unique</span>([<span class="str">'tracer_study_id'</span>, <span class="str">'parameter_number'</span>]);
+});</div>
+  </div>
+
+  <div class="migration-block">
+    <div class="migration-header">
+      <span class="filename">create_reports_table.php</span>
+    </div>
+<div class="migration-code">Schema::<span class="fn">create</span>(<span class="str">'reports'</span>, <span class="kw">function</span> (Blueprint $table) {
+    $table-><span class="fn">id</span>();
+    $table-><span class="fn">foreignId</span>(<span class="str">'tracer_study_id'</span>)
+          -><span class="fn">constrained</span>()
+          -><span class="fn">cascadeOnDelete</span>();
+    $table-><span class="fn">string</span>(<span class="str">'filename'</span>);
+    $table-><span class="fn">string</span>(<span class="str">'file_path'</span>, <span class="jn">500</span>);
+    $table-><span class="fn">unsignedBigInteger</span>(<span class="str">'file_size'</span>);
+    $table-><span class="fn">timestamps</span>();
+
+    $table-><span class="fn">index</span>(<span class="str">'tracer_study_id'</span>);
+});</div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 7. KEPUTUSAN DATABASE -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">4.7</span>
+    <h2>Keputusan Database</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Keputusan</th><th>Alasan</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>JSON column untuk result_data</strong></td>
+          <td class="desc">13 parameter menghasilkan struktur data berbeda (frequency array, mean scalar, competency matrix). JSON column lebih fleksibel daripada tabel terpisah per tipe. MySQL 8+ mendukung JSON natively dengan indexing.</td>
+        </tr>
+        <tr>
+          <td><strong>Unique composite index (tracer_study_id + parameter_number)</strong></td>
+          <td class="desc">Menjamin tidak ada duplikasi parameter dalam satu tracer study. Sekaligus mempercepat query utama: "ambil semua parameter untuk tracer study X".</td>
+        </tr>
+        <tr>
+          <td><strong>CASCADE on delete</strong></td>
+          <td class="desc">Ketika tracer study dihapus, seluruh analysis_results dan reports terkait otomatis terhapus. Menghindari orphaned records.</td>
+        </tr>
+        <tr>
+          <td><strong>ENUM untuk status</strong></td>
+          <td class="desc">Hanya 4 kemungkinan status, jarang berubah. ENUM lebih efisien dan self-documenting daripada string bebas atau lookup table.</td>
+        </tr>
+        <tr>
+          <td><strong>DECIMAL(5,2) untuk response rate</strong></td>
+          <td class="desc">Presisi 2 desimal cukup untuk persentase (0.00 &ndash; 100.00). DECIMAL menghindari floating-point rounding issues.</td>
+        </tr>
+        <tr>
+          <td><strong>Tidak ada tabel users</strong></td>
+          <td class="desc">Sesuai keputusan: tidak ada autentikasi. Menghilangkan kebutuhan tabel users, password_resets, sessions, dan personal_access_tokens.</td>
+        </tr>
+        <tr>
+          <td><strong>file_path relatif, bukan absolut</strong></td>
+          <td class="desc">Path disimpan relatif terhadap storage root ("reports/abc123.docx"), bukan absolut. Memungkinkan portabilitas antar environment.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 4 &mdash; Struktur Database: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 5: Struktur Folder Laravel</span>
+</div>

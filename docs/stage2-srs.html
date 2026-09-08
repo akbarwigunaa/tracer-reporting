@@ -1,0 +1,936 @@
+<title>Software Requirement Specification</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --surface-dim: #eef0f4;
+    --border: #d8dce6;
+    --text: #1a1d26;
+    --text-secondary: #5a6070;
+    --text-tertiary: #8890a0;
+    --accent: #2d5be3;
+    --accent-light: #e8eefb;
+    --accent-muted: #6b8de8;
+    --tag-green: #16825d;
+    --tag-green-bg: #e6f5ee;
+    --tag-amber: #9a6700;
+    --tag-amber-bg: #fef3e0;
+    --tag-blue: #1a56db;
+    --tag-blue-bg: #e1ecfc;
+    --tag-purple: #6b3fa0;
+    --tag-purple-bg: #f0eafa;
+    --tag-red: #c93c37;
+    --tag-red-bg: #fde8e8;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --tag-green: #3dd68c; --tag-green-bg: #0f2a1e;
+      --tag-amber: #f0b440; --tag-amber-bg: #2a2010;
+      --tag-blue: #6b9cf0; --tag-blue-bg: #152040;
+      --tag-purple: #a880d8; --tag-purple-bg: #201830;
+      --tag-red: #f06060; --tag-red-bg: #301818;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --tag-green: #3dd68c; --tag-green-bg: #0f2a1e;
+    --tag-amber: #f0b440; --tag-amber-bg: #2a2010;
+    --tag-blue: #6b9cf0; --tag-blue-bg: #152040;
+    --tag-purple: #a880d8; --tag-purple-bg: #201830;
+    --tag-red: #f06060; --tag-red-bg: #301818;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: var(--font-body); background: var(--bg); color: var(--text);
+    line-height: 1.6; max-width: 880px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem;
+  }
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; color: var(--text); margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  /* TOC */
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 2.5rem; box-shadow: var(--shadow-sm); }
+  .toc-title { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 0.75rem; }
+  .toc-list { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 2rem; }
+  .toc-list li { font-size: 0.82rem; padding: 0.2rem 0; break-inside: avoid; }
+  .toc-list a { color: var(--accent); text-decoration: none; }
+  .toc-list a:hover { text-decoration: underline; }
+  .toc-num { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-muted); margin-right: 0.4rem; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  h3 { font-size: 0.92rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text); }
+  h4 { font-size: 0.84rem; font-weight: 600; margin: 1rem 0 0.5rem; color: var(--text); }
+  p, li { font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  p { margin: 0 0 0.85rem; }
+  ul, ol { padding-left: 1.25rem; margin: 0 0 1rem; }
+  li { margin-bottom: 0.3rem; }
+
+  .tag { display: inline-flex; align-items: center; font-size: 0.66rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 4px; letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; }
+  .tag-high { color: var(--tag-red); background: var(--tag-red-bg); }
+  .tag-medium { color: var(--tag-amber); background: var(--tag-amber-bg); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.55rem 0.8rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.mono { font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent-muted); }
+  td.desc { color: var(--text-secondary); }
+
+  /* FR detail card */
+  .fr-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.15rem; margin-bottom: 0.75rem; }
+  .fr-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem; }
+  .fr-id { font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600; color: var(--accent); background: var(--accent-light); padding: 0.15rem 0.5rem; border-radius: 4px; }
+  .fr-title { font-weight: 600; font-size: 0.88rem; color: var(--text); }
+  .fr-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+  .fr-col label { display: block; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-tertiary); margin-bottom: 0.3rem; }
+  .fr-col div { font-size: 0.8rem; color: var(--text-secondary); }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .toc-list { columns: 1; }
+    .fr-grid { grid-template-columns: 1fr; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Software Requirement Specification</h1>
+  <p class="doc-subtitle">Spesifikasi kebutuhan perangkat lunak untuk sistem pengolahan data Tracer Study menjadi dashboard analitik dan laporan otomatis berbasis Microsoft Word.</p>
+  <div class="doc-meta">
+    <span>Tahap 2 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>2</strong> / 27 &mdash; SRS</span>
+</div>
+
+<!-- Table of Contents -->
+<nav class="toc">
+  <div class="toc-title">Daftar Isi</div>
+  <ol class="toc-list">
+    <li><span class="toc-num">1</span> <a href="#s1">Pendahuluan</a></li>
+    <li><span class="toc-num">2</span> <a href="#s2">Deskripsi Umum</a></li>
+    <li><span class="toc-num">3</span> <a href="#s3">Kebutuhan Fungsional</a></li>
+    <li><span class="toc-num">4</span> <a href="#s4">Kebutuhan Non-Fungsional</a></li>
+    <li><span class="toc-num">5</span> <a href="#s5">Kebutuhan Antarmuka</a></li>
+    <li><span class="toc-num">6</span> <a href="#s6">Kebutuhan Data</a></li>
+    <li><span class="toc-num">7</span> <a href="#s7">Mapping Parameter &amp; Kolom Excel</a></li>
+    <li><span class="toc-num">8</span> <a href="#s8">Aturan Bisnis</a></li>
+  </ol>
+</nav>
+
+<!-- ============================================================ -->
+<!-- 1. PENDAHULUAN -->
+<!-- ============================================================ -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <span class="section-num">1</span>
+    <h2>Pendahuluan</h2>
+  </div>
+
+  <h3>1.1 Tujuan Dokumen</h3>
+  <p>Dokumen ini mendefinisikan seluruh kebutuhan perangkat lunak untuk Web Tracer Reporting System. Dokumen menjadi acuan utama dalam perancangan arsitektur, implementasi, dan pengujian sistem.</p>
+
+  <h3>1.2 Ruang Lingkup Produk</h3>
+  <p>Web Tracer Reporting System adalah aplikasi web yang mengolah data Tracer Study dari file Excel (.xlsx) sesuai template DIKTI menjadi dashboard analitik dan laporan otomatis dalam format Microsoft Word. Sistem tidak menyediakan pengisian kuesioner, registrasi alumni, data cleaning, validasi data, autentikasi pengguna, maupun integrasi API eksternal.</p>
+
+  <h3>1.3 Definisi &amp; Akronim</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Istilah</th><th>Definisi</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Tracer Study</strong></td><td>Studi pelacakan lulusan perguruan tinggi untuk mengetahui kondisi dan outcome setelah lulus</td></tr>
+        <tr><td><strong>DIKTI</strong></td><td>Direktorat Jenderal Pendidikan Tinggi, Kemendikbudristek</td></tr>
+        <tr><td><strong>f-code</strong></td><td>Kode field kuesioner Tracer Study standar DIKTI (contoh: f8, f502, f1761)</td></tr>
+        <tr><td><strong>Parameter</strong></td><td>Satu unit analisis yang menghasilkan statistik, grafik, tabel, dan narasi</td></tr>
+        <tr><td><strong>Response Rate</strong></td><td>Persentase lulusan yang mengisi kuesioner dari total lulusan</td></tr>
+        <tr><td><strong>Indeks</strong></td><td>Rata-rata tertimbang dari skala Likert 1&ndash;5</td></tr>
+        <tr><td><strong>Dimensi A</strong></td><td>Kompetensi yang dikuasai saat lulus (self-assessment)</td></tr>
+        <tr><td><strong>Dimensi B</strong></td><td>Kompetensi yang dibutuhkan dalam pekerjaan</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>1.4 Technology Stack</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Komponen</th><th>Teknologi</th><th>Versi</th></tr></thead>
+      <tbody>
+        <tr><td>Framework</td><td>Laravel</td><td>12.x</td></tr>
+        <tr><td>Bahasa</td><td>PHP</td><td>8.4+</td></tr>
+        <tr><td>Database</td><td>MySQL</td><td>8.0+</td></tr>
+        <tr><td>CSS Framework</td><td>Bootstrap</td><td>5.x</td></tr>
+        <tr><td>Admin Template</td><td>AdminLTE</td><td>4.x</td></tr>
+        <tr><td>Charting</td><td>Chart.js</td><td>4.x</td></tr>
+        <tr><td>Excel Reader</td><td>PhpSpreadsheet</td><td>latest</td></tr>
+        <tr><td>Word Export</td><td>PHPWord</td><td>latest</td></tr>
+        <tr><td>Version Control</td><td>Git + GitHub</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 2. DESKRIPSI UMUM -->
+<!-- ============================================================ -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <span class="section-num">2</span>
+    <h2>Deskripsi Umum</h2>
+  </div>
+
+  <h3>2.1 Perspektif Produk</h3>
+  <p>Sistem merupakan aplikasi standalone yang berjalan di environment lokal atau server perguruan tinggi. Tidak terintegrasi dengan sistem eksternal. Input berupa file Excel, output berupa dashboard web dan dokumen Word.</p>
+
+  <h3>2.2 Fungsi Utama Produk</h3>
+  <ul>
+    <li>Membaca dan mengolah data dari file Excel template Tracer Study DIKTI</li>
+    <li>Menghitung statistik (frekuensi, persentase, mean, median, sum) untuk 13 parameter</li>
+    <li>Menampilkan hasil analisis dalam dashboard analitik bergaya BI</li>
+    <li>Menghasilkan grafik otomatis (pie chart, bar chart, grouped bar chart)</li>
+    <li>Menghasilkan narasi interpretasi otomatis per parameter</li>
+    <li>Men-generate laporan formal lengkap dan mengekspornya ke Microsoft Word</li>
+    <li>Menyimpan riwayat laporan untuk diunduh kembali</li>
+  </ul>
+
+  <h3>2.3 Karakteristik Pengguna</h3>
+  <p>Pengguna tunggal tanpa autentikasi. Diasumsikan memahami format template Excel Tracer Study DIKTI dan mengetahui meta informasi institusi (nama PT, nama prodi, total lulusan).</p>
+
+  <h3>2.4 Batasan Umum</h3>
+  <ul>
+    <li>Input hanya file .xlsx sesuai template</li>
+    <li>Tidak ada data cleaning atau validasi logika data</li>
+    <li>Tidak ada integrasi API eksternal</li>
+    <li>Tidak ada autentikasi pengguna</li>
+    <li>Export hanya ke format Word (.docx)</li>
+    <li>Setiap upload berdiri sendiri, tidak ada perbandingan antar periode</li>
+  </ul>
+
+  <h3>2.5 Asumsi &amp; Dependensi</h3>
+  <ul>
+    <li>Server memiliki PHP 8.4+, Composer, MySQL 8+, dan ekstensi PHP yang dibutuhkan Laravel</li>
+    <li>Template Excel memiliki sheet "data tracer" dengan header di baris 3 dan data mulai baris 4</li>
+    <li>Kolom Excel menggunakan f-code DIKTI yang sudah terdefinisi (86 kolom)</li>
+    <li>PhpSpreadsheet dapat membaca file .xlsx tanpa masalah kompatibilitas</li>
+  </ul>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 3. KEBUTUHAN FUNGSIONAL -->
+<!-- ============================================================ -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <span class="section-num">3</span>
+    <h2>Kebutuhan Fungsional</h2>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-01</span>
+      <span class="fr-title">Dashboard Ringkasan</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Data hasil analisis tersimpan di database</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Query data analisis terbaru, hitung ringkasan statistik utama</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>Halaman dashboard menampilkan: total responden, tahun tracer, program studi, response rate, grafik ringkasan status alumni, dan statistik utama</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-02</span>
+      <span class="fr-title">Upload File Excel</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>File .xlsx sesuai template (max 10 MB), plus form meta: nama PT, nama prodi, total lulusan universitas, total lulusan prodi, tahun tracer</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Validasi ekstensi file (.xlsx). Simpan file sementara. Simpan meta informasi ke database.</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>File tersimpan sementara di storage, record tracer_studies dibuat di database, redirect ke proses analisis</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-03</span>
+      <span class="fr-title">Input Meta Informasi</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Form fields: nama_pt (string), nama_prodi (string), total_lulusan_pt (integer), total_lulusan_prodi (integer), tahun_tracer (year)</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Validasi required &amp; tipe data. Hitung response_rate = total_responden / total_lulusan_prodi &times; 100%</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>Meta tersimpan di tabel tracer_studies, response rate dihitung otomatis</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-04</span>
+      <span class="fr-title">Pengolahan Data Tracer</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>File Excel yang telah diupload, sheet "data tracer", baris 4+</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Baca seluruh baris data. Untuk setiap 13 parameter: ambil kolom sesuai mapping, hitung statistik sesuai jenis (COUNTIF/MEAN/MEDIAN/SUM), hitung persentase, generate narasi otomatis. Simpan hasil ke database. Hapus file Excel sementara.</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>13 set hasil analisis tersimpan di tabel analysis_results, file Excel dihapus</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-05</span>
+      <span class="fr-title">Hitung Statistik per Parameter</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Array data dari kolom parameter tertentu</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>
+          <strong>Frekuensi:</strong> COUNTIF per kategori, hitung persentase<br>
+          <strong>Mean:</strong> rata-rata numerik<br>
+          <strong>Median:</strong> nilai tengah<br>
+          <strong>Sum:</strong> total penjumlahan<br>
+          <strong>Indeks:</strong> rata-rata tertimbang Likert (parameter #13)
+        </div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>Object statistik: {type, categories[], values[], percentages[], mean, median, sum, total_respondents}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-06</span>
+      <span class="fr-title">Generate Grafik Otomatis</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Data statistik per parameter</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Render Chart.js sesuai jenis: Pie (#1), Bar (#2&ndash;#6, #8), Grouped Bar (#13). Pass data sebagai JSON ke Blade component.</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>Canvas chart interaktif di browser, dengan legend dan tooltip</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-07</span>
+      <span class="fr-title">Generate Tabel per Parameter</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Data statistik per parameter</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Format data ke tabel HTML: kolom kategori, jumlah, persentase. Parameter #12: tabel Universitas + Prodi. Parameter #13: tabel 7 kompetensi &times; (frekuensi per skala + indeks A + indeks B).</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>Tabel HTML responsif dalam card parameter</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-08</span>
+      <span class="fr-title">Generate Narasi Otomatis</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Data statistik dan meta informasi</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Untuk setiap parameter, generate paragraf narasi menggunakan template kalimat yang diisi dengan data aktual. Contoh: "Sebanyak {n} responden ({pct}%) berstatus bekerja setelah lulus." Sertakan interpretasi: identifikasi kategori tertinggi/terendah, bandingkan indeks A vs B (#13).</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>Paragraf narasi bahasa Indonesia formal per parameter</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-09</span>
+      <span class="fr-title">Tampilan Card per Parameter</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Hasil analisis 13 parameter</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Render setiap parameter dalam card terpisah yang berisi: judul parameter, statistik ringkasan, grafik, tabel detail, dan narasi interpretasi</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>Halaman analisis dengan 13 card, dikelompokkan per grup (Status Alumni, Bekerja &amp; Wiraswasta, Mencari Kerja, Studi Lanjut, Kompetensi)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-10</span>
+      <span class="fr-title">Generate Laporan Lengkap</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Seluruh hasil analisis + meta informasi</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Susun dokumen dengan struktur: Cover (nama PT, prodi, tahun), Daftar Isi, Ringkasan Eksekutif, Hasil Analisis per parameter (narasi + tabel + grafik), Kesimpulan (rangkuman temuan utama), Lampiran</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>Dokumen laporan siap diekspor</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-11</span>
+      <span class="fr-title">Export ke Microsoft Word</span>
+      <span class="tag tag-high">High</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Data laporan yang telah di-generate</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Gunakan PHPWord untuk membuat dokumen .docx: set page layout (A4, margin standar), tambahkan cover page, daftar isi, konten per section, tabel dengan styling, gambar grafik (render Chart.js ke image server-side atau gunakan tabel sebagai pengganti). Simpan file ke storage.</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>File .docx tersimpan di storage/app/reports/, trigger download ke browser</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-12</span>
+      <span class="fr-title">Riwayat Laporan</span>
+      <span class="tag tag-medium">Medium</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Daftar laporan yang tersimpan di database</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>Query tabel reports, tampilkan list dengan: nama file, tahun tracer, prodi, tanggal generate, ukuran file. Sediakan tombol download dan hapus.</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>Halaman daftar riwayat laporan dengan aksi download ulang</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-card">
+    <div class="fr-head">
+      <span class="fr-id">FR-13</span>
+      <span class="fr-title">Hitung Response Rate</span>
+      <span class="tag tag-medium">Medium</span>
+    </div>
+    <div class="fr-grid">
+      <div class="fr-col">
+        <label>Input</label>
+        <div>Total responden (dari data Excel), total lulusan prodi (input manual)</div>
+      </div>
+      <div class="fr-col">
+        <label>Proses</label>
+        <div>response_rate = (total_responden / total_lulusan_prodi) &times; 100. Juga hitung level universitas jika total_lulusan_pt diisi.</div>
+      </div>
+      <div class="fr-col">
+        <label>Output</label>
+        <div>Persentase response rate ditampilkan di dashboard dan dimasukkan ke laporan</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 4. KEBUTUHAN NON-FUNGSIONAL -->
+<!-- ============================================================ -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <span class="section-num">4</span>
+    <h2>Kebutuhan Non-Fungsional</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>ID</th><th>Kebutuhan</th><th>Kategori</th><th>Metrik / Target</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">NFR-01</td><td>UI responsif, modern, profesional</td><td>Usability</td><td class="desc">Bootstrap 5 + AdminLTE 4, berfungsi di desktop &amp; tablet (min-width 768px)</td></tr>
+        <tr><td class="mono">NFR-02</td><td>Performa pengolahan</td><td>Performance</td><td class="desc">Upload + analisis &lt; 30 detik untuk &le; 5.000 baris data</td></tr>
+        <tr><td class="mono">NFR-03</td><td>Arsitektur bersih</td><td>Maintainability</td><td class="desc">Clean Architecture, SOLID, Repository Pattern, Service Layer. Business logic di Service, bukan Controller.</td></tr>
+        <tr><td class="mono">NFR-04</td><td>Standar kode</td><td>Code Quality</td><td class="desc">PSR-12, Laravel Best Practices, Form Request Validation</td></tr>
+        <tr><td class="mono">NFR-05</td><td>File Excel sementara</td><td>Security</td><td class="desc">File dihapus otomatis setelah analisis selesai, tidak tersimpan permanen</td></tr>
+        <tr><td class="mono">NFR-06</td><td>Penyimpanan laporan</td><td>Reliability</td><td class="desc">File .docx tersimpan di storage/app/reports/ dan dapat diunduh kembali</td></tr>
+        <tr><td class="mono">NFR-07</td><td>Database</td><td>Compatibility</td><td class="desc">MySQL 8.0+, seluruh tabel via Laravel Migration, Eloquent ORM</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 5. KEBUTUHAN ANTARMUKA -->
+<!-- ============================================================ -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <span class="section-num">5</span>
+    <h2>Kebutuhan Antarmuka</h2>
+  </div>
+
+  <h3>5.1 Antarmuka Pengguna (UI)</h3>
+  <p>Aplikasi menggunakan layout AdminLTE 4 dengan komponen:</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Komponen</th><th>Fungsi</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Sidebar</strong></td><td>Navigasi utama: Dashboard, Upload Data, Hasil Analisis, Riwayat Laporan</td></tr>
+        <tr><td><strong>Navbar</strong></td><td>Breadcrumb lokasi halaman saat ini</td></tr>
+        <tr><td><strong>Dashboard Cards</strong></td><td>Ringkasan statistik (total responden, tahun, prodi, response rate)</td></tr>
+        <tr><td><strong>Parameter Cards</strong></td><td>Card per parameter berisi statistik, grafik, tabel, narasi</td></tr>
+        <tr><td><strong>Progress Bar</strong></td><td>Indikator progres saat proses upload dan analisis berjalan</td></tr>
+        <tr><td><strong>Loading Spinner</strong></td><td>Feedback visual saat sistem mengolah data</td></tr>
+        <tr><td><strong>Toast Notification</strong></td><td>Notifikasi sukses/error (upload berhasil, laporan ter-generate, dll)</td></tr>
+        <tr><td><strong>Modal Dialog</strong></td><td>Konfirmasi aksi (hapus laporan, konfirmasi generate)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.2 Halaman Aplikasi</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Halaman</th><th>Route</th><th>Deskripsi</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Dashboard</strong></td><td class="mono">/</td><td class="desc">Halaman utama, ringkasan data analisis terbaru</td></tr>
+        <tr><td><strong>Upload Data</strong></td><td class="mono">/upload</td><td class="desc">Form upload Excel + input meta informasi</td></tr>
+        <tr><td><strong>Proses Analisis</strong></td><td class="mono">/analysis/{id}</td><td class="desc">Halaman progres pengolahan data</td></tr>
+        <tr><td><strong>Hasil Analisis</strong></td><td class="mono">/analysis/{id}/results</td><td class="desc">Dashboard analitik dengan 13 card parameter</td></tr>
+        <tr><td><strong>Generate Laporan</strong></td><td class="mono">/reports/{id}/generate</td><td class="desc">Preview dan tombol generate laporan Word</td></tr>
+        <tr><td><strong>Riwayat Laporan</strong></td><td class="mono">/reports</td><td class="desc">Daftar laporan tersimpan, download, hapus</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.3 Antarmuka Perangkat Lunak</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Interface</th><th>Teknologi</th><th>Arah</th></tr></thead>
+      <tbody>
+        <tr><td>Baca Excel</td><td>PhpSpreadsheet</td><td class="desc">File .xlsx &rarr; Array PHP</td></tr>
+        <tr><td>Tulis Word</td><td>PHPWord</td><td class="desc">Data analisis &rarr; File .docx</td></tr>
+        <tr><td>Grafik browser</td><td>Chart.js</td><td class="desc">JSON data &rarr; Canvas chart</td></tr>
+        <tr><td>Database</td><td>Eloquent ORM + MySQL</td><td class="desc">Model &harr; Tabel MySQL</td></tr>
+        <tr><td>File Storage</td><td>Laravel Filesystem</td><td class="desc">Upload temp &amp; reports storage</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 6. KEBUTUHAN DATA -->
+<!-- ============================================================ -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <span class="section-num">6</span>
+    <h2>Kebutuhan Data</h2>
+  </div>
+
+  <h3>6.1 Entity Overview</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Entity</th><th>Deskripsi</th><th>Relasi</th></tr></thead>
+      <tbody>
+        <tr><td><strong>tracer_studies</strong></td><td class="desc">Record utama per upload: meta info (nama PT, prodi, tahun, total lulusan), total responden, response rate, status pengolahan, timestamps</td><td class="desc">has many analysis_results, has many reports</td></tr>
+        <tr><td><strong>analysis_results</strong></td><td class="desc">Hasil analisis per parameter: nomor parameter, nama, tipe statistik, data hasil (JSON), narasi, konfigurasi grafik</td><td class="desc">belongs to tracer_studies</td></tr>
+        <tr><td><strong>reports</strong></td><td class="desc">Record laporan yang di-generate: path file .docx, ukuran file, timestamps</td><td class="desc">belongs to tracer_studies</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.2 Skema Tabel</h3>
+
+  <h4>tracer_studies</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">id</td><td>bigint unsigned</td><td>PK, auto-increment</td><td></td></tr>
+        <tr><td class="mono">nama_pt</td><td>varchar(255)</td><td>NOT NULL</td><td>Nama Perguruan Tinggi</td></tr>
+        <tr><td class="mono">nama_prodi</td><td>varchar(255)</td><td>NOT NULL</td><td>Nama Program Studi</td></tr>
+        <tr><td class="mono">tahun_tracer</td><td>year</td><td>NOT NULL</td><td>Tahun pelaksanaan tracer</td></tr>
+        <tr><td class="mono">total_lulusan_pt</td><td>int unsigned</td><td>NOT NULL</td><td>Total lulusan level universitas</td></tr>
+        <tr><td class="mono">total_lulusan_prodi</td><td>int unsigned</td><td>NOT NULL</td><td>Total lulusan level prodi</td></tr>
+        <tr><td class="mono">total_responden</td><td>int unsigned</td><td>NOT NULL</td><td>Jumlah baris data di Excel</td></tr>
+        <tr><td class="mono">response_rate_pt</td><td>decimal(5,2)</td><td>NULLABLE</td><td>% mengisi level universitas</td></tr>
+        <tr><td class="mono">response_rate_prodi</td><td>decimal(5,2)</td><td>NULLABLE</td><td>% mengisi level prodi</td></tr>
+        <tr><td class="mono">status</td><td>enum</td><td>NOT NULL, default 'pending'</td><td>pending / processing / completed / failed</td></tr>
+        <tr><td class="mono">original_filename</td><td>varchar(255)</td><td>NOT NULL</td><td>Nama file asli yang diupload</td></tr>
+        <tr><td class="mono">created_at</td><td>timestamp</td><td></td><td></td></tr>
+        <tr><td class="mono">updated_at</td><td>timestamp</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>analysis_results</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">id</td><td>bigint unsigned</td><td>PK, auto-increment</td><td></td></tr>
+        <tr><td class="mono">tracer_study_id</td><td>bigint unsigned</td><td>FK &rarr; tracer_studies</td><td></td></tr>
+        <tr><td class="mono">parameter_number</td><td>tinyint unsigned</td><td>NOT NULL</td><td>1&ndash;13</td></tr>
+        <tr><td class="mono">parameter_name</td><td>varchar(255)</td><td>NOT NULL</td><td>Nama parameter</td></tr>
+        <tr><td class="mono">parameter_group</td><td>varchar(100)</td><td>NOT NULL</td><td>Grup: status_alumni, bekerja, mencari_kerja, studi_lanjut, kompetensi</td></tr>
+        <tr><td class="mono">statistic_type</td><td>varchar(50)</td><td>NOT NULL</td><td>frequency, mean, median, sum, index, display</td></tr>
+        <tr><td class="mono">result_data</td><td>json</td><td>NOT NULL</td><td>Hasil statistik lengkap</td></tr>
+        <tr><td class="mono">chart_type</td><td>varchar(30)</td><td>NULLABLE</td><td>pie, bar, grouped_bar, null</td></tr>
+        <tr><td class="mono">chart_config</td><td>json</td><td>NULLABLE</td><td>Konfigurasi Chart.js</td></tr>
+        <tr><td class="mono">narrative</td><td>text</td><td>NULLABLE</td><td>Narasi otomatis</td></tr>
+        <tr><td class="mono">created_at</td><td>timestamp</td><td></td><td></td></tr>
+        <tr><td class="mono">updated_at</td><td>timestamp</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>reports</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">id</td><td>bigint unsigned</td><td>PK, auto-increment</td><td></td></tr>
+        <tr><td class="mono">tracer_study_id</td><td>bigint unsigned</td><td>FK &rarr; tracer_studies</td><td></td></tr>
+        <tr><td class="mono">filename</td><td>varchar(255)</td><td>NOT NULL</td><td>Nama file .docx</td></tr>
+        <tr><td class="mono">file_path</td><td>varchar(500)</td><td>NOT NULL</td><td>Path di storage</td></tr>
+        <tr><td class="mono">file_size</td><td>bigint unsigned</td><td>NOT NULL</td><td>Ukuran file dalam bytes</td></tr>
+        <tr><td class="mono">created_at</td><td>timestamp</td><td></td><td></td></tr>
+        <tr><td class="mono">updated_at</td><td>timestamp</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 7. MAPPING PARAMETER -->
+<!-- ============================================================ -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <span class="section-num">7</span>
+    <h2>Mapping Parameter &amp; Kolom Excel</h2>
+  </div>
+
+  <p>Tabel berikut mendefinisikan mapping lengkap antara parameter analisis, kolom di sheet "data tracer", metode statistik, kategori, dan jenis visualisasi.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Parameter</th><th>Kolom</th><th>f-code</th><th>Statistik</th><th>Kategori</th><th>Chart</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">1</td><td>Status Setelah Lulus</td><td class="mono">M</td><td class="mono">f8</td>
+          <td>COUNTIF 1&ndash;5</td>
+          <td class="desc">Bekerja; Tidak Bekerja; Wirausaha; Studi Lanjut; Mencari Kerja</td>
+          <td>Pie</td>
+        </tr>
+        <tr>
+          <td class="mono">2</td><td>Lama Mendapatkan Pekerjaan</td><td class="mono">BX</td><td class="mono">f502</td>
+          <td>COUNTIF 3 kategori</td>
+          <td class="desc">&lt;6 bulan; 6&ndash;12 bulan; &gt;12 bulan</td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td class="mono">3</td><td>Tingkat Tempat Kerja</td><td class="mono">BI</td><td class="mono">f5d</td>
+          <td>COUNTIF 1&ndash;3</td>
+          <td class="desc">Lokal; Nasional; Multinasional</td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td class="mono">4</td><td>Bidang Kerja Lulusan</td><td class="mono">T</td><td class="mono">f1101</td>
+          <td>COUNTIF 1&ndash;7</td>
+          <td class="desc">Pemerintah; Non-profit; Swasta; Wiraswasta; Lainnya; BUMN; Multilateral</td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td class="mono">5</td><td>Kesesuaian Bidang Studi</td><td class="mono">BC</td><td class="mono">f14</td>
+          <td>COUNTIF 1&ndash;5</td>
+          <td class="desc">Sangat Erat; Erat; Cukup Erat; Kurang Erat; Tidak Sama Sekali</td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td class="mono">6</td><td>Tingkat Pendidikan pada Pekerjaan</td><td class="mono">AM</td><td class="mono">f15</td>
+          <td>COUNTIF 1&ndash;4</td>
+          <td class="desc">Lebih Tinggi; Sama; Lebih Rendah; Tidak Perlu PT</td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td class="mono">7</td><td>Pendapatan Pertama Lulusan</td><td class="mono">BP</td><td class="mono">f505</td>
+          <td>MEAN + MEDIAN</td>
+          <td class="desc">Nilai rupiah numerik</td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td class="mono">8</td><td>Penghasilan Lulusan</td><td class="mono">BP</td><td class="mono">f505</td>
+          <td>COUNTIF 4 kategori</td>
+          <td class="desc">&lt;1 jt; 1&ndash;3 jt; 3&ndash;5 jt; &gt;5 jt</td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td class="mono">9</td><td>Mulai Mencari Pekerjaan</td><td class="mono">AY</td><td class="mono">f301</td>
+          <td>MEAN</td>
+          <td class="desc">Bulan (numerik)</td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td class="mono">10</td><td>Melamar Pekerjaan</td><td class="mono">CG</td><td class="mono">f6</td>
+          <td>SUM</td>
+          <td class="desc">Total lamaran (numerik)</td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td class="mono">11</td><td>Diundang Wawancara</td><td class="mono">BD</td><td class="mono">f7a</td>
+          <td>SUM</td>
+          <td class="desc">Total undangan (numerik)</td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td class="mono">12</td><td>Tempat Melanjutkan Pendidikan</td><td class="mono">AK</td><td class="mono">f18c</td>
+          <td>DISPLAY</td>
+          <td class="desc">Teks: Universitas + Prodi</td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td class="mono">13</td><td>Penilaian Kemampuan Diri</td><td class="mono">*</td><td class="mono">f1761&ndash;f1774</td>
+          <td>INDEX (Likert)</td>
+          <td class="desc">7 kompetensi &times; 2 dimensi (A dikuasai, B dibutuhkan)</td>
+          <td>Grouped Bar</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Detail Mapping Kompetensi (#13)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kompetensi</th><th>Kolom A (dikuasai)</th><th>f-code A</th><th>Kolom B (dibutuhkan)</th><th>f-code B</th></tr></thead>
+      <tbody>
+        <tr><td>Etika</td><td class="mono">BH</td><td class="mono">f1761</td><td class="mono">BK</td><td class="mono">f1768</td></tr>
+        <tr><td>Keahlian Bidang Ilmu</td><td class="mono">AG</td><td class="mono">f1762</td><td class="mono">AF</td><td class="mono">f1769</td></tr>
+        <tr><td>Bahasa Inggris</td><td class="mono">AZ</td><td class="mono">f1763</td><td class="mono">AX</td><td class="mono">f1770</td></tr>
+        <tr><td>Penggunaan TI</td><td class="mono">Y</td><td class="mono">f1764</td><td class="mono">AE</td><td class="mono">f1771</td></tr>
+        <tr><td>Komunikasi</td><td class="mono">BT</td><td class="mono">f1765</td><td class="mono">BN</td><td class="mono">f1772</td></tr>
+        <tr><td>Kerja Sama Tim</td><td class="mono">AV</td><td class="mono">f1766</td><td class="mono">CC</td><td class="mono">f1773</td></tr>
+        <tr><td>Pengembangan Diri</td><td class="mono">AN</td><td class="mono">f1767</td><td class="mono">BW</td><td class="mono">f1774</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 8. ATURAN BISNIS -->
+<!-- ============================================================ -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <span class="section-num">8</span>
+    <h2>Aturan Bisnis</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>ID</th><th>Aturan</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono">BR-01</td>
+          <td>File yang diupload harus berekstensi .xlsx</td>
+          <td class="desc">Validasi ekstensi saja, bukan isi file</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-02</td>
+          <td>Sheet yang dibaca harus bernama "data tracer" (case-insensitive)</td>
+          <td class="desc">Jika sheet tidak ditemukan, tampilkan error</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-03</td>
+          <td>Header kolom berada di baris 3, data dimulai baris 4</td>
+          <td class="desc">Baris 1&ndash;2 diabaikan</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-04</td>
+          <td>Baris data yang seluruh kolom parameternya kosong diabaikan</td>
+          <td class="desc">Tidak dihitung sebagai responden</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-05</td>
+          <td>Parameter #2 (Lama Kerja): nilai bulan dikategorikan berdasarkan range numerik</td>
+          <td class="desc">&lt;6, 6&ndash;12, &gt;12 bulan</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-06</td>
+          <td>Parameter #7 &amp; #8 menggunakan kolom yang sama (BP/f505)</td>
+          <td class="desc">#7 hitung mean+median, #8 kategorikan ke 4 range penghasilan</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-07</td>
+          <td>Parameter #13 menghitung indeks per kompetensi: &sum;(nilai &times; frekuensi) / total responden</td>
+          <td class="desc">Skala 1&ndash;5 (Sangat Kurang&ndash;Sangat Baik)</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-08</td>
+          <td>Narasi otomatis menggunakan template kalimat dengan placeholder data</td>
+          <td class="desc">Bahasa Indonesia formal, tanpa opini</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-09</td>
+          <td>File Excel dihapus setelah analisis selesai</td>
+          <td class="desc">Tidak ada penyimpanan data mentah</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-10</td>
+          <td>Laporan Word tersimpan permanen sampai dihapus manual oleh pengguna</td>
+          <td class="desc">Tersimpan di storage/app/reports/</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-11</td>
+          <td>Persentase dibulatkan 2 desimal, nilai rupiah tanpa desimal</td>
+          <td class="desc">Konsistensi format angka di seluruh output</td>
+        </tr>
+        <tr>
+          <td class="mono">BR-12</td>
+          <td>Response rate = (total_responden / total_lulusan) &times; 100</td>
+          <td class="desc">Dihitung untuk level prodi dan universitas</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 2 &mdash; SRS: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 3: Arsitektur Aplikasi</span>
+</div>

@@ -1,0 +1,695 @@
+<title>Class Diagram</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --cls-ctrl: #2d5be3; --cls-ctrl-bg: #e8eefb;
+    --cls-svc: #7c3aed; --cls-svc-bg: #f5f3ff;
+    --cls-model: #059669; --cls-model-bg: #ecfdf5;
+    --cls-repo: #d97706; --cls-repo-bg: #fffbeb;
+    --cls-iface: #0891b2; --cls-iface-bg: #ecfeff;
+    --cls-req: #dc2626; --cls-req-bg: #fef2f2;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --cls-ctrl: #6b8de8; --cls-ctrl-bg: #1e2a4a;
+      --cls-svc: #a78bfa; --cls-svc-bg: #1e1838;
+      --cls-model: #34d399; --cls-model-bg: #0d2818;
+      --cls-repo: #fbbf24; --cls-repo-bg: #2a2010;
+      --cls-iface: #22d3ee; --cls-iface-bg: #0a2028;
+      --cls-req: #f87171; --cls-req-bg: #2a1010;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --cls-ctrl: #6b8de8; --cls-ctrl-bg: #1e2a4a;
+    --cls-svc: #a78bfa; --cls-svc-bg: #1e1838;
+    --cls-model: #34d399; --cls-model-bg: #0d2818;
+    --cls-repo: #fbbf24; --cls-repo-bg: #2a2010;
+    --cls-iface: #22d3ee; --cls-iface-bg: #0a2028;
+    --cls-req: #f87171; --cls-req-bg: #2a1010;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  h3 { font-size: 0.92rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text); }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--text-secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Class card */
+  .cls-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .cls-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.85rem; border-bottom: 1px solid var(--border); }
+  .cls-stereotype { font-size: 0.6rem; font-weight: 600; padding: 0.1rem 0.4rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .st-ctrl { color: var(--cls-ctrl); background: var(--cls-ctrl-bg); }
+  .st-svc { color: var(--cls-svc); background: var(--cls-svc-bg); }
+  .st-model { color: var(--cls-model); background: var(--cls-model-bg); }
+  .st-repo { color: var(--cls-repo); background: var(--cls-repo-bg); }
+  .st-iface { color: var(--cls-iface); background: var(--cls-iface-bg); }
+  .st-req { color: var(--cls-req); background: var(--cls-req-bg); }
+  .cls-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+  .cls-extends { font-size: 0.68rem; color: var(--text-tertiary); margin-left: auto; }
+
+  .cls-section { padding: 0.5rem 0.85rem; border-bottom: 1px solid var(--border); }
+  .cls-section:last-child { border-bottom: none; }
+  .cls-section-title { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-tertiary); margin-bottom: 0.3rem; }
+  .cls-member { font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.7; color: var(--text-secondary); }
+  .cls-member .vis { color: var(--cls-model); font-weight: 600; margin-right: 0.2rem; }
+  .cls-member .type { color: var(--accent-muted); }
+  .cls-member .param { color: var(--text-tertiary); }
+  .cls-member .ret { color: var(--cls-svc); }
+
+  /* Relations */
+  .rel-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  .rel-table th { background: var(--surface-dim); font-weight: 600; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.45rem 0.7rem; text-align: left; border-bottom: 1px solid var(--border); }
+  .rel-table td { padding: 0.4rem 0.7rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+  .rel-table tbody tr:last-child td { border-bottom: none; }
+  .rel-from { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .rel-arrow { text-align: center; font-size: 0.8rem; color: var(--text-tertiary); white-space: nowrap; }
+  .rel-to { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .rel-type { font-size: 0.66rem; font-weight: 600; padding: 0.08rem 0.35rem; border-radius: 3px; white-space: nowrap; }
+  .rt-dep { color: var(--cls-ctrl); background: var(--cls-ctrl-bg); }
+  .rt-comp { color: var(--cls-model); background: var(--cls-model-bg); }
+  .rt-impl { color: var(--cls-iface); background: var(--cls-iface-bg); }
+  .rt-assoc { color: var(--cls-repo); background: var(--cls-repo-bg); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  .cls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 700px) { .cls-grid { grid-template-columns: 1fr; } }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .legend { flex-direction: column; gap: 0.35rem; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Class Diagram</h1>
+  <p class="doc-subtitle">Diagram kelas UML lengkap: atribut, method, visibility, relasi antar kelas untuk seluruh layer arsitektur.</p>
+  <div class="doc-meta">
+    <span>Tahap 10 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>10</strong> / 27 &mdash; Class</span>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background: var(--cls-ctrl);"></div>Controller</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--cls-svc);"></div>Service</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--cls-model);"></div>Model</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--cls-repo);"></div>Repository</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--cls-iface);"></div>Interface</div>
+  <div class="legend-item"><div class="legend-dot" style="background: var(--cls-req);"></div>Form Request</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 1. MODELS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">10.1</span>
+    <h2>Domain Layer: Eloquent Models</h2>
+  </div>
+
+  <div class="cls-grid">
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-model">Model</span>
+        <span class="cls-name">TracerStudy</span>
+        <span class="cls-extends">extends Model</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Attributes</div>
+        <div class="cls-member">
+          <span class="vis">#</span> $fillable: <span class="type">array</span><br>
+          <span class="vis">#</span> $casts: <span class="type">array</span><br>
+          <span class="param">  // tahun_tracer → int</span><br>
+          <span class="param">  // response_rate_* → float</span>
+        </div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Relationships</div>
+        <div class="cls-member">
+          <span class="vis">+</span> analysisResults(): <span class="ret">HasMany</span><br>
+          <span class="vis">+</span> reports(): <span class="ret">HasMany</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-model">Model</span>
+        <span class="cls-name">AnalysisResult</span>
+        <span class="cls-extends">extends Model</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Attributes</div>
+        <div class="cls-member">
+          <span class="vis">#</span> $fillable: <span class="type">array</span><br>
+          <span class="vis">#</span> $casts: <span class="type">array</span><br>
+          <span class="param">  // result_data → array (JSON)</span><br>
+          <span class="param">  // chart_config → array (JSON)</span>
+        </div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Relationships</div>
+        <div class="cls-member">
+          <span class="vis">+</span> tracerStudy(): <span class="ret">BelongsTo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-model">Model</span>
+        <span class="cls-name">Report</span>
+        <span class="cls-extends">extends Model</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Attributes</div>
+        <div class="cls-member">
+          <span class="vis">#</span> $fillable: <span class="type">array</span>
+        </div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Relationships</div>
+        <div class="cls-member">
+          <span class="vis">+</span> tracerStudy(): <span class="ret">BelongsTo</span>
+        </div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Events</div>
+        <div class="cls-member">
+          <span class="vis">#</span> booted(): <span class="ret">void</span><br>
+          <span class="param">  // deleting → Storage::delete(file_path)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 2. INTERFACES -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">10.2</span>
+    <h2>Domain Layer: Repository Interfaces</h2>
+  </div>
+
+  <div class="cls-grid">
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-iface">Interface</span>
+        <span class="cls-name">TracerStudyRepositoryInterface</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> all(): <span class="ret">Collection</span><br>
+          <span class="vis">+</span> find(<span class="param">int $id</span>): <span class="ret">?TracerStudy</span><br>
+          <span class="vis">+</span> create(<span class="param">array $data</span>): <span class="ret">TracerStudy</span><br>
+          <span class="vis">+</span> updateStatus(<span class="param">int $id, string $status</span>): <span class="ret">bool</span><br>
+          <span class="vis">+</span> delete(<span class="param">int $id</span>): <span class="ret">bool</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-iface">Interface</span>
+        <span class="cls-name">AnalysisResultRepositoryInterface</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> findByTracerStudy(<span class="param">int $studyId</span>): <span class="ret">Collection</span><br>
+          <span class="vis">+</span> createMany(<span class="param">array $results</span>): <span class="ret">bool</span><br>
+          <span class="vis">+</span> findByParameter(<span class="param">int $studyId, int $num</span>): <span class="ret">?AnalysisResult</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-iface">Interface</span>
+        <span class="cls-name">ReportRepositoryInterface</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> findByTracerStudy(<span class="param">int $studyId</span>): <span class="ret">Collection</span><br>
+          <span class="vis">+</span> create(<span class="param">array $data</span>): <span class="ret">Report</span><br>
+          <span class="vis">+</span> find(<span class="param">int $id</span>): <span class="ret">?Report</span><br>
+          <span class="vis">+</span> delete(<span class="param">int $id</span>): <span class="ret">bool</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 3. REPOSITORIES -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">10.3</span>
+    <h2>Infrastructure Layer: Eloquent Repositories</h2>
+  </div>
+
+  <div class="cls-grid">
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-repo">Repository</span>
+        <span class="cls-name">TracerStudyRepository</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Implements</div>
+        <div class="cls-member"><span class="type">TracerStudyRepositoryInterface</span></div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Dependencies</div>
+        <div class="cls-member">
+          <span class="vis">-</span> $model: <span class="type">TracerStudy</span>
+        </div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> all(): <span class="ret">Collection</span><br>
+          <span class="vis">+</span> find(<span class="param">int $id</span>): <span class="ret">?TracerStudy</span><br>
+          <span class="vis">+</span> create(<span class="param">array $data</span>): <span class="ret">TracerStudy</span><br>
+          <span class="vis">+</span> updateStatus(<span class="param">int $id, string $status</span>): <span class="ret">bool</span><br>
+          <span class="vis">+</span> delete(<span class="param">int $id</span>): <span class="ret">bool</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-repo">Repository</span>
+        <span class="cls-name">AnalysisResultRepository</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Implements</div>
+        <div class="cls-member"><span class="type">AnalysisResultRepositoryInterface</span></div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> findByTracerStudy(<span class="param">int $studyId</span>): <span class="ret">Collection</span><br>
+          <span class="vis">+</span> createMany(<span class="param">array $results</span>): <span class="ret">bool</span><br>
+          <span class="vis">+</span> findByParameter(<span class="param">int $studyId, int $num</span>): <span class="ret">?AnalysisResult</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-repo">Repository</span>
+        <span class="cls-name">ReportRepository</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Implements</div>
+        <div class="cls-member"><span class="type">ReportRepositoryInterface</span></div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> findByTracerStudy(<span class="param">int $studyId</span>): <span class="ret">Collection</span><br>
+          <span class="vis">+</span> create(<span class="param">array $data</span>): <span class="ret">Report</span><br>
+          <span class="vis">+</span> find(<span class="param">int $id</span>): <span class="ret">?Report</span><br>
+          <span class="vis">+</span> delete(<span class="param">int $id</span>): <span class="ret">bool</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 4. SERVICES -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">10.4</span>
+    <h2>Application Layer: Services</h2>
+  </div>
+
+  <div class="cls-card">
+    <div class="cls-header">
+      <span class="cls-stereotype st-svc">Service</span>
+      <span class="cls-name">TracerAnalysisService</span>
+    </div>
+    <div class="cls-section">
+      <div class="cls-section-title">Dependencies (Constructor Injection)</div>
+      <div class="cls-member">
+        <span class="vis">-</span> $excelReader: <span class="type">ExcelReaderService</span><br>
+        <span class="vis">-</span> $statistics: <span class="type">StatisticsService</span><br>
+        <span class="vis">-</span> $chartConfig: <span class="type">ChartConfigService</span><br>
+        <span class="vis">-</span> $narrative: <span class="type">NarrativeService</span><br>
+        <span class="vis">-</span> $tracerStudyRepo: <span class="type">TracerStudyRepositoryInterface</span><br>
+        <span class="vis">-</span> $analysisResultRepo: <span class="type">AnalysisResultRepositoryInterface</span>
+      </div>
+    </div>
+    <div class="cls-section">
+      <div class="cls-section-title">Methods</div>
+      <div class="cls-member">
+        <span class="vis">+</span> analyze(<span class="param">UploadedFile $file, array $meta</span>): <span class="ret">TracerStudy</span><br>
+        <span class="vis">-</span> processParameters(<span class="param">array $respondents, TracerStudy $study</span>): <span class="ret">void</span><br>
+        <span class="vis">-</span> calculateResponseRates(<span class="param">int $total, int $lulusanPt, int $lulusanProdi</span>): <span class="ret">array</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cls-grid">
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-svc">Service</span>
+        <span class="cls-name">ExcelReaderService</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> read(<span class="param">string $filePath</span>): <span class="ret">array</span><br>
+          <span class="vis">-</span> mapColumns(<span class="param">Worksheet $sheet</span>): <span class="ret">array</span><br>
+          <span class="vis">-</span> parseRow(<span class="param">array $row, array $columnMap</span>): <span class="ret">array</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-svc">Service</span>
+        <span class="cls-name">StatisticsService</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> calculate(<span class="param">array $data, array $paramConfig</span>): <span class="ret">array</span><br>
+          <span class="vis">-</span> frequency(<span class="param">array $values, array $labels</span>): <span class="ret">array</span><br>
+          <span class="vis">-</span> meanMedian(<span class="param">array $values</span>): <span class="ret">array</span><br>
+          <span class="vis">-</span> mean(<span class="param">array $values</span>): <span class="ret">array</span><br>
+          <span class="vis">-</span> sum(<span class="param">array $values</span>): <span class="ret">array</span><br>
+          <span class="vis">-</span> competencyIndex(<span class="param">array $data, array $config</span>): <span class="ret">array</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-svc">Service</span>
+        <span class="cls-name">ChartConfigService</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> build(<span class="param">array $resultData, array $paramConfig</span>): <span class="ret">?array</span><br>
+          <span class="vis">-</span> pieConfig(<span class="param">array $categories</span>): <span class="ret">array</span><br>
+          <span class="vis">-</span> barConfig(<span class="param">array $categories</span>): <span class="ret">array</span><br>
+          <span class="vis">-</span> groupedBarConfig(<span class="param">array $competencies</span>): <span class="ret">array</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-svc">Service</span>
+        <span class="cls-name">NarrativeService</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> generate(<span class="param">array $resultData, array $paramConfig</span>): <span class="ret">string</span><br>
+          <span class="vis">-</span> replacePlaceholders(<span class="param">string $template, array $vars</span>): <span class="ret">string</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-svc">Service</span>
+        <span class="cls-name">ReportGeneratorService</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Dependencies</div>
+        <div class="cls-member">
+          <span class="vis">-</span> $tracerStudyRepo: <span class="type">TracerStudyRepositoryInterface</span><br>
+          <span class="vis">-</span> $analysisResultRepo: <span class="type">AnalysisResultRepositoryInterface</span><br>
+          <span class="vis">-</span> $reportRepo: <span class="type">ReportRepositoryInterface</span>
+        </div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> generate(<span class="param">int $tracerStudyId</span>): <span class="ret">Report</span><br>
+          <span class="vis">-</span> buildDocument(<span class="param">TracerStudy $study, Collection $results</span>): <span class="ret">PhpWord</span><br>
+          <span class="vis">-</span> addCoverPage(<span class="param">PhpWord $doc, TracerStudy $study</span>): <span class="ret">void</span><br>
+          <span class="vis">-</span> addParameterSection(<span class="param">PhpWord $doc, AnalysisResult $result</span>): <span class="ret">void</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 5. CONTROLLERS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">10.5</span>
+    <h2>Presentation Layer: Controllers &amp; Request</h2>
+  </div>
+
+  <div class="cls-grid">
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-ctrl">Controller</span>
+        <span class="cls-name">DashboardController</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Dependencies</div>
+        <div class="cls-member">
+          <span class="vis">-</span> $tracerStudyRepo: <span class="type">TracerStudyRepositoryInterface</span>
+        </div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> index(): <span class="ret">View</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-ctrl">Controller</span>
+        <span class="cls-name">UploadController</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Dependencies</div>
+        <div class="cls-member">
+          <span class="vis">-</span> $analysisService: <span class="type">TracerAnalysisService</span>
+        </div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> create(): <span class="ret">View</span><br>
+          <span class="vis">+</span> store(<span class="param">UploadTracerRequest $request</span>): <span class="ret">RedirectResponse</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-ctrl">Controller</span>
+        <span class="cls-name">AnalysisController</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Dependencies</div>
+        <div class="cls-member">
+          <span class="vis">-</span> $tracerStudyRepo: <span class="type">TracerStudyRepositoryInterface</span><br>
+          <span class="vis">-</span> $analysisResultRepo: <span class="type">AnalysisResultRepositoryInterface</span>
+        </div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> show(<span class="param">int $id</span>): <span class="ret">View</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cls-card">
+      <div class="cls-header">
+        <span class="cls-stereotype st-ctrl">Controller</span>
+        <span class="cls-name">ReportController</span>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Dependencies</div>
+        <div class="cls-member">
+          <span class="vis">-</span> $reportGenerator: <span class="type">ReportGeneratorService</span><br>
+          <span class="vis">-</span> $reportRepo: <span class="type">ReportRepositoryInterface</span>
+        </div>
+      </div>
+      <div class="cls-section">
+        <div class="cls-section-title">Methods</div>
+        <div class="cls-member">
+          <span class="vis">+</span> index(): <span class="ret">View</span><br>
+          <span class="vis">+</span> generate(<span class="param">int $id</span>): <span class="ret">RedirectResponse</span><br>
+          <span class="vis">+</span> download(<span class="param">int $id</span>): <span class="ret">BinaryFileResponse</span><br>
+          <span class="vis">+</span> destroy(<span class="param">int $id</span>): <span class="ret">RedirectResponse</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cls-card" style="max-width: 460px;">
+    <div class="cls-header">
+      <span class="cls-stereotype st-req">Form Request</span>
+      <span class="cls-name">UploadTracerRequest</span>
+      <span class="cls-extends">extends FormRequest</span>
+    </div>
+    <div class="cls-section">
+      <div class="cls-section-title">Methods</div>
+      <div class="cls-member">
+        <span class="vis">+</span> rules(): <span class="ret">array</span><br>
+        <span class="param">  // file: required|file|mimes:xlsx|max:10240</span><br>
+        <span class="param">  // nama_pt: required|string|max:255</span><br>
+        <span class="param">  // nama_prodi: required|string|max:255</span><br>
+        <span class="param">  // tahun_tracer: required|integer|digits:4</span><br>
+        <span class="param">  // total_lulusan_pt: required|integer|min:1</span><br>
+        <span class="param">  // total_lulusan_prodi: required|integer|min:1</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 6. RELATIONS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">10.6</span>
+    <h2>Relasi Antar Kelas</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table class="rel-table">
+      <thead><tr><th>Dari</th><th></th><th>Ke</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr><td class="rel-from">TracerStudy</td><td class="rel-arrow">1 ──── *</td><td class="rel-to">AnalysisResult</td><td><span class="rel-type rt-comp">Composition</span></td><td>hasMany, cascade delete</td></tr>
+        <tr><td class="rel-from">TracerStudy</td><td class="rel-arrow">1 ──── *</td><td class="rel-to">Report</td><td><span class="rel-type rt-comp">Composition</span></td><td>hasMany, cascade delete</td></tr>
+        <tr><td class="rel-from">TracerStudyRepository</td><td class="rel-arrow">- - -▷</td><td class="rel-to">TracerStudyRepoInterface</td><td><span class="rel-type rt-impl">Implements</span></td><td>Eloquent implementation</td></tr>
+        <tr><td class="rel-from">AnalysisResultRepository</td><td class="rel-arrow">- - -▷</td><td class="rel-to">AnalysisResultRepoInterface</td><td><span class="rel-type rt-impl">Implements</span></td><td>Eloquent implementation</td></tr>
+        <tr><td class="rel-from">ReportRepository</td><td class="rel-arrow">- - -▷</td><td class="rel-to">ReportRepoInterface</td><td><span class="rel-type rt-impl">Implements</span></td><td>Eloquent implementation</td></tr>
+        <tr><td class="rel-from">TracerAnalysisService</td><td class="rel-arrow">──────▶</td><td class="rel-to">ExcelReaderService</td><td><span class="rel-type rt-dep">Dependency</span></td><td>Constructor injection</td></tr>
+        <tr><td class="rel-from">TracerAnalysisService</td><td class="rel-arrow">──────▶</td><td class="rel-to">StatisticsService</td><td><span class="rel-type rt-dep">Dependency</span></td><td>Constructor injection</td></tr>
+        <tr><td class="rel-from">TracerAnalysisService</td><td class="rel-arrow">──────▶</td><td class="rel-to">ChartConfigService</td><td><span class="rel-type rt-dep">Dependency</span></td><td>Constructor injection</td></tr>
+        <tr><td class="rel-from">TracerAnalysisService</td><td class="rel-arrow">──────▶</td><td class="rel-to">NarrativeService</td><td><span class="rel-type rt-dep">Dependency</span></td><td>Constructor injection</td></tr>
+        <tr><td class="rel-from">TracerAnalysisService</td><td class="rel-arrow">──────▶</td><td class="rel-to">TracerStudyRepoInterface</td><td><span class="rel-type rt-dep">Dependency</span></td><td>Constructor injection</td></tr>
+        <tr><td class="rel-from">TracerAnalysisService</td><td class="rel-arrow">──────▶</td><td class="rel-to">AnalysisResultRepoInterface</td><td><span class="rel-type rt-dep">Dependency</span></td><td>Constructor injection</td></tr>
+        <tr><td class="rel-from">ReportGeneratorService</td><td class="rel-arrow">──────▶</td><td class="rel-to">3 Repository Interfaces</td><td><span class="rel-type rt-dep">Dependency</span></td><td>Constructor injection</td></tr>
+        <tr><td class="rel-from">UploadController</td><td class="rel-arrow">──────▶</td><td class="rel-to">TracerAnalysisService</td><td><span class="rel-type rt-dep">Dependency</span></td><td>Constructor injection</td></tr>
+        <tr><td class="rel-from">AnalysisController</td><td class="rel-arrow">──────▶</td><td class="rel-to">2 Repository Interfaces</td><td><span class="rel-type rt-dep">Dependency</span></td><td>Constructor injection</td></tr>
+        <tr><td class="rel-from">ReportController</td><td class="rel-arrow">──────▶</td><td class="rel-to">ReportGeneratorService</td><td><span class="rel-type rt-dep">Dependency</span></td><td>Constructor injection</td></tr>
+        <tr><td class="rel-from">UploadController</td><td class="rel-arrow">──────▶</td><td class="rel-to">UploadTracerRequest</td><td><span class="rel-type rt-assoc">Association</span></td><td>Method parameter type-hint</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 7. SUMMARY -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">10.7</span>
+    <h2>Ringkasan Kelas</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table class="rel-table">
+      <thead><tr><th>Layer</th><th>Tipe</th><th>Jumlah</th><th>Kelas</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:600;">Presentation</td><td>Controller</td><td style="text-align:center;">4</td><td>Dashboard, Upload, Analysis, Report</td></tr>
+        <tr><td></td><td>Form Request</td><td style="text-align:center;">1</td><td>UploadTracerRequest</td></tr>
+        <tr><td style="font-weight:600;">Application</td><td>Service</td><td style="text-align:center;">6</td><td>TracerAnalysis, ExcelReader, Statistics, ChartConfig, Narrative, ReportGenerator</td></tr>
+        <tr><td style="font-weight:600;">Domain</td><td>Model</td><td style="text-align:center;">3</td><td>TracerStudy, AnalysisResult, Report</td></tr>
+        <tr><td></td><td>Interface</td><td style="text-align:center;">3</td><td>TracerStudyRepo, AnalysisResultRepo, ReportRepo</td></tr>
+        <tr><td style="font-weight:600;">Infrastructure</td><td>Repository</td><td style="text-align:center;">3</td><td>Eloquent implementations</td></tr>
+        <tr><td></td><td>Provider</td><td style="text-align:center;">1</td><td>RepositoryServiceProvider</td></tr>
+        <tr><td colspan="2" style="font-weight:700;">Total</td><td style="text-align:center; font-weight:700;">21</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 10 &mdash; Class Diagram: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 11: Product Backlog</span>
+</div>

@@ -1,0 +1,678 @@
+<title>Arsitektur Aplikasi</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --layer-presentation: #2563eb; --layer-presentation-bg: #eff6ff;
+    --layer-application: #7c3aed; --layer-application-bg: #f5f3ff;
+    --layer-domain: #059669; --layer-domain-bg: #ecfdf5;
+    --layer-infrastructure: #d97706; --layer-infrastructure-bg: #fffbeb;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --layer-presentation: #60a5fa; --layer-presentation-bg: #172040;
+      --layer-application: #a78bfa; --layer-application-bg: #1e1838;
+      --layer-domain: #34d399; --layer-domain-bg: #0f2a1e;
+      --layer-infrastructure: #fbbf24; --layer-infrastructure-bg: #2a2010;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --layer-presentation: #60a5fa; --layer-presentation-bg: #172040;
+    --layer-application: #a78bfa; --layer-application-bg: #1e1838;
+    --layer-domain: #34d399; --layer-domain-bg: #0f2a1e;
+    --layer-infrastructure: #fbbf24; --layer-infrastructure-bg: #2a2010;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 880px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; color: var(--text); margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  h3 { font-size: 0.92rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text); }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  ul, ol { padding-left: 1.25rem; margin: 0 0 1rem; }
+  li { font-size: 0.86rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.55rem 0.8rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.mono { font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent-muted); }
+  td.desc { color: var(--text-secondary); }
+
+  /* Layer diagram */
+  .layer-stack { display: flex; flex-direction: column; gap: 0; margin-bottom: 1.5rem; }
+  .layer { padding: 1rem 1.25rem; border: 1px solid var(--border); position: relative; }
+  .layer:first-child { border-radius: 8px 8px 0 0; }
+  .layer:last-child { border-radius: 0 0 8px 8px; }
+  .layer + .layer { border-top: none; }
+  .layer-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.4rem; }
+  .layer-badge .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .layer-name { font-weight: 600; font-size: 0.88rem; color: var(--text); margin-bottom: 0.15rem; }
+  .layer-desc { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+  .layer-items { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+  .layer-item { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 4px; white-space: nowrap; }
+
+  .layer.presentation { background: var(--layer-presentation-bg); }
+  .layer.presentation .layer-badge { color: var(--layer-presentation); }
+  .layer.presentation .dot { background: var(--layer-presentation); }
+  .layer.presentation .layer-item { background: color-mix(in srgb, var(--layer-presentation) 12%, transparent); color: var(--layer-presentation); }
+
+  .layer.application { background: var(--layer-application-bg); }
+  .layer.application .layer-badge { color: var(--layer-application); }
+  .layer.application .dot { background: var(--layer-application); }
+  .layer.application .layer-item { background: color-mix(in srgb, var(--layer-application) 12%, transparent); color: var(--layer-application); }
+
+  .layer.domain { background: var(--layer-domain-bg); }
+  .layer.domain .layer-badge { color: var(--layer-domain); }
+  .layer.domain .dot { background: var(--layer-domain); }
+  .layer.domain .layer-item { background: color-mix(in srgb, var(--layer-domain) 12%, transparent); color: var(--layer-domain); }
+
+  .layer.infrastructure { background: var(--layer-infrastructure-bg); }
+  .layer.infrastructure .layer-badge { color: var(--layer-infrastructure); }
+  .layer.infrastructure .dot { background: var(--layer-infrastructure); }
+  .layer.infrastructure .layer-item { background: color-mix(in srgb, var(--layer-infrastructure) 12%, transparent); color: var(--layer-infrastructure); }
+
+  .arrow-down { text-align: center; padding: 0.15rem 0; font-size: 0.8rem; color: var(--text-tertiary); }
+
+  /* Folder tree */
+  .tree { font-family: var(--font-mono); font-size: 0.76rem; line-height: 1.7; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); overflow-x: auto; white-space: pre; color: var(--text-secondary); }
+  .tree .dir { color: var(--accent); font-weight: 500; }
+  .tree .file { color: var(--text-secondary); }
+  .tree .comment { color: var(--text-tertiary); font-style: italic; }
+
+  /* Flow cards */
+  .flow-h { display: flex; gap: 0.5rem; align-items: stretch; margin-bottom: 1.25rem; overflow-x: auto; padding-bottom: 0.25rem; }
+  .flow-card { flex: 1; min-width: 130px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 0.85rem; display: flex; flex-direction: column; gap: 0.25rem; }
+  .flow-card .step-num { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 600; color: var(--accent-muted); }
+  .flow-card .step-title { font-weight: 600; font-size: 0.8rem; color: var(--text); }
+  .flow-card .step-detail { font-size: 0.74rem; color: var(--text-tertiary); }
+  .flow-arrow-h { display: flex; align-items: center; color: var(--text-tertiary); font-size: 0.9rem; flex-shrink: 0; }
+
+  /* Pattern card */
+  .pattern-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.65rem; margin-bottom: 1.25rem; }
+  .pattern-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; }
+  .pattern-name { font-weight: 600; font-size: 0.86rem; color: var(--text); margin-bottom: 0.25rem; }
+  .pattern-why { font-size: 0.78rem; color: var(--text-secondary); margin: 0; }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .flow-h { flex-direction: column; }
+    .flow-arrow-h { transform: rotate(90deg); justify-content: center; }
+    .pattern-grid { grid-template-columns: 1fr; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Arsitektur Aplikasi</h1>
+  <p class="doc-subtitle">Desain arsitektur empat layer, struktur folder Laravel 12, design patterns, dan request lifecycle untuk sistem pengolahan Tracer Study.</p>
+  <div class="doc-meta">
+    <span>Tahap 3 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div>
+  <div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>3</strong> / 27 &mdash; Arsitektur</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- 1. ARCHITECTURAL OVERVIEW -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3.1</span>
+    <h2>Arsitektur Layer</h2>
+  </div>
+
+  <p>Sistem menggunakan arsitektur empat layer yang mengadaptasi Clean Architecture ke dalam konteks Laravel MVC. Setiap layer memiliki tanggung jawab yang jelas dan dependency hanya mengalir ke bawah (layer atas bergantung pada layer bawah, tidak sebaliknya).</p>
+
+  <div class="layer-stack">
+    <div class="layer presentation">
+      <div class="layer-badge"><span class="dot"></span> Presentation Layer</div>
+      <div class="layer-name">Blade Views, Chart.js, Routes, Middleware</div>
+      <p class="layer-desc">Menerima input pengguna dan menampilkan output. Tidak berisi business logic.</p>
+      <div class="layer-items">
+        <span class="layer-item">Blade Templates</span>
+        <span class="layer-item">AdminLTE 4</span>
+        <span class="layer-item">Chart.js</span>
+        <span class="layer-item">Routes</span>
+        <span class="layer-item">Form Requests</span>
+      </div>
+    </div>
+    <div class="layer application">
+      <div class="layer-badge"><span class="dot"></span> Application Layer</div>
+      <div class="layer-name">Controllers, Services</div>
+      <p class="layer-desc">Mengorkestrasikan alur proses. Controller menerima request, memanggil Service, mengembalikan response. Service berisi seluruh business logic.</p>
+      <div class="layer-items">
+        <span class="layer-item">Controllers</span>
+        <span class="layer-item">TracerAnalysisService</span>
+        <span class="layer-item">StatisticsService</span>
+        <span class="layer-item">NarrativeService</span>
+        <span class="layer-item">ReportGeneratorService</span>
+        <span class="layer-item">ExcelReaderService</span>
+      </div>
+    </div>
+    <div class="layer domain">
+      <div class="layer-badge"><span class="dot"></span> Domain Layer</div>
+      <div class="layer-name">Models, Repository Interfaces, Config</div>
+      <p class="layer-desc">Mendefinisikan entitas bisnis dan kontrak akses data. Tidak bergantung pada framework atau database.</p>
+      <div class="layer-items">
+        <span class="layer-item">TracerStudy</span>
+        <span class="layer-item">AnalysisResult</span>
+        <span class="layer-item">Report</span>
+        <span class="layer-item">Repository Interfaces</span>
+        <span class="layer-item">Parameter Config</span>
+      </div>
+    </div>
+    <div class="layer infrastructure">
+      <div class="layer-badge"><span class="dot"></span> Infrastructure Layer</div>
+      <div class="layer-name">Eloquent Repositories, PhpSpreadsheet, PHPWord, MySQL</div>
+      <p class="layer-desc">Implementasi konkret akses data, file I/O, dan library pihak ketiga.</p>
+      <div class="layer-items">
+        <span class="layer-item">Eloquent Repositories</span>
+        <span class="layer-item">PhpSpreadsheet</span>
+        <span class="layer-item">PHPWord</span>
+        <span class="layer-item">MySQL</span>
+        <span class="layer-item">Laravel Filesystem</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Alasan Teknis</h3>
+  <ul>
+    <li><strong>Controller tipis:</strong> Controller hanya menerima request tervalidasi (Form Request), memanggil Service, dan mengembalikan response/view. Tidak ada query, kalkulasi, atau logika kondisional di Controller.</li>
+    <li><strong>Service Layer:</strong> Seluruh business logic (pengolahan statistik, generate narasi, generate laporan) berada di Service. Ini memungkinkan reuse logic antara web controller dan command-line jika diperlukan di masa depan.</li>
+    <li><strong>Repository Pattern:</strong> Akses data melalui interface, implementasi menggunakan Eloquent. Jika di masa depan perlu mengganti ORM atau database, cukup ganti implementasi repository tanpa mengubah Service.</li>
+    <li><strong>Dependency Injection:</strong> Seluruh Service dan Repository di-inject melalui Laravel Service Container. Tidak ada instansiasi manual (<code>new Service()</code>) di Controller.</li>
+  </ul>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 2. DESIGN PATTERNS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3.2</span>
+    <h2>Design Patterns</h2>
+  </div>
+
+  <div class="pattern-grid">
+    <div class="pattern-card">
+      <div class="pattern-name">Repository Pattern</div>
+      <p class="pattern-why">Abstraksi akses data melalui interface. Controller dan Service tidak tahu apakah data berasal dari Eloquent, Query Builder, atau cache. Memudahkan testing dengan mock.</p>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-name">Service Layer</div>
+      <p class="pattern-why">Mengenkapsulasi business logic dalam class yang fokus pada satu domain. Menghindari fat controller dan memungkinkan reuse logic di berbagai entry point.</p>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-name">Strategy Pattern</div>
+      <p class="pattern-why">Setiap parameter analisis memiliki strategi pengolahan berbeda (frequency, mean, sum, index, display). Strategi di-resolve berdasarkan konfigurasi parameter.</p>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-name">Config-Driven Processing</div>
+      <p class="pattern-why">Mapping 13 parameter (kolom, tipe statistik, kategori, chart) didefinisikan dalam config file, bukan hardcoded di Service. Menambah atau mengubah parameter cukup edit config.</p>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-name">Form Request Validation</div>
+      <p class="pattern-why">Validasi input dipisahkan dari Controller ke Form Request class, sesuai Laravel convention dan SRP (Single Responsibility Principle).</p>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-name">View Composer / Component</div>
+      <p class="pattern-why">Blade component reusable untuk card parameter, chart wrapper, dan tabel statistik. Menghindari duplikasi markup di 13 parameter card.</p>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 3. REQUEST LIFECYCLE -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3.3</span>
+    <h2>Request Lifecycle: Upload &amp; Analisis</h2>
+  </div>
+
+  <p>Alur paling kritis dalam sistem adalah proses upload file Excel hingga hasil analisis tersimpan di database. Berikut lifecycle-nya:</p>
+
+  <div class="flow-h">
+    <div class="flow-card">
+      <span class="step-num">01</span>
+      <span class="step-title">Browser</span>
+      <span class="step-detail">Form upload .xlsx + meta info</span>
+    </div>
+    <span class="flow-arrow-h">&rarr;</span>
+    <div class="flow-card">
+      <span class="step-num">02</span>
+      <span class="step-title">Form Request</span>
+      <span class="step-detail">Validasi file, meta fields</span>
+    </div>
+    <span class="flow-arrow-h">&rarr;</span>
+    <div class="flow-card">
+      <span class="step-num">03</span>
+      <span class="step-title">Controller</span>
+      <span class="step-detail">Panggil TracerAnalysisService</span>
+    </div>
+    <span class="flow-arrow-h">&rarr;</span>
+    <div class="flow-card">
+      <span class="step-num">04</span>
+      <span class="step-title">ExcelReaderService</span>
+      <span class="step-detail">Baca sheet, extract array data</span>
+    </div>
+  </div>
+  <div class="flow-h">
+    <div class="flow-card">
+      <span class="step-num">05</span>
+      <span class="step-title">StatisticsService</span>
+      <span class="step-detail">Hitung per parameter via Strategy</span>
+    </div>
+    <span class="flow-arrow-h">&rarr;</span>
+    <div class="flow-card">
+      <span class="step-num">06</span>
+      <span class="step-title">NarrativeService</span>
+      <span class="step-detail">Generate narasi per parameter</span>
+    </div>
+    <span class="flow-arrow-h">&rarr;</span>
+    <div class="flow-card">
+      <span class="step-num">07</span>
+      <span class="step-title">Repository</span>
+      <span class="step-detail">Simpan ke analysis_results</span>
+    </div>
+    <span class="flow-arrow-h">&rarr;</span>
+    <div class="flow-card">
+      <span class="step-num">08</span>
+      <span class="step-title">Cleanup</span>
+      <span class="step-detail">Hapus file Excel temp</span>
+    </div>
+  </div>
+
+  <h3>Request Lifecycle: Generate Laporan</h3>
+  <div class="flow-h">
+    <div class="flow-card">
+      <span class="step-num">01</span>
+      <span class="step-title">Controller</span>
+      <span class="step-detail">Panggil ReportGeneratorService</span>
+    </div>
+    <span class="flow-arrow-h">&rarr;</span>
+    <div class="flow-card">
+      <span class="step-num">02</span>
+      <span class="step-title">Repository</span>
+      <span class="step-detail">Ambil analysis_results + meta</span>
+    </div>
+    <span class="flow-arrow-h">&rarr;</span>
+    <div class="flow-card">
+      <span class="step-num">03</span>
+      <span class="step-title">ReportGenerator</span>
+      <span class="step-detail">Susun dokumen Word via PHPWord</span>
+    </div>
+    <span class="flow-arrow-h">&rarr;</span>
+    <div class="flow-card">
+      <span class="step-num">04</span>
+      <span class="step-title">Storage</span>
+      <span class="step-detail">Simpan .docx, catat di reports</span>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 4. SERVICE MAP -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3.4</span>
+    <h2>Service Map</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Service</th><th>Tanggung Jawab</th><th>Dependensi</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>TracerAnalysis Service</strong></td>
+          <td class="desc">Orkestrator utama: menerima file + meta, koordinasi ExcelReader &rarr; Statistics &rarr; Narrative &rarr; Repository &rarr; cleanup</td>
+          <td class="desc">ExcelReaderService, StatisticsService, NarrativeService, TracerStudyRepository, AnalysisResultRepository</td>
+        </tr>
+        <tr>
+          <td><strong>ExcelReader Service</strong></td>
+          <td class="desc">Membaca file .xlsx via PhpSpreadsheet, extract data dari sheet "data tracer" ke array asosiatif per baris</td>
+          <td class="desc">PhpSpreadsheet (IOFactory)</td>
+        </tr>
+        <tr>
+          <td><strong>Statistics Service</strong></td>
+          <td class="desc">Menghitung statistik per parameter berdasarkan konfigurasi: frequency+percentage, mean, median, sum, weighted index</td>
+          <td class="desc">Parameter config (config/tracer.php)</td>
+        </tr>
+        <tr>
+          <td><strong>Narrative Service</strong></td>
+          <td class="desc">Generate narasi bahasa Indonesia formal per parameter dari template kalimat + data statistik</td>
+          <td class="desc">Narrative templates (config/narratives.php)</td>
+        </tr>
+        <tr>
+          <td><strong>ReportGenerator Service</strong></td>
+          <td class="desc">Menyusun dokumen Word lengkap (cover, daftar isi, konten, tabel, kesimpulan) menggunakan PHPWord</td>
+          <td class="desc">PHPWord, AnalysisResultRepository, TracerStudyRepository</td>
+        </tr>
+        <tr>
+          <td><strong>ChartConfig Service</strong></td>
+          <td class="desc">Menyiapkan konfigurasi Chart.js (labels, datasets, options, colors) per parameter untuk Blade view</td>
+          <td class="desc">Parameter config</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 5. REPOSITORY MAP -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3.5</span>
+    <h2>Repository Map</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Interface</th><th>Implementasi</th><th>Metode Utama</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>TracerStudy RepositoryInterface</strong></td>
+          <td class="mono">EloquentTracerStudy Repository</td>
+          <td class="desc">create(), findById(), getLatest(), updateStatus(), delete()</td>
+        </tr>
+        <tr>
+          <td><strong>AnalysisResult RepositoryInterface</strong></td>
+          <td class="mono">EloquentAnalysisResult Repository</td>
+          <td class="desc">createMany(), getByTracerStudy(), getByParameter()</td>
+        </tr>
+        <tr>
+          <td><strong>Report RepositoryInterface</strong></td>
+          <td class="mono">EloquentReport Repository</td>
+          <td class="desc">create(), getByTracerStudy(), getAll(), delete()</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Interface didefinisikan di <code>app/Repositories/Interfaces/</code>, implementasi di <code>app/Repositories/Eloquent/</code>. Binding dilakukan via <code>AppServiceProvider</code>.</p>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 6. FOLDER STRUCTURE -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3.6</span>
+    <h2>Struktur Folder Laravel</h2>
+  </div>
+
+  <div class="tree"><span class="dir">app/</span>
+├── <span class="dir">Http/</span>
+│   ├── <span class="dir">Controllers/</span>
+│   │   ├── <span class="file">DashboardController.php</span>
+│   │   ├── <span class="file">UploadController.php</span>
+│   │   ├── <span class="file">AnalysisController.php</span>
+│   │   └── <span class="file">ReportController.php</span>
+│   └── <span class="dir">Requests/</span>
+│       └── <span class="file">UploadTracerRequest.php</span>
+├── <span class="dir">Models/</span>
+│   ├── <span class="file">TracerStudy.php</span>
+│   ├── <span class="file">AnalysisResult.php</span>
+│   └── <span class="file">Report.php</span>
+├── <span class="dir">Repositories/</span>
+│   ├── <span class="dir">Interfaces/</span>
+│   │   ├── <span class="file">TracerStudyRepositoryInterface.php</span>
+│   │   ├── <span class="file">AnalysisResultRepositoryInterface.php</span>
+│   │   └── <span class="file">ReportRepositoryInterface.php</span>
+│   └── <span class="dir">Eloquent/</span>
+│       ├── <span class="file">EloquentTracerStudyRepository.php</span>
+│       ├── <span class="file">EloquentAnalysisResultRepository.php</span>
+│       └── <span class="file">EloquentReportRepository.php</span>
+├── <span class="dir">Services/</span>
+│   ├── <span class="file">TracerAnalysisService.php</span>
+│   ├── <span class="file">ExcelReaderService.php</span>
+│   ├── <span class="file">StatisticsService.php</span>
+│   ├── <span class="file">NarrativeService.php</span>
+│   ├── <span class="file">ReportGeneratorService.php</span>
+│   └── <span class="file">ChartConfigService.php</span>
+└── <span class="dir">Providers/</span>
+    └── <span class="file">AppServiceProvider.php</span>          <span class="comment">// Repository bindings</span>
+
+<span class="dir">config/</span>
+├── <span class="file">tracer.php</span>                            <span class="comment">// Parameter mapping &amp; categories</span>
+└── <span class="file">narratives.php</span>                        <span class="comment">// Narrative templates</span>
+
+<span class="dir">database/</span>
+└── <span class="dir">migrations/</span>
+    ├── <span class="file">xxxx_create_tracer_studies_table.php</span>
+    ├── <span class="file">xxxx_create_analysis_results_table.php</span>
+    └── <span class="file">xxxx_create_reports_table.php</span>
+
+<span class="dir">resources/</span>
+├── <span class="dir">views/</span>
+│   ├── <span class="dir">layouts/</span>
+│   │   └── <span class="file">app.blade.php</span>                <span class="comment">// AdminLTE 4 master layout</span>
+│   ├── <span class="dir">components/</span>
+│   │   ├── <span class="file">parameter-card.blade.php</span>     <span class="comment">// Reusable card per parameter</span>
+│   │   ├── <span class="file">chart-canvas.blade.php</span>       <span class="comment">// Chart.js wrapper</span>
+│   │   ├── <span class="file">stat-table.blade.php</span>         <span class="comment">// Statistics table</span>
+│   │   └── <span class="file">narrative-block.blade.php</span>    <span class="comment">// Narrative paragraph</span>
+│   ├── <span class="dir">dashboard/</span>
+│   │   └── <span class="file">index.blade.php</span>
+│   ├── <span class="dir">upload/</span>
+│   │   └── <span class="file">index.blade.php</span>
+│   ├── <span class="dir">analysis/</span>
+│   │   ├── <span class="file">processing.blade.php</span>
+│   │   └── <span class="file">results.blade.php</span>
+│   └── <span class="dir">reports/</span>
+│       ├── <span class="file">index.blade.php</span>              <span class="comment">// Riwayat laporan</span>
+│       └── <span class="file">generate.blade.php</span>
+└── <span class="dir">css/</span>  <span class="dir">js/</span>                              <span class="comment">// Custom assets</span>
+
+<span class="dir">routes/</span>
+└── <span class="file">web.php</span>
+
+<span class="dir">storage/</span>
+└── <span class="dir">app/</span>
+    ├── <span class="dir">temp/</span>                              <span class="comment">// Temporary Excel files</span>
+    └── <span class="dir">reports/</span>                           <span class="comment">// Generated .docx files</span></div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 7. ROUTING -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3.7</span>
+    <h2>Route Structure</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Method</th><th>URI</th><th>Controller@Method</th><th>Name</th><th>Deskripsi</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">GET</td><td class="mono">/</td><td class="mono">DashboardController@index</td><td class="mono">dashboard</td><td class="desc">Halaman dashboard utama</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/upload</td><td class="mono">UploadController@index</td><td class="mono">upload.index</td><td class="desc">Form upload + meta</td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/upload</td><td class="mono">UploadController@store</td><td class="mono">upload.store</td><td class="desc">Proses upload &amp; analisis</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/analysis/{id}</td><td class="mono">AnalysisController@show</td><td class="mono">analysis.show</td><td class="desc">Halaman hasil analisis</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/reports</td><td class="mono">ReportController@index</td><td class="mono">reports.index</td><td class="desc">Riwayat laporan</td></tr>
+        <tr><td class="mono">POST</td><td class="mono">/reports/{id}/generate</td><td class="mono">ReportController@generate</td><td class="mono">reports.generate</td><td class="desc">Generate laporan Word</td></tr>
+        <tr><td class="mono">GET</td><td class="mono">/reports/{id}/download</td><td class="mono">ReportController@download</td><td class="mono">reports.download</td><td class="desc">Download file .docx</td></tr>
+        <tr><td class="mono">DELETE</td><td class="mono">/reports/{id}</td><td class="mono">ReportController@destroy</td><td class="mono">reports.destroy</td><td class="desc">Hapus laporan</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 8. CONFIG-DRIVEN PARAMETER -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3.8</span>
+    <h2>Config-Driven Parameter Processing</h2>
+  </div>
+
+  <p>Seluruh definisi parameter disimpan di <code>config/tracer.php</code> sebagai array asosiatif. Ini memungkinkan penambahan atau modifikasi parameter tanpa mengubah kode Service.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Key</th><th>Tipe</th><th>Contoh</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">number</td><td>int</td><td class="mono">1</td><td class="desc">Nomor urut parameter</td></tr>
+        <tr><td class="mono">name</td><td>string</td><td class="mono">'Status Setelah Lulus'</td><td class="desc">Nama parameter</td></tr>
+        <tr><td class="mono">group</td><td>string</td><td class="mono">'status_alumni'</td><td class="desc">Grup parameter</td></tr>
+        <tr><td class="mono">column</td><td>string</td><td class="mono">'M'</td><td class="desc">Kolom Excel (letter)</td></tr>
+        <tr><td class="mono">f_code</td><td>string</td><td class="mono">'f8'</td><td class="desc">Field code DIKTI</td></tr>
+        <tr><td class="mono">statistic_type</td><td>string</td><td class="mono">'frequency'</td><td class="desc">frequency | mean | median | sum | index | display</td></tr>
+        <tr><td class="mono">categories</td><td>array</td><td class="mono">[1 =&gt; 'Bekerja', ...]</td><td class="desc">Mapping nilai &rarr; label (null jika tidak kategorikal)</td></tr>
+        <tr><td class="mono">chart_type</td><td>string|null</td><td class="mono">'pie'</td><td class="desc">pie | bar | grouped_bar | null</td></tr>
+        <tr><td class="mono">range_rules</td><td>array|null</td><td class="mono">[['<', 6, '< 6 bln'], ...]</td><td class="desc">Aturan range untuk COUNTIF berbasis range (parameter #2, #8)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>Keuntungan:</strong> StatisticsService hanya perlu membaca config, loop parameter, dan memanggil metode hitung yang sesuai berdasarkan <code>statistic_type</code>. Tidak ada <code>if parameter == 1 then ...</code> di dalam Service.</p>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 9. DEPENDENCY INJECTION -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3.9</span>
+    <h2>Dependency Injection &amp; Service Provider</h2>
+  </div>
+
+  <p>Seluruh binding Repository Interface &rarr; Implementasi dilakukan di <code>AppServiceProvider::register()</code>. Service di-inject via constructor injection di Controller.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Interface</th><th>Bound To</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">TracerStudyRepositoryInterface</td><td class="mono">EloquentTracerStudyRepository</td></tr>
+        <tr><td class="mono">AnalysisResultRepositoryInterface</td><td class="mono">EloquentAnalysisResultRepository</td></tr>
+        <tr><td class="mono">ReportRepositoryInterface</td><td class="mono">EloquentReportRepository</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Service tidak memerlukan binding eksplisit karena tidak menggunakan interface &mdash; mereka adalah concrete class yang langsung di-resolve oleh Laravel container melalui auto-resolution. Jika di masa depan ada kebutuhan swap implementasi (misalnya ReportGenerator untuk format lain), barulah dibuatkan interface.</p>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 10. KEPUTUSAN ARSITEKTURAL -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3.10</span>
+    <h2>Keputusan Arsitektural</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Keputusan</th><th>Alasan</th><th>Alternatif yang Ditolak</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Synchronous processing (bukan queue)</strong></td>
+          <td class="desc">File Excel &le; 5.000 baris, proses &lt; 30 detik. Queue menambah kompleksitas (Redis/Supervisor) tanpa manfaat signifikan untuk skala ini.</td>
+          <td class="desc">Laravel Queue + Job: overhead setup untuk single-user app</td>
+        </tr>
+        <tr>
+          <td><strong>JSON column di analysis_results</strong></td>
+          <td class="desc">Setiap parameter menghasilkan struktur data berbeda (frekuensi, mean, tabel teks). JSON column fleksibel tanpa perlu tabel tambahan per tipe.</td>
+          <td class="desc">Tabel terpisah per tipe statistik: terlalu banyak tabel untuk 13 parameter</td>
+        </tr>
+        <tr>
+          <td><strong>Config file untuk parameter mapping</strong></td>
+          <td class="desc">Parameter jarang berubah, tidak perlu CRUD via UI. Config file lebih simple dan versionable via Git.</td>
+          <td class="desc">Tabel parameters di database: over-engineering untuk 13 parameter tetap</td>
+        </tr>
+        <tr>
+          <td><strong>Blade + Chart.js (bukan SPA)</strong></td>
+          <td class="desc">Aplikasi bersifat read-heavy dengan sedikit interaksi. Server-side rendering via Blade lebih simple daripada SPA (Vue/React) dan sesuai dengan AdminLTE.</td>
+          <td class="desc">Livewire: dependensi tambahan. Inertia+Vue: kompleksitas build pipeline</td>
+        </tr>
+        <tr>
+          <td><strong>Hapus Excel setelah analisis</strong></td>
+          <td class="desc">Data mentah tidak diperlukan setelah analisis. Mengurangi storage dan risiko penyimpanan data pribadi mahasiswa (NIM, nama, NIK).</td>
+          <td class="desc">Simpan permanen: risiko keamanan data pribadi</td>
+        </tr>
+        <tr>
+          <td><strong>Tanpa middleware auth</strong></td>
+          <td class="desc">Single-user app yang diakses pribadi. Tidak ada tabel users, tidak ada session auth. Menyederhanakan arsitektur secara signifikan.</td>
+          <td class="desc">Laravel Breeze/Fortify: unnecessary untuk single user</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 3 &mdash; Arsitektur Aplikasi: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 4: Struktur Database</span>
+</div>

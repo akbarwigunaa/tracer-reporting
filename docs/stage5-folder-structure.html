@@ -1,0 +1,577 @@
+<title>Struktur Folder</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --layer-presentation: #2d5be3; --layer-presentation-bg: #e8eefb;
+    --layer-application: #7c3aed; --layer-application-bg: #f5f3ff;
+    --layer-domain: #059669; --layer-domain-bg: #ecfdf5;
+    --layer-infra: #d97706; --layer-infra-bg: #fffbeb;
+    --layer-config: #dc2626; --layer-config-bg: #fef2f2;
+    --layer-resource: #0891b2; --layer-resource-bg: #ecfeff;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --layer-presentation: #6b8de8; --layer-presentation-bg: #1e2a4a;
+      --layer-application: #a78bfa; --layer-application-bg: #1e1838;
+      --layer-domain: #34d399; --layer-domain-bg: #0d2818;
+      --layer-infra: #fbbf24; --layer-infra-bg: #2a2010;
+      --layer-config: #f87171; --layer-config-bg: #2a1010;
+      --layer-resource: #22d3ee; --layer-resource-bg: #0a2028;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --layer-presentation: #6b8de8; --layer-presentation-bg: #1e2a4a;
+    --layer-application: #a78bfa; --layer-application-bg: #1e1838;
+    --layer-domain: #34d399; --layer-domain-bg: #0d2818;
+    --layer-infra: #fbbf24; --layer-infra-bg: #2a2010;
+    --layer-config: #f87171; --layer-config-bg: #2a1010;
+    --layer-resource: #22d3ee; --layer-resource-bg: #0a2028;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 920px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; color: var(--text); margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  h3 { font-size: 0.92rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text); }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  .layer-tag { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 3px; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; vertical-align: middle; }
+  .lt-pres { color: var(--layer-presentation); background: var(--layer-presentation-bg); }
+  .lt-app { color: var(--layer-application); background: var(--layer-application-bg); }
+  .lt-dom { color: var(--layer-domain); background: var(--layer-domain-bg); }
+  .lt-infra { color: var(--layer-infra); background: var(--layer-infra-bg); }
+  .lt-conf { color: var(--layer-config); background: var(--layer-config-bg); }
+  .lt-res { color: var(--layer-resource); background: var(--layer-resource-bg); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; padding: 0.85rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; color: var(--text-secondary); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Tree */
+  .tree-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1rem; box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; overflow-x: auto; }
+  .tree { font-family: var(--font-mono); font-size: 0.74rem; line-height: 1.8; white-space: pre; color: var(--text-secondary); }
+  .tree .dir { color: var(--text); font-weight: 600; }
+  .tree .file { color: var(--text-secondary); }
+  .tree .comment { color: var(--text-tertiary); font-style: italic; font-family: var(--font-body); font-size: 0.72rem; }
+  .tree .new { color: var(--accent); font-weight: 500; }
+
+  /* File table */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 0.45rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.col-path { font-family: var(--font-mono); font-size: 0.73rem; color: var(--text); font-weight: 500; white-space: nowrap; }
+  td.col-layer { white-space: nowrap; }
+  td.desc { color: var(--text-secondary); font-size: 0.78rem; }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+  .note-box { padding: 0.85rem 1rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.25rem; }
+  .note-box strong { color: var(--accent); }
+
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .legend { flex-direction: column; gap: 0.4rem; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Struktur Folder Laravel</h1>
+  <p class="doc-subtitle">Pemetaan folder dan file untuk arsitektur Clean Architecture + Service Layer pada proyek Laravel 12.</p>
+  <div class="doc-meta">
+    <span>Tahap 5 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>5</strong> / 27 &mdash; Folder</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- 1. LAYER LEGEND -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">5.1</span>
+    <h2>Layer Legend</h2>
+  </div>
+
+  <p>Setiap file dipetakan ke salah satu layer arsitektur. Warna tag menunjukkan layer mana file tersebut berada.</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background: var(--layer-presentation);"></div>Presentation</div>
+    <div class="legend-item"><div class="legend-dot" style="background: var(--layer-application);"></div>Application (Service)</div>
+    <div class="legend-item"><div class="legend-dot" style="background: var(--layer-domain);"></div>Domain (Model)</div>
+    <div class="legend-item"><div class="legend-dot" style="background: var(--layer-infra);"></div>Infrastructure</div>
+    <div class="legend-item"><div class="legend-dot" style="background: var(--layer-config);"></div>Config</div>
+    <div class="legend-item"><div class="legend-dot" style="background: var(--layer-resource);"></div>Resource (View/Asset)</div>
+  </div>
+
+  <div class="note-box">
+    <strong>Prinsip dependensi:</strong> Presentation &rarr; Application &rarr; Domain &larr; Infrastructure. Layer dalam tidak boleh bergantung pada layer luar. Service dan Repository diinjeksi via Service Provider.
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 2. FULL TREE -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">5.2</span>
+    <h2>Folder Tree Lengkap</h2>
+  </div>
+
+  <p>Hanya menampilkan file custom (bukan default Laravel). File default Laravel yang tidak dimodifikasi tidak ditampilkan.</p>
+
+  <div class="tree-wrap">
+    <div class="tree"><span class="dir">tracer-reporting/</span>
+├── <span class="dir">app/</span>
+│   ├── <span class="dir">Http/</span>
+│   │   ├── <span class="dir">Controllers/</span>
+│   │   │   ├── <span class="new">DashboardController.php</span>          <span class="comment">Halaman utama dashboard</span>
+│   │   │   ├── <span class="new">UploadController.php</span>             <span class="comment">Form upload + proses Excel</span>
+│   │   │   ├── <span class="new">AnalysisController.php</span>           <span class="comment">Tampilkan hasil analisis</span>
+│   │   │   └── <span class="new">ReportController.php</span>             <span class="comment">Generate + download Word</span>
+│   │   └── <span class="dir">Requests/</span>
+│   │       └── <span class="new">UploadTracerRequest.php</span>          <span class="comment">Validasi form upload</span>
+│   │
+│   ├── <span class="dir">Models/</span>
+│   │   ├── <span class="new">TracerStudy.php</span>                      <span class="comment">Eloquent model + relasi</span>
+│   │   ├── <span class="new">AnalysisResult.php</span>                   <span class="comment">Eloquent model + JSON cast</span>
+│   │   └── <span class="new">Report.php</span>                           <span class="comment">Eloquent model + file cleanup</span>
+│   │
+│   ├── <span class="dir">Services/</span>
+│   │   ├── <span class="new">TracerAnalysisService.php</span>            <span class="comment">Orchestrator: baca → hitung → simpan</span>
+│   │   ├── <span class="new">ExcelReaderService.php</span>               <span class="comment">Baca Excel via PhpSpreadsheet</span>
+│   │   ├── <span class="new">StatisticsService.php</span>                <span class="comment">Hitung frekuensi, mean, median, dll</span>
+│   │   ├── <span class="new">NarrativeService.php</span>                 <span class="comment">Generate paragraf narasi otomatis</span>
+│   │   ├── <span class="new">ReportGeneratorService.php</span>           <span class="comment">Generate .docx via PHPWord</span>
+│   │   └── <span class="new">ChartConfigService.php</span>               <span class="comment">Build konfigurasi Chart.js</span>
+│   │
+│   ├── <span class="dir">Repositories/</span>
+│   │   ├── <span class="dir">Interfaces/</span>
+│   │   │   ├── <span class="new">TracerStudyRepositoryInterface.php</span>
+│   │   │   ├── <span class="new">AnalysisResultRepositoryInterface.php</span>
+│   │   │   └── <span class="new">ReportRepositoryInterface.php</span>
+│   │   └── <span class="dir">Eloquent/</span>
+│   │       ├── <span class="new">TracerStudyRepository.php</span>
+│   │       ├── <span class="new">AnalysisResultRepository.php</span>
+│   │       └── <span class="new">ReportRepository.php</span>
+│   │
+│   └── <span class="dir">Providers/</span>
+│       └── <span class="new">RepositoryServiceProvider.php</span>        <span class="comment">Bind interface → implementation</span>
+│
+├── <span class="dir">config/</span>
+│   ├── <span class="new">tracer.php</span>                               <span class="comment">Parameter mapping + kolom Excel</span>
+│   └── <span class="new">narratives.php</span>                           <span class="comment">Template narasi per parameter</span>
+│
+├── <span class="dir">database/</span>
+│   └── <span class="dir">migrations/</span>
+│       ├── <span class="new">xxxx_create_tracer_studies_table.php</span>
+│       ├── <span class="new">xxxx_create_analysis_results_table.php</span>
+│       └── <span class="new">xxxx_create_reports_table.php</span>
+│
+├── <span class="dir">resources/</span>
+│   └── <span class="dir">views/</span>
+│       ├── <span class="dir">layouts/</span>
+│       │   └── <span class="new">app.blade.php</span>                    <span class="comment">AdminLTE 4 master layout</span>
+│       ├── <span class="dir">components/</span>
+│       │   ├── <span class="new">parameter-card.blade.php</span>         <span class="comment">Card reusable per parameter</span>
+│       │   ├── <span class="new">chart-container.blade.php</span>        <span class="comment">Wrapper Chart.js canvas</span>
+│       │   ├── <span class="new">stat-widget.blade.php</span>            <span class="comment">Widget angka ringkasan</span>
+│       │   └── <span class="new">empty-state.blade.php</span>            <span class="comment">Tampilan saat belum ada data</span>
+│       ├── <span class="dir">pages/</span>
+│       │   ├── <span class="new">dashboard.blade.php</span>              <span class="comment">Halaman utama</span>
+│       │   ├── <span class="new">upload.blade.php</span>                 <span class="comment">Form upload + meta input</span>
+│       │   ├── <span class="new">analysis.blade.php</span>               <span class="comment">Detail analisis 13 parameter</span>
+│       │   └── <span class="new">reports.blade.php</span>                <span class="comment">Daftar laporan + generate</span>
+│       └── <span class="dir">partials/</span>
+│           ├── <span class="new">sidebar.blade.php</span>                <span class="comment">Navigasi sidebar AdminLTE</span>
+│           └── <span class="new">navbar.blade.php</span>                 <span class="comment">Top navbar</span>
+│
+├── <span class="dir">routes/</span>
+│   └── <span class="file">web.php</span>                                  <span class="comment">8 route definitions</span>
+│
+├── <span class="dir">storage/</span>
+│   └── <span class="dir">app/</span>
+│       ├── <span class="dir">uploads/</span>                              <span class="comment">Temp Excel files (dihapus setelah analisis)</span>
+│       └── <span class="dir">reports/</span>                              <span class="comment">Generated .docx files</span>
+│
+└── <span class="dir">public/</span>
+    └── <span class="dir">assets/</span>
+        ├── <span class="dir">css/</span>
+        │   └── <span class="new">custom.css</span>                       <span class="comment">Override AdminLTE + custom styles</span>
+        └── <span class="dir">js/</span>
+            └── <span class="new">charts.js</span>                        <span class="comment">Inisialisasi Chart.js per parameter</span></div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 3. FILE REGISTRY -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">5.3</span>
+    <h2>File Registry: Controllers</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Layer</th><th>Tanggung Jawab</th><th>Dependensi</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-path">DashboardController</td>
+          <td class="col-layer"><span class="layer-tag lt-pres">Presentation</span></td>
+          <td class="desc">Menampilkan daftar tracer study terbaru, statistik ringkasan. Method: <code>index()</code></td>
+          <td class="desc">TracerStudyRepositoryInterface</td>
+        </tr>
+        <tr>
+          <td class="col-path">UploadController</td>
+          <td class="col-layer"><span class="layer-tag lt-pres">Presentation</span></td>
+          <td class="desc">Form upload dan proses file. Methods: <code>create()</code>, <code>store()</code></td>
+          <td class="desc">TracerAnalysisService, UploadTracerRequest</td>
+        </tr>
+        <tr>
+          <td class="col-path">AnalysisController</td>
+          <td class="col-layer"><span class="layer-tag lt-pres">Presentation</span></td>
+          <td class="desc">Menampilkan 13 parameter cards + charts. Method: <code>show($id)</code></td>
+          <td class="desc">TracerStudyRepositoryInterface, AnalysisResultRepositoryInterface</td>
+        </tr>
+        <tr>
+          <td class="col-path">ReportController</td>
+          <td class="col-layer"><span class="layer-tag lt-pres">Presentation</span></td>
+          <td class="desc">Daftar laporan, generate Word, download. Methods: <code>index()</code>, <code>generate($id)</code>, <code>download($id)</code>, <code>destroy($id)</code></td>
+          <td class="desc">ReportGeneratorService, ReportRepositoryInterface</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">5.4</span>
+    <h2>File Registry: Services</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Layer</th><th>Tanggung Jawab</th><th>Dependensi</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-path">TracerAnalysisService</td>
+          <td class="col-layer"><span class="layer-tag lt-app">Application</span></td>
+          <td class="desc"><strong>Orchestrator utama.</strong> Menerima file Excel + meta → koordinasi pembacaan, statistik, narasi, chart config → simpan semua hasil ke DB.</td>
+          <td class="desc">ExcelReaderService, StatisticsService, NarrativeService, ChartConfigService, TracerStudyRepositoryInterface, AnalysisResultRepositoryInterface</td>
+        </tr>
+        <tr>
+          <td class="col-path">ExcelReaderService</td>
+          <td class="col-layer"><span class="layer-tag lt-app">Application</span></td>
+          <td class="desc">Baca sheet "data tracer" via PhpSpreadsheet. Return array of associative arrays (1 row = 1 responden, key = f-code).</td>
+          <td class="desc">config/tracer.php, PhpSpreadsheet</td>
+        </tr>
+        <tr>
+          <td class="col-path">StatisticsService</td>
+          <td class="col-layer"><span class="layer-tag lt-app">Application</span></td>
+          <td class="desc">Hitung statistik per parameter berdasarkan tipenya: frequency, mean, median, sum, index. Gunakan Strategy Pattern internal.</td>
+          <td class="desc">config/tracer.php</td>
+        </tr>
+        <tr>
+          <td class="col-path">NarrativeService</td>
+          <td class="col-layer"><span class="layer-tag lt-app">Application</span></td>
+          <td class="desc">Generate paragraf narasi otomatis dari template + hasil statistik. Satu paragraf per parameter.</td>
+          <td class="desc">config/narratives.php</td>
+        </tr>
+        <tr>
+          <td class="col-path">ReportGeneratorService</td>
+          <td class="col-layer"><span class="layer-tag lt-app">Application</span></td>
+          <td class="desc">Buat dokumen .docx lengkap via PHPWord. Isi: cover, daftar isi, ringkasan, 13 bab parameter (tabel + narasi).</td>
+          <td class="desc">AnalysisResultRepositoryInterface, TracerStudyRepositoryInterface, PHPWord</td>
+        </tr>
+        <tr>
+          <td class="col-path">ChartConfigService</td>
+          <td class="col-layer"><span class="layer-tag lt-app">Application</span></td>
+          <td class="desc">Build JSON konfigurasi Chart.js (labels, datasets, colors, options) per parameter. Disimpan di chart_config column.</td>
+          <td class="desc">config/tracer.php</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">5.5</span>
+    <h2>File Registry: Models &amp; Repositories</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Layer</th><th>Tanggung Jawab</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-path">TracerStudy</td>
+          <td class="col-layer"><span class="layer-tag lt-dom">Domain</span></td>
+          <td class="desc">Eloquent model. Relasi: <code>hasMany(AnalysisResult)</code>, <code>hasMany(Report)</code>. Cast: <code>tahun_tracer</code> → integer, <code>status</code> → enum.</td>
+        </tr>
+        <tr>
+          <td class="col-path">AnalysisResult</td>
+          <td class="col-layer"><span class="layer-tag lt-dom">Domain</span></td>
+          <td class="desc">Eloquent model. Relasi: <code>belongsTo(TracerStudy)</code>. Cast: <code>result_data</code> → array, <code>chart_config</code> → array.</td>
+        </tr>
+        <tr>
+          <td class="col-path">Report</td>
+          <td class="col-layer"><span class="layer-tag lt-dom">Domain</span></td>
+          <td class="desc">Eloquent model. Relasi: <code>belongsTo(TracerStudy)</code>. Boot: auto-delete file fisik saat model dihapus.</td>
+        </tr>
+        <tr>
+          <td class="col-path">TracerStudyRepositoryInterface</td>
+          <td class="col-layer"><span class="layer-tag lt-dom">Domain</span></td>
+          <td class="desc">Contract: <code>all()</code>, <code>find($id)</code>, <code>create(array)</code>, <code>updateStatus($id, $status)</code>, <code>delete($id)</code></td>
+        </tr>
+        <tr>
+          <td class="col-path">AnalysisResultRepositoryInterface</td>
+          <td class="col-layer"><span class="layer-tag lt-dom">Domain</span></td>
+          <td class="desc">Contract: <code>findByTracerStudy($id)</code>, <code>createMany(array)</code>, <code>findByParameter($studyId, $num)</code></td>
+        </tr>
+        <tr>
+          <td class="col-path">ReportRepositoryInterface</td>
+          <td class="col-layer"><span class="layer-tag lt-dom">Domain</span></td>
+          <td class="desc">Contract: <code>findByTracerStudy($id)</code>, <code>create(array)</code>, <code>find($id)</code>, <code>delete($id)</code></td>
+        </tr>
+        <tr>
+          <td class="col-path">TracerStudyRepository</td>
+          <td class="col-layer"><span class="layer-tag lt-infra">Infrastructure</span></td>
+          <td class="desc">Implementasi Eloquent dari TracerStudyRepositoryInterface</td>
+        </tr>
+        <tr>
+          <td class="col-path">AnalysisResultRepository</td>
+          <td class="col-layer"><span class="layer-tag lt-infra">Infrastructure</span></td>
+          <td class="desc">Implementasi Eloquent dari AnalysisResultRepositoryInterface</td>
+        </tr>
+        <tr>
+          <td class="col-path">ReportRepository</td>
+          <td class="col-layer"><span class="layer-tag lt-infra">Infrastructure</span></td>
+          <td class="desc">Implementasi Eloquent dari ReportRepositoryInterface</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">5.6</span>
+    <h2>File Registry: Config, Views &amp; Assets</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Layer</th><th>Tanggung Jawab</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-path">config/tracer.php</td>
+          <td class="col-layer"><span class="layer-tag lt-conf">Config</span></td>
+          <td class="desc">Mapping 13 parameter: nama, f-code kolom Excel, tipe statistik, chart type, label kategori. Single source of truth untuk parameter processing.</td>
+        </tr>
+        <tr>
+          <td class="col-path">config/narratives.php</td>
+          <td class="col-layer"><span class="layer-tag lt-conf">Config</span></td>
+          <td class="desc">Template Blade-style string per parameter. Placeholder: <code>:total</code>, <code>:top_category</code>, <code>:top_percentage</code>, <code>:mean</code>, dll.</td>
+        </tr>
+        <tr>
+          <td class="col-path">layouts/app.blade.php</td>
+          <td class="col-layer"><span class="layer-tag lt-res">Resource</span></td>
+          <td class="desc">Master layout AdminLTE 4. Slot: @yield('content'), @yield('scripts'). Include sidebar + navbar partials.</td>
+        </tr>
+        <tr>
+          <td class="col-path">components/*.blade.php</td>
+          <td class="col-layer"><span class="layer-tag lt-res">Resource</span></td>
+          <td class="desc">4 Blade components: parameter-card (tabel+chart per param), chart-container (canvas wrapper), stat-widget (angka highlight), empty-state.</td>
+        </tr>
+        <tr>
+          <td class="col-path">pages/*.blade.php</td>
+          <td class="col-layer"><span class="layer-tag lt-res">Resource</span></td>
+          <td class="desc">4 halaman: dashboard, upload, analysis, reports. Masing-masing extend layouts/app.</td>
+        </tr>
+        <tr>
+          <td class="col-path">public/assets/css/custom.css</td>
+          <td class="col-layer"><span class="layer-tag lt-res">Resource</span></td>
+          <td class="desc">Override AdminLTE styles + custom parameter card styling.</td>
+        </tr>
+        <tr>
+          <td class="col-path">public/assets/js/charts.js</td>
+          <td class="col-layer"><span class="layer-tag lt-res">Resource</span></td>
+          <td class="desc">Inisialisasi Chart.js instances dari JSON chart_config yang di-pass via Blade.</td>
+        </tr>
+        <tr>
+          <td class="col-path">RepositoryServiceProvider</td>
+          <td class="col-layer"><span class="layer-tag lt-infra">Infrastructure</span></td>
+          <td class="desc">Bind 3 repository interface → Eloquent implementation. Didaftarkan di config/app.php providers.</td>
+        </tr>
+        <tr>
+          <td class="col-path">UploadTracerRequest</td>
+          <td class="col-layer"><span class="layer-tag lt-pres">Presentation</span></td>
+          <td class="desc">Form Request: validasi file (.xlsx, max 10MB), nama_pt, nama_prodi, tahun_tracer, total_lulusan_pt, total_lulusan_prodi.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 4. DEPENDENCY FLOW -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">5.7</span>
+    <h2>Alur Dependensi Utama</h2>
+  </div>
+
+  <p>Diagram menunjukkan alur dependensi pada use case utama: upload dan analisis Excel.</p>
+
+  <div class="tree-wrap">
+    <div class="tree" style="line-height: 2;">
+<span style="color: var(--layer-presentation); font-weight: 600;">UploadController</span>
+  │
+  ├─▶ <span style="color: var(--layer-presentation); font-weight: 500;">UploadTracerRequest</span>        <span class="comment">validasi input</span>
+  │
+  └─▶ <span style="color: var(--layer-application); font-weight: 600;">TracerAnalysisService</span>       <span class="comment">orchestrator</span>
+        │
+        ├─▶ <span style="color: var(--layer-application); font-weight: 500;">ExcelReaderService</span>      <span class="comment">baca file → array responden</span>
+        │     └─▶ <span style="color: var(--layer-config); font-weight: 500;">config/tracer.php</span>   <span class="comment">mapping f-code → kolom</span>
+        │
+        ├─▶ <span style="color: var(--layer-application); font-weight: 500;">StatisticsService</span>       <span class="comment">hitung per parameter</span>
+        │     └─▶ <span style="color: var(--layer-config); font-weight: 500;">config/tracer.php</span>   <span class="comment">tipe statistik + label</span>
+        │
+        ├─▶ <span style="color: var(--layer-application); font-weight: 500;">ChartConfigService</span>      <span class="comment">build Chart.js JSON</span>
+        │
+        ├─▶ <span style="color: var(--layer-application); font-weight: 500;">NarrativeService</span>        <span class="comment">generate paragraf</span>
+        │     └─▶ <span style="color: var(--layer-config); font-weight: 500;">config/narratives.php</span>
+        │
+        ├─▶ <span style="color: var(--layer-domain); font-weight: 500;">TracerStudyRepoInterface</span>  <span class="comment">simpan record study</span>
+        │     └─▶ <span style="color: var(--layer-infra); font-weight: 500;">TracerStudyRepository</span>  <span class="comment">(Eloquent)</span>
+        │
+        └─▶ <span style="color: var(--layer-domain); font-weight: 500;">AnalysisResultRepoInterface</span> <span class="comment">simpan 13 results</span>
+              └─▶ <span style="color: var(--layer-infra); font-weight: 500;">AnalysisResultRepository</span> <span class="comment">(Eloquent)</span></div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 5. TOTAL FILE COUNT -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">5.8</span>
+    <h2>Ringkasan Jumlah File Custom</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kategori</th><th>Jumlah</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Controllers</td><td style="font-variant-numeric: tabular-nums; text-align: center;">4</td><td class="desc">Dashboard, Upload, Analysis, Report</td></tr>
+        <tr><td>Form Requests</td><td style="font-variant-numeric: tabular-nums; text-align: center;">1</td><td class="desc">UploadTracerRequest</td></tr>
+        <tr><td>Models</td><td style="font-variant-numeric: tabular-nums; text-align: center;">3</td><td class="desc">TracerStudy, AnalysisResult, Report</td></tr>
+        <tr><td>Services</td><td style="font-variant-numeric: tabular-nums; text-align: center;">6</td><td class="desc">TracerAnalysis, ExcelReader, Statistics, Narrative, ReportGenerator, ChartConfig</td></tr>
+        <tr><td>Repository Interfaces</td><td style="font-variant-numeric: tabular-nums; text-align: center;">3</td><td class="desc">TracerStudy, AnalysisResult, Report</td></tr>
+        <tr><td>Repository Implementations</td><td style="font-variant-numeric: tabular-nums; text-align: center;">3</td><td class="desc">Eloquent implementations</td></tr>
+        <tr><td>Providers</td><td style="font-variant-numeric: tabular-nums; text-align: center;">1</td><td class="desc">RepositoryServiceProvider</td></tr>
+        <tr><td>Config Files</td><td style="font-variant-numeric: tabular-nums; text-align: center;">2</td><td class="desc">tracer.php, narratives.php</td></tr>
+        <tr><td>Migrations</td><td style="font-variant-numeric: tabular-nums; text-align: center;">3</td><td class="desc">3 tabel</td></tr>
+        <tr><td>Views (Blade)</td><td style="font-variant-numeric: tabular-nums; text-align: center;">10</td><td class="desc">1 layout + 4 components + 4 pages + 2 partials (minus 1 overlap = 10 unique)</td></tr>
+        <tr><td>Public Assets</td><td style="font-variant-numeric: tabular-nums; text-align: center;">2</td><td class="desc">custom.css, charts.js</td></tr>
+        <tr><td><strong>Total Custom Files</strong></td><td style="font-variant-numeric: tabular-nums; text-align: center; font-weight: 700;">38</td><td class="desc"></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- 6. CONVENTIONS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">5.9</span>
+    <h2>Konvensi Penamaan</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Jenis</th><th>Konvensi</th><th>Contoh</th></tr></thead>
+      <tbody>
+        <tr><td>Controller</td><td class="desc">PascalCase + "Controller" suffix</td><td class="col-path">UploadController</td></tr>
+        <tr><td>Service</td><td class="desc">PascalCase + "Service" suffix</td><td class="col-path">StatisticsService</td></tr>
+        <tr><td>Repository Interface</td><td class="desc">PascalCase + "RepositoryInterface" suffix</td><td class="col-path">TracerStudyRepositoryInterface</td></tr>
+        <tr><td>Repository Impl</td><td class="desc">PascalCase + "Repository" suffix</td><td class="col-path">TracerStudyRepository</td></tr>
+        <tr><td>Model</td><td class="desc">PascalCase singular</td><td class="col-path">TracerStudy</td></tr>
+        <tr><td>Migration</td><td class="desc">snake_case, prefix timestamp</td><td class="col-path">xxxx_create_tracer_studies_table</td></tr>
+        <tr><td>Config</td><td class="desc">snake_case .php</td><td class="col-path">tracer.php</td></tr>
+        <tr><td>Blade View</td><td class="desc">kebab-case .blade.php</td><td class="col-path">parameter-card.blade.php</td></tr>
+        <tr><td>Route</td><td class="desc">kebab-case URI</td><td class="col-path">/analysis/{id}</td></tr>
+        <tr><td>DB Table</td><td class="desc">snake_case plural</td><td class="col-path">tracer_studies</td></tr>
+        <tr><td>DB Column</td><td class="desc">snake_case</td><td class="col-path">total_responden</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 5 &mdash; Struktur Folder: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 6: Desain UI/UX (Wireframe)</span>
+</div>

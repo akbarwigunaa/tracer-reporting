@@ -1,0 +1,1107 @@
+<title>Analisis Kebutuhan Sistem</title>
+<meta name="description" content="Tahap 1 — Web Tracer Reporting System requirements analysis">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --surface-dim: #eef0f4;
+    --border: #d8dce6;
+    --text: #1a1d26;
+    --text-secondary: #5a6070;
+    --text-tertiary: #8890a0;
+    --accent: #2d5be3;
+    --accent-light: #e8eefb;
+    --accent-muted: #6b8de8;
+    --tag-green: #16825d;
+    --tag-green-bg: #e6f5ee;
+    --tag-amber: #9a6700;
+    --tag-amber-bg: #fef3e0;
+    --tag-blue: #1a56db;
+    --tag-blue-bg: #e1ecfc;
+    --tag-purple: #6b3fa0;
+    --tag-purple-bg: #f0eafa;
+    --tag-red: #c93c37;
+    --tag-red-bg: #fde8e8;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --shadow-md: 0 2px 8px rgba(26,29,38,.08);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318;
+      --surface: #1a1d26;
+      --surface-dim: #22262f;
+      --border: #2e3340;
+      --text: #e4e6ec;
+      --text-secondary: #9ba0b0;
+      --text-tertiary: #6b7080;
+      --accent: #6b8de8;
+      --accent-light: #1e2a4a;
+      --accent-muted: #4a6ec0;
+      --tag-green: #3dd68c;
+      --tag-green-bg: #0f2a1e;
+      --tag-amber: #f0b440;
+      --tag-amber-bg: #2a2010;
+      --tag-blue: #6b9cf0;
+      --tag-blue-bg: #152040;
+      --tag-purple: #a880d8;
+      --tag-purple-bg: #201830;
+      --tag-red: #f06060;
+      --tag-red-bg: #301818;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+      --shadow-md: 0 2px 8px rgba(0,0,0,.3);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #111318;
+    --surface: #1a1d26;
+    --surface-dim: #22262f;
+    --border: #2e3340;
+    --text: #e4e6ec;
+    --text-secondary: #9ba0b0;
+    --text-tertiary: #6b7080;
+    --accent: #6b8de8;
+    --accent-light: #1e2a4a;
+    --accent-muted: #4a6ec0;
+    --tag-green: #3dd68c;
+    --tag-green-bg: #0f2a1e;
+    --tag-amber: #f0b440;
+    --tag-amber-bg: #2a2010;
+    --tag-blue: #6b9cf0;
+    --tag-blue-bg: #152040;
+    --tag-purple: #a880d8;
+    --tag-purple-bg: #201830;
+    --tag-red: #f06060;
+    --tag-red-bg: #301818;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    --shadow-md: 0 2px 8px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* Header */
+  .doc-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .doc-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .doc-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-wrap: balance;
+    color: var(--text);
+    margin: 0 0 0.75rem;
+  }
+
+  .doc-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  .doc-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
+  }
+
+  .doc-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* Stage tracker */
+  .stage-tracker {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 2.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stage-pip {
+    width: 1.75rem;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--surface-dim);
+    flex-shrink: 0;
+  }
+
+  .stage-pip.active {
+    background: var(--accent);
+  }
+
+  .stage-pip.current {
+    background: var(--accent);
+    position: relative;
+  }
+
+  .stage-label {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    margin-left: 0.75rem;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  .stage-label strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Sections */
+  .section {
+    margin-bottom: 2.25rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--accent-muted);
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    color: var(--text);
+  }
+
+  p {
+    margin: 0 0 1rem;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    max-width: 65ch;
+  }
+
+  /* Tags */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .tag-high { color: var(--tag-red); background: var(--tag-red-bg); }
+  .tag-medium { color: var(--tag-amber); background: var(--tag-amber-bg); }
+  .tag-freq { color: var(--tag-blue); background: var(--tag-blue-bg); }
+  .tag-stat { color: var(--tag-purple); background: var(--tag-purple-bg); }
+  .tag-narr { color: var(--tag-green); background: var(--tag-green-bg); }
+  .tag-table { color: var(--tag-amber); background: var(--tag-amber-bg); }
+
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.25rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  thead th {
+    background: var(--surface-dim);
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    padding: 0.6rem 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 0.55rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  td.mono {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--accent-muted);
+  }
+
+  td.desc {
+    color: var(--text-secondary);
+    max-width: 32ch;
+  }
+
+  /* Flow diagram */
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.25rem;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text);
+    padding: 0.35rem 0.7rem;
+    background: var(--accent-light);
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+
+  .flow-step .num {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--accent-muted);
+    font-weight: 600;
+  }
+
+  .flow-arrow {
+    color: var(--text-tertiary);
+    font-size: 0.72rem;
+    flex-shrink: 0;
+  }
+
+  .flow-branch {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .flow-branch .flow-step {
+    background: var(--surface-dim);
+  }
+
+  /* Constraint list */
+  .constraints {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .constraint {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+    padding: 0.6rem 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .constraint-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--tag-red-bg);
+    color: var(--tag-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-top: 0.05rem;
+  }
+
+  /* Param grid */
+  .param-grid {
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: 1fr;
+    margin-bottom: 1.25rem;
+  }
+
+  .param-card {
+    display: grid;
+    grid-template-columns: 2rem 1fr auto;
+    gap: 0 0.75rem;
+    align-items: center;
+    padding: 0.7rem 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .param-num {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-muted);
+    text-align: center;
+  }
+
+  .param-body {
+    min-width: 0;
+  }
+
+  .param-name {
+    font-weight: 600;
+    font-size: 0.84rem;
+    color: var(--text);
+    margin-bottom: 0.1rem;
+  }
+
+  .param-detail {
+    font-size: 0.74rem;
+    color: var(--text-tertiary);
+  }
+
+  .param-detail code {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0.1rem 0.3rem;
+    background: var(--surface-dim);
+    border-radius: 3px;
+    color: var(--accent-muted);
+  }
+
+  .param-tags {
+    display: flex;
+    gap: 0.3rem;
+    flex-shrink: 0;
+  }
+
+  /* Decision log */
+  .decision {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 0.6rem;
+  }
+
+  .decision-q {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .decision-a {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+  }
+
+  .decision-a strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Competency matrix */
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .comp-item {
+    padding: 0.65rem 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.82rem;
+  }
+
+  .comp-name {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .comp-codes {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .comp-codes span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .comp-codes .label {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  /* Assumption list */
+  .assumptions {
+    counter-reset: assumption;
+    padding: 0;
+    list-style: none;
+    margin: 0 0 1.25rem;
+  }
+
+  .assumptions li {
+    counter-increment: assumption;
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+    padding: 0.45rem 0;
+  }
+
+  .assumptions li::before {
+    content: counter(assumption);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    min-width: 1.2rem;
+    text-align: right;
+    margin-top: 0.15rem;
+  }
+
+  /* Separator */
+  .sep {
+    height: 1px;
+    background: var(--border);
+    margin: 2rem 0;
+  }
+
+  /* Status footer */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--accent-light);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    margin-top: 2.5rem;
+  }
+
+  .status-bar .label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .status-bar .next {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.4rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .param-card { grid-template-columns: 1.5rem 1fr; }
+    .param-tags { grid-column: 2; margin-top: 0.25rem; }
+    .comp-grid { grid-template-columns: 1fr; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Analisis Kebutuhan Sistem</h1>
+  <p class="doc-subtitle">Dokumen analisis kebutuhan fungsional dan non-fungsional berdasarkan template Excel Tracer Study DIKTI, dengan 13 parameter analisis, engine pengolahan otomatis, dan export laporan ke Word.</p>
+  <div class="doc-meta">
+    <span>Tahap 1 dari 27</span>
+    <span>Versi 1.1</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <div class="stage-pip"></div>
+  <span class="stage-label"><strong>1</strong> / 27 &mdash; Analisis Kebutuhan</span>
+</div>
+
+<!-- 1.1 Deskripsi Umum -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.1</span>
+    <h2>Deskripsi Umum Sistem</h2>
+  </div>
+  <p>Aplikasi berbasis web yang menerima file Excel berisi data Tracer Study sesuai template DIKTI, kemudian mengolahnya secara otomatis menjadi dashboard analitik bergaya Business Intelligence, statistik, grafik, tabel, narasi interpretasi, serta laporan formal yang dapat diekspor ke Microsoft Word.</p>
+  <p>Sistem ini <strong>bukan</strong> sistem tracer online. Tidak menyediakan pengisian kuesioner, registrasi alumni, data cleaning, validasi data, maupun integrasi API eksternal. Tidak ada autentikasi &mdash; aplikasi langsung terbuka ke dashboard. Setiap upload menghasilkan satu set analisis independen.</p>
+</div>
+
+<!-- 1.2 Stakeholder -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.2</span>
+    <h2>Identifikasi Stakeholder</h2>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Stakeholder</th><th>Peran</th><th>Kebutuhan</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Pengguna</strong></td>
+          <td>Pengguna tunggal (tanpa login)</td>
+          <td class="desc">Upload data, olah data, lihat dashboard, generate &amp; download laporan</td>
+        </tr>
+        <tr>
+          <td><strong>Perguruan Tinggi</strong></td>
+          <td>Organisasi</td>
+          <td class="desc">Laporan Tracer Study profesional yang cepat dan akurat</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 1.3 Kebutuhan Fungsional -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.3</span>
+    <h2>Kebutuhan Fungsional</h2>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="mono">FR-01</td><td>Dashboard ringkasan: total responden, tahun tracer, prodi, statistik utama, grafik</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-02</td><td>Upload file Excel (.xlsx) sesuai template yang ditentukan</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-03</td><td>Input manual meta informasi: nama PT, nama prodi, total lulusan universitas, total lulusan prodi</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-04</td><td>Baca sheet "data tracer" dan olah 13 parameter secara otomatis</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-05</td><td>Hitung statistik per parameter: frekuensi, persentase, mean, median, sum</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-06</td><td>Generate grafik otomatis per parameter (pie chart, bar chart) via Chart.js</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-07</td><td>Generate tabel per parameter</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-08</td><td>Generate narasi &amp; interpretasi otomatis per parameter</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-09</td><td>Tampilkan setiap parameter dalam card terpisah</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-10</td><td>Generate laporan lengkap: cover, daftar isi, ringkasan eksekutif, analisis, kesimpulan, lampiran</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-11</td><td>Export laporan ke Microsoft Word (PHPWord)</td><td><span class="tag tag-high">High</span></td></tr>
+        <tr><td class="mono">FR-12</td><td>Riwayat laporan yang telah di-generate, tersimpan dan dapat diunduh kembali</td><td><span class="tag tag-medium">Medium</span></td></tr>
+        <tr><td class="mono">FR-13</td><td>Hitung response rate otomatis dari total responden / total lulusan</td><td><span class="tag tag-medium">Medium</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 1.4 Kebutuhan Non-Fungsional -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.4</span>
+    <h2>Kebutuhan Non-Fungsional</h2>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Kebutuhan</th><th>Kategori</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="mono">NFR-01</td><td>UI responsif, modern, dan profesional (Bootstrap 5 + AdminLTE 4)</td><td>Usability</td></tr>
+        <tr><td class="mono">NFR-02</td><td>Proses upload &amp; analisis &lt; 30 detik untuk file &le; 5.000 baris</td><td>Performance</td></tr>
+        <tr><td class="mono">NFR-03</td><td>Clean Architecture + SOLID + Repository Pattern + Service Layer</td><td>Maintainability</td></tr>
+        <tr><td class="mono">NFR-04</td><td>Kode mengikuti standar PSR-12</td><td>Code Quality</td></tr>
+        <tr><td class="mono">NFR-05</td><td>File Excel disimpan sementara selama proses, dihapus setelahnya</td><td>Security</td></tr>
+        <tr><td class="mono">NFR-06</td><td>Laporan yang di-generate disimpan permanen di server storage</td><td>Reliability</td></tr>
+        <tr><td class="mono">NFR-07</td><td>MySQL 8+ sebagai database engine</td><td>Compatibility</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 1.5 Struktur Template Excel -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.5</span>
+    <h2>Struktur Template Excel</h2>
+  </div>
+  <p>Template terdiri dari 3 sheet. Sheet <strong>"data tracer"</strong> menjadi sumber data utama (86 kolom, header di baris 3, data mulai baris 4). Sheet "PARAMETER LAPORAN" mendefinisikan parameter analisis. Sheet "pengolahan" berisi referensi logic.</p>
+
+  <h3>Kolom Identitas (10 kolom)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Kolom</th><th>Header</th><th>Keterangan</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="mono">A</td><td>No.</td><td class="desc">Nomor urut</td></tr>
+        <tr><td class="mono">B</td><td>Kode PT</td><td class="desc">Kode Perguruan Tinggi</td></tr>
+        <tr><td class="mono">C</td><td>Kode Jurusan</td><td class="desc">Kode Program Studi</td></tr>
+        <tr><td class="mono">D</td><td>NIM</td><td class="desc">Nomor Induk Mahasiswa</td></tr>
+        <tr><td class="mono">E</td><td>Nama Mhs</td><td class="desc">Nama Mahasiswa</td></tr>
+        <tr><td class="mono">F</td><td>Telp. Mhs</td><td class="desc">Nomor telepon</td></tr>
+        <tr><td class="mono">G</td><td>Email Mhs</td><td class="desc">Alamat email</td></tr>
+        <tr><td class="mono">H</td><td>Tahun Lulus</td><td class="desc">Tahun kelulusan</td></tr>
+        <tr><td class="mono">I</td><td>NIK</td><td class="desc">Nomor Induk Kependudukan</td></tr>
+        <tr><td class="mono">CH</td><td>angkatan</td><td class="desc">Tahun angkatan</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Kolom Data Tracer (76 kolom)</h3>
+  <p>Kolom J&ndash;CG berisi kode field DIKTI (f-codes). Nilai berupa numerik sesuai kuesioner tracer DIKTI. Mapping kolom ke parameter analisis didefinisikan di sheet "PARAMETER LAPORAN".</p>
+</div>
+
+<!-- 1.6 Parameter Analisis -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.6</span>
+    <h2>Parameter Analisis (13 Parameter)</h2>
+  </div>
+
+  <h3>Grup: Status Alumni</h3>
+  <div class="param-grid">
+    <div class="param-card">
+      <span class="param-num">01</span>
+      <div class="param-body">
+        <div class="param-name">Status Setelah Lulus</div>
+        <div class="param-detail">Kolom <code>M</code> (f8) &middot; COUNTIF 1&ndash;5 &middot; 5 kategori</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-freq">Frekuensi</span>
+        <span class="tag tag-stat">Pie</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Grup: Bekerja &amp; Wiraswasta</h3>
+  <div class="param-grid">
+    <div class="param-card">
+      <span class="param-num">02</span>
+      <div class="param-body">
+        <div class="param-name">Lama Mendapatkan Pekerjaan</div>
+        <div class="param-detail">Kolom <code>BX</code> (f502) &middot; 3 kategori waktu tunggu</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-freq">Frekuensi</span>
+        <span class="tag tag-stat">Bar</span>
+      </div>
+    </div>
+    <div class="param-card">
+      <span class="param-num">03</span>
+      <div class="param-body">
+        <div class="param-name">Tingkat Tempat Kerja</div>
+        <div class="param-detail">Kolom <code>BI</code> (f5d) &middot; COUNTIF 1&ndash;3</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-freq">Frekuensi</span>
+        <span class="tag tag-stat">Bar</span>
+      </div>
+    </div>
+    <div class="param-card">
+      <span class="param-num">04</span>
+      <div class="param-body">
+        <div class="param-name">Bidang Kerja Lulusan</div>
+        <div class="param-detail">Kolom <code>T</code> (f1101) &middot; COUNTIF 1&ndash;7 &middot; 7 jenis instansi</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-freq">Frekuensi</span>
+        <span class="tag tag-stat">Bar</span>
+      </div>
+    </div>
+    <div class="param-card">
+      <span class="param-num">05</span>
+      <div class="param-body">
+        <div class="param-name">Kesesuaian Bidang Studi</div>
+        <div class="param-detail">Kolom <code>BC</code> (f14) &middot; COUNTIF 1&ndash;5 &middot; skala kesesuaian</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-freq">Frekuensi</span>
+        <span class="tag tag-stat">Bar</span>
+      </div>
+    </div>
+    <div class="param-card">
+      <span class="param-num">06</span>
+      <div class="param-body">
+        <div class="param-name">Tingkat Pendidikan pada Pekerjaan</div>
+        <div class="param-detail">Kolom <code>AM</code> (f15) &middot; COUNTIF 1&ndash;4</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-freq">Frekuensi</span>
+        <span class="tag tag-stat">Bar</span>
+      </div>
+    </div>
+    <div class="param-card">
+      <span class="param-num">07</span>
+      <div class="param-body">
+        <div class="param-name">Pendapatan Pertama Lulusan</div>
+        <div class="param-detail">Kolom <code>BP</code> (f505) &middot; MEAN + MEDIAN dalam Rupiah</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-stat">Mean</span>
+        <span class="tag tag-narr">Naratif</span>
+      </div>
+    </div>
+    <div class="param-card">
+      <span class="param-num">08</span>
+      <div class="param-body">
+        <div class="param-name">Penghasilan Lulusan</div>
+        <div class="param-detail">Kolom <code>BP</code> (f505) &middot; 4 kategori rentang gaji</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-freq">Frekuensi</span>
+        <span class="tag tag-stat">Bar</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Grup: Sedang Mencari Kerja</h3>
+  <div class="param-grid">
+    <div class="param-card">
+      <span class="param-num">09</span>
+      <div class="param-body">
+        <div class="param-name">Mulai Mencari Pekerjaan</div>
+        <div class="param-detail">Kolom <code>AY</code> (f301) &middot; MEAN total bulan</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-stat">Mean</span>
+        <span class="tag tag-narr">Naratif</span>
+      </div>
+    </div>
+    <div class="param-card">
+      <span class="param-num">10</span>
+      <div class="param-body">
+        <div class="param-name">Melamar Pekerjaan</div>
+        <div class="param-detail">Kolom <code>CG</code> (f6) &middot; SUM total lamaran</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-stat">Sum</span>
+        <span class="tag tag-narr">Naratif</span>
+      </div>
+    </div>
+    <div class="param-card">
+      <span class="param-num">11</span>
+      <div class="param-body">
+        <div class="param-name">Diundang Wawancara</div>
+        <div class="param-detail">Kolom <code>BD</code> (f7a) &middot; SUM total undangan</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-stat">Sum</span>
+        <span class="tag tag-narr">Naratif</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Grup: Melanjutkan Pendidikan</h3>
+  <div class="param-grid">
+    <div class="param-card">
+      <span class="param-num">12</span>
+      <div class="param-body">
+        <div class="param-name">Tempat Melanjutkan Pendidikan</div>
+        <div class="param-detail">Kolom <code>AK</code> (f18c) &middot; Tampilkan Universitas + Prodi</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-table">Tabel</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Grup: Penilaian Kemampuan Diri</h3>
+  <div class="param-grid">
+    <div class="param-card">
+      <span class="param-num">13</span>
+      <div class="param-body">
+        <div class="param-name">Penilaian Kemampuan Diri</div>
+        <div class="param-detail">7 kompetensi &middot; Dimensi A (dikuasai) vs B (dibutuhkan) &middot; Likert 1&ndash;5 &middot; Indeks rata-rata</div>
+      </div>
+      <div class="param-tags">
+        <span class="tag tag-freq">Frekuensi</span>
+        <span class="tag tag-stat">Grouped Bar</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 1.7 Penilaian Kemampuan Diri Detail -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.7</span>
+    <h2>Mapping Kompetensi (Parameter #13)</h2>
+  </div>
+  <p>Setiap kompetensi dibaca dari dua kolom di sheet "data tracer": dimensi A (kompetensi yang dikuasai saat lulus) dan dimensi B (kompetensi yang dibutuhkan dalam pekerjaan).</p>
+  <div class="comp-grid">
+    <div class="comp-item">
+      <div class="comp-name">Etika</div>
+      <div class="comp-codes">
+        <span><span class="label">A</span> f1761</span>
+        <span><span class="label">B</span> f1768</span>
+      </div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">Keahlian Bidang Ilmu</div>
+      <div class="comp-codes">
+        <span><span class="label">A</span> f1762</span>
+        <span><span class="label">B</span> f1769</span>
+      </div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">Bahasa Inggris</div>
+      <div class="comp-codes">
+        <span><span class="label">A</span> f1763</span>
+        <span><span class="label">B</span> f1770</span>
+      </div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">Penggunaan TI</div>
+      <div class="comp-codes">
+        <span><span class="label">A</span> f1764</span>
+        <span><span class="label">B</span> f1771</span>
+      </div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">Komunikasi</div>
+      <div class="comp-codes">
+        <span><span class="label">A</span> f1765</span>
+        <span><span class="label">B</span> f1772</span>
+      </div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">Kerja Sama Tim</div>
+      <div class="comp-codes">
+        <span><span class="label">A</span> f1766</span>
+        <span><span class="label">B</span> f1773</span>
+      </div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-name">Pengembangan Diri</div>
+      <div class="comp-codes">
+        <span><span class="label">A</span> f1767</span>
+        <span><span class="label">B</span> f1774</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 1.8 Alur Proses Bisnis -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.8</span>
+    <h2>Alur Proses Bisnis</h2>
+  </div>
+  <div class="flow">
+    <div class="flow-step"><span class="num">1</span> Dashboard</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step"><span class="num">2</span> Upload .xlsx + Meta</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step"><span class="num">3</span> Baca Sheet</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step"><span class="num">4</span> Olah 13 Parameter</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step"><span class="num">5</span> Tampilkan Hasil</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step"><span class="num">6</span> Generate Laporan</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step">Word (.docx)</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step"><span class="num">7</span> Riwayat</div>
+  </div>
+</div>
+
+<!-- 1.9 Batasan Sistem -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.9</span>
+    <h2>Batasan Sistem</h2>
+  </div>
+  <div class="constraints">
+    <div class="constraint">
+      <span class="constraint-icon">&times;</span>
+      <span>Hanya menerima file Excel (.xlsx) sesuai template yang ditentukan</span>
+    </div>
+    <div class="constraint">
+      <span class="constraint-icon">&times;</span>
+      <span>Tidak ada proses data cleaning &mdash; sistem mengasumsikan data sudah bersih</span>
+    </div>
+    <div class="constraint">
+      <span class="constraint-icon">&times;</span>
+      <span>Tidak ada validasi logika data &mdash; sistem membaca dan mengolah apa adanya</span>
+    </div>
+    <div class="constraint">
+      <span class="constraint-icon">&times;</span>
+      <span>Tidak ada integrasi API eksternal, webhook, maupun koneksi ke sistem lain</span>
+    </div>
+    <div class="constraint">
+      <span class="constraint-icon">&times;</span>
+      <span>Tidak ada autentikasi &mdash; aplikasi langsung terbuka tanpa login</span>
+    </div>
+    <div class="constraint">
+      <span class="constraint-icon">&times;</span>
+      <span>Export hanya ke Microsoft Word (.docx) &mdash; tidak ada export PDF</span>
+    </div>
+    <div class="constraint">
+      <span class="constraint-icon">&times;</span>
+      <span>Setiap upload berdiri sendiri &mdash; tidak ada perbandingan antar tahun</span>
+    </div>
+    <div class="constraint">
+      <span class="constraint-icon">&times;</span>
+      <span>Read-only terhadap data sumber &mdash; sistem tidak memodifikasi file Excel</span>
+    </div>
+  </div>
+</div>
+
+<!-- 1.10 Asumsi -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.10</span>
+    <h2>Asumsi</h2>
+  </div>
+  <ol class="assumptions">
+    <li>Template Excel sudah ditentukan dan memiliki sheet bernama "data tracer" dengan header di baris 3</li>
+    <li>Data dimulai dari baris 4 sheet "data tracer" dengan 86 kolom sesuai mapping</li>
+    <li>Kolom menggunakan kode field DIKTI (f-codes) yang sudah terdefinisi</li>
+    <li>Administrator memasukkan meta informasi (nama PT, nama prodi, total lulusan) secara manual saat upload</li>
+    <li>Response rate dihitung otomatis: total responden dalam data / total lulusan yang diinput</li>
+    <li>Satu sesi upload menghasilkan satu set analisis dan satu laporan</li>
+    <li>Sistem dijalankan di environment lokal atau server perguruan tinggi</li>
+  </ol>
+</div>
+
+<!-- 1.11 Keputusan -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1.11</span>
+    <h2>Keputusan yang Telah Disetujui</h2>
+  </div>
+  <div class="decision">
+    <div>
+      <div class="decision-q">Apakah sistem memerlukan autentikasi login?</div>
+      <div class="decision-a"><strong>Tidak</strong> &mdash; pengguna tunggal, aplikasi langsung terbuka ke dashboard tanpa login. Tidak ada tabel users.</div>
+    </div>
+  </div>
+  <div class="decision">
+    <div>
+      <div class="decision-q">Format export laporan apa saja yang didukung?</div>
+      <div class="decision-a"><strong>Hanya Microsoft Word</strong> &mdash; menggunakan PHPWord. DomPDF tidak digunakan.</div>
+    </div>
+  </div>
+  <div class="decision">
+    <div>
+      <div class="decision-q">Apakah Penilaian Kemampuan Diri masuk sebagai parameter analisis?</div>
+      <div class="decision-a"><strong>Ya</strong> &mdash; menjadi parameter ke-13 dengan tabel perbandingan indeks A vs B dan grouped bar chart per kompetensi</div>
+    </div>
+  </div>
+  <div class="decision">
+    <div>
+      <div class="decision-q">Apakah sistem mendukung perbandingan antar tahun?</div>
+      <div class="decision-a"><strong>Tidak</strong> &mdash; setiap upload berdiri sendiri sebagai satu set analisis independen</div>
+    </div>
+  </div>
+  <div class="decision">
+    <div>
+      <div class="decision-q">Bagaimana meta informasi (total lulusan, response rate) diperoleh?</div>
+      <div class="decision-a"><strong>Input manual</strong> &mdash; Administrator mengisi nama PT, nama prodi, total lulusan universitas &amp; prodi via form saat upload. Response rate dihitung otomatis.</div>
+    </div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 1 &mdash; Analisis Kebutuhan Sistem: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 2: Software Requirement Specification (SRS)</span>
+</div>
