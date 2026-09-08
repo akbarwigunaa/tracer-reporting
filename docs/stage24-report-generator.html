@@ -1,0 +1,151 @@
+<title>Report Generator</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #64748b;
+    --accent: #2563eb; --accent-light: #eff6ff;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --border: #e2e8f0; --card-bg: #ffffff;
+    --code-bg: #f1f5f9; --code-fg: #334155;
+    --table-stripe: #f8fafc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --accent: #60a5fa; --accent-light: #1e293b;
+      --success: #4ade80; --success-light: #0f2a1a;
+      --border: #334155; --card-bg: #1e293b;
+      --code-bg: #1e293b; --code-fg: #cbd5e1;
+      --table-stripe: #1a2536;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+    --accent: #60a5fa; --accent-light: #1e293b;
+    --success: #4ade80; --success-light: #0f2a1a;
+    --border: #334155; --card-bg: #1e293b;
+    --code-bg: #1e293b; --code-fg: #cbd5e1;
+    --table-stripe: #1a2536;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .meta-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; margin-top: 0.15rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+  code { background: var(--code-bg); color: var(--code-fg); padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 0; }
+  .check { color: var(--success); }
+  .file-tree .new { color: var(--success); font-weight: 600; }
+  .file-tree .mod { color: var(--accent); font-weight: 600; }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  @media (max-width: 600px) { body { padding: 1rem; } .meta-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<h1>Tahap 24 — Report Generator</h1>
+<p class="subtitle">Sprint 3 &middot; PHPWord Export &middot; <span class="badge badge-green">Selesai</span></p>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Stage</div>
+    <div class="meta-value">24 / 27</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Sprint</div>
+    <div class="meta-value">Sprint 3</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Library</div>
+    <div class="meta-value">PHPWord 1.4.0</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Commit</div>
+    <div class="meta-value"><code>d4ddcdf</code></div>
+  </div>
+</div>
+
+<h2>1. Ringkasan</h2>
+<p>Implementasi <code>ReportGeneratorService</code> yang menghasilkan laporan Word (.docx) dari data analisis tracer study menggunakan PHPWord. Laporan mencakup cover page, ringkasan institusi, dan 13 parameter analisis dengan narasi + tabel data. Juga dibangun UI halaman laporan untuk generate, download, dan hapus.</p>
+
+<h2>2. File yang Dibuat/Dimodifikasi</h2>
+<div class="card" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.8;">
+  <span class="new">+ app/Services/Interfaces/ReportGeneratorServiceInterface.php</span><br>
+  <span class="new">+ app/Services/ReportGeneratorService.php</span> — 280 lines<br>
+  <span class="mod">~ app/Http/Controllers/ReportController.php</span> — Full implementation<br>
+  <span class="mod">~ app/Providers/RepositoryServiceProvider.php</span> — Binding<br>
+  <span class="mod">~ resources/views/reports/index.blade.php</span> — Full UI
+</div>
+
+<h2>3. Struktur Dokumen Word</h2>
+<table>
+  <thead><tr><th>Bagian</th><th>Konten</th></tr></thead>
+  <tbody>
+    <tr><td>Cover Page</td><td>Judul "LAPORAN HASIL TRACER STUDY", nama prodi + jenjang, institusi, tahun lulusan, tahun tracer</td></tr>
+    <tr><td>Ringkasan</td><td>Tabel 8 baris: institusi, prodi, jenjang, tahun, total lulusan/responden, response rate</td></tr>
+    <tr><td>13 Parameter</td><td>Heading (H2) + narasi teks + tabel data per tipe statistik</td></tr>
+    <tr><td>Footer</td><td>Teks italic "dihasilkan secara otomatis..."</td></tr>
+  </tbody>
+</table>
+
+<h2>4. Tabel per Tipe Statistik</h2>
+<table>
+  <thead><tr><th>Tipe</th><th>Kolom Tabel</th></tr></thead>
+  <tbody>
+    <tr><td>frequency</td><td>Kategori | Jumlah | Persentase + footer Total</td></tr>
+    <tr><td>mean_median</td><td>Label-value pairs: Mean, Median, Min, Max, Count (Rp format)</td></tr>
+    <tr><td>mean</td><td>Rata-rata (bulan) | Count</td></tr>
+    <tr><td>sum</td><td>Total | Rata-rata | Count</td></tr>
+    <tr><td>display</td><td>Bulleted list + count</td></tr>
+    <tr><td>index</td><td>Kompetensi | Dikuasai | Dibutuhkan | Gap (color: red/green)</td></tr>
+  </tbody>
+</table>
+
+<h2>5. Styling Word</h2>
+<ul>
+  <li>Font: Times New Roman, 12pt default</li>
+  <li>Title H1: 16pt bold, warna #1F4E79</li>
+  <li>Title H2: 13pt bold, warna #1F4E79</li>
+  <li>Header cells: background #D6E4F0</li>
+  <li>Table borders: 6pt, warna #CCCCCC</li>
+  <li>Margin: 1 inch (1440 twips) semua sisi</li>
+</ul>
+
+<h2>6. Reports UI</h2>
+<h3>Generate Section</h3>
+<p>Dropdown select tracer study (hanya status=completed) + tombol "Generate Laporan". Form action diupdate via JavaScript berdasarkan selection.</p>
+
+<h3>Reports Table</h3>
+<p>Kolom: Nama File (dengan icon Word), Tracer Study, Ukuran, Dibuat, Aksi (Download + Hapus).</p>
+
+<h2>7. ReportController</h2>
+<pre><code>generate(TracerStudy) → cek isCompleted → service->generate → redirect + success
+download(Report)       → Storage::disk('local')->path() → response()->download
+destroy(Report)        → unlink file → repository->delete → redirect + success</code></pre>
+
+<h2>8. Verifikasi</h2>
+<div class="card">
+  <ul>
+    <li><span class="check">&#10003;</span> Tinker test: .docx generated (10.8 KB), file exists</li>
+    <li><span class="check">&#10003;</span> UI: Generate button → success alert + report appears in table</li>
+    <li><span class="check">&#10003;</span> Empty state: "Belum ada laporan yang dibuat"</li>
+    <li><span class="check">&#10003;</span> Download button present (download blocked in browser pane)</li>
+    <li><span class="check">&#10003;</span> Delete button with confirm dialog</li>
+    <li><span class="check">&#10003;</span> File path uses Storage::disk('local')->path() (Laravel 13 fix)</li>
+    <li><span class="check">&#10003;</span> Reports saved to storage/app/private/reports/</li>
+  </ul>
+</div>
+
+<h2>9. Tahap Selanjutnya</h2>
+<p><strong>Stage 25 — Reports List View &amp; Finishing</strong>: Polishing UI, menambah generate button dari halaman analysis detail, dan link dari dashboard ke reports.</p>
