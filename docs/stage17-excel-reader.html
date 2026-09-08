@@ -1,0 +1,209 @@
+<title>ExcelReaderService</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #64748b;
+    --accent: #2563eb; --accent-light: #eff6ff;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --border: #e2e8f0; --card-bg: #ffffff;
+    --code-bg: #f1f5f9; --code-fg: #334155;
+    --table-stripe: #f8fafc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --accent: #60a5fa; --accent-light: #1e293b;
+      --success: #4ade80; --success-light: #0f2a1a;
+      --border: #334155; --card-bg: #1e293b;
+      --code-bg: #1e293b; --code-fg: #cbd5e1;
+      --table-stripe: #1a2536;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+    --accent: #60a5fa; --accent-light: #1e293b;
+    --success: #4ade80; --success-light: #0f2a1a;
+    --border: #334155; --card-bg: #1e293b;
+    --code-bg: #1e293b; --code-fg: #cbd5e1;
+    --table-stripe: #1a2536;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .meta-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; margin-top: 0.15rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+  code { background: var(--code-bg); color: var(--code-fg); padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 0; }
+  .file-tree { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.8; }
+  .file-tree .new { color: var(--success); font-weight: 600; }
+  .file-tree .mod { color: var(--accent); font-weight: 600; }
+  .check { color: var(--success); }
+  ul { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  a { color: var(--accent); text-decoration: none; }
+  @media (max-width: 600px) { body { padding: 1rem; } .meta-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<h1>Tahap 17 — ExcelReaderService</h1>
+<p class="subtitle">Sprint 2 &middot; Service Layer &middot; <span class="badge badge-green">Selesai</span></p>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Stage</div>
+    <div class="meta-value">17 / 27</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Sprint</div>
+    <div class="meta-value">Sprint 2</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Library</div>
+    <div class="meta-value">PhpSpreadsheet 5.9</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Commit</div>
+    <div class="meta-value"><code>369908f</code></div>
+  </div>
+</div>
+
+<h2>1. Ringkasan</h2>
+<p>ExcelReaderService membaca file Excel tracer study (.xlsx) menggunakan PhpSpreadsheet, melakukan mapping f-code dari header row ke kolom secara dinamis, dan mengekstrak data mentah untuk semua 13 parameter analisis. Service mengikuti Interface + Implementation pattern dan teregistrasi di ServiceProvider.</p>
+
+<h2>2. File yang Dibuat/Dimodifikasi</h2>
+<div class="file-tree card">
+  <span class="new">+ app/Services/Interfaces/ExcelReaderServiceInterface.php</span> — Interface<br>
+  <span class="new">+ app/Services/ExcelReaderService.php</span> — Implementation (135 lines)<br>
+  <span class="mod">~ app/Providers/RepositoryServiceProvider.php</span> — Binding ditambahkan
+</div>
+
+<h2>3. Interface</h2>
+<pre><code>interface ExcelReaderServiceInterface
+{
+    /**
+     * @return array&lt;string, array&lt;int, mixed&gt;&gt;
+     */
+    public function read(string $filePath): array;
+}</code></pre>
+<p>Method <code>read()</code> menerima path file Excel dan mengembalikan array keyed by <code>parameter_key</code>, masing-masing berisi array nilai mentah dari kolom terkait.</p>
+
+<h2>4. Arsitektur Service</h2>
+
+<h3>4.1 Flow Proses</h3>
+<div class="card">
+  <ol>
+    <li><strong>Load spreadsheet</strong> — <code>IOFactory::load($filePath)</code></li>
+    <li><strong>Get sheet</strong> — Cari sheet "data tracer" (throw RuntimeException jika tidak ditemukan)</li>
+    <li><strong>Build f-code map</strong> — Scan header row 3, bangun mapping <code>f-code → column index</code></li>
+    <li><strong>Read parameters</strong> — Untuk setiap parameter di <code>config/tracer.php</code>:
+      <ul>
+        <li>Parameter 1–12: resolve kolom via f-code (fallback ke column letter), baca semua nilai non-empty</li>
+        <li>Parameter 13 (kemampuan_diri): untuk setiap 7 kompetensi, resolve 2 kolom (column_a, column_b) via f-code</li>
+      </ul>
+    </li>
+    <li><strong>Return</strong> — Array keyed by parameter_key</li>
+  </ol>
+</div>
+
+<h3>4.2 Strategi Resolusi Kolom</h3>
+<table>
+  <thead><tr><th>Prioritas</th><th>Strategi</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>F-code lookup</td><td>Scan header row, cocokkan f-code (case-insensitive)</td></tr>
+    <tr><td>2</td><td>Column letter fallback</td><td>Gunakan <code>column</code> key dari config (hanya parameter 1–12)</td></tr>
+    <tr><td>—</td><td>RuntimeException</td><td>Jika keduanya gagal</td></tr>
+  </tbody>
+</table>
+
+<h3>4.3 Private Methods</h3>
+<table>
+  <thead><tr><th>Method</th><th>Fungsi</th></tr></thead>
+  <tbody>
+    <tr><td><code>getSheet()</code></td><td>Ambil worksheet by name, throw jika tidak ada</td></tr>
+    <tr><td><code>buildFCodeMap()</code></td><td>Scan header row → <code>['f8' => 13, 'f502' => 76, ...]</code></td></tr>
+    <tr><td><code>resolveColumn()</code></td><td>F-code lookup + column letter fallback</td></tr>
+    <tr><td><code>readColumn()</code></td><td>Baca semua nilai non-empty dari satu kolom (row range)</td></tr>
+    <tr><td><code>readKemampuanDiri()</code></td><td>Baca 7 kompetensi × 2 kolom (values_a, values_b)</td></tr>
+    <tr><td><code>resolveFCode()</code></td><td>Lookup f-code di map, throw jika tidak ada</td></tr>
+  </tbody>
+</table>
+
+<h2>5. Output Format</h2>
+
+<h3>5.1 Parameter 1–12 (Single Column)</h3>
+<pre><code>[
+    'status_setelah_lulus' => [1, 1, 3, 4, 5],
+    'pendapatan_pertama'  => [4500000, 3200000, 6000000, 2500000],
+    'tempat_pendidikan_lanjut' => ['Universitas Gadjah Mada'],
+    ...
+]</code></pre>
+
+<h3>5.2 Parameter 13 — Kemampuan Diri</h3>
+<pre><code>[
+    'kemampuan_diri' => [
+        'etika' => [
+            'name' => 'Etika',
+            'values_a' => [4, 5, 3, 4, 5],  // diperlukan saat kuliah
+            'values_b' => [3, 4, 3, 4, 5],  // diperlukan saat bekerja
+        ],
+        'keahlian_bidang' => [...],
+        'bahasa_inggris' => [...],
+        'teknologi_informasi' => [...],
+        'komunikasi' => [...],
+        'kerjasama' => [...],
+        'pengembangan_diri' => [...],
+    ]
+]</code></pre>
+
+<h2>6. Konfigurasi Excel</h2>
+<table>
+  <thead><tr><th>Key</th><th>Value</th><th>Keterangan</th></tr></thead>
+  <tbody>
+    <tr><td><code>sheet_name</code></td><td>'data tracer'</td><td>Nama worksheet target</td></tr>
+    <tr><td><code>header_row</code></td><td>3</td><td>Row berisi f-code header</td></tr>
+    <tr><td><code>data_start_row</code></td><td>4</td><td>Row pertama data responden</td></tr>
+  </tbody>
+</table>
+
+<h2>7. Error Handling</h2>
+<table>
+  <thead><tr><th>Kondisi</th><th>Exception</th><th>Pesan</th></tr></thead>
+  <tbody>
+    <tr><td>Sheet tidak ditemukan</td><td>RuntimeException</td><td>"Sheet 'data tracer' tidak ditemukan. Sheet tersedia: ..."</td></tr>
+    <tr><td>F-code tidak ditemukan</td><td>RuntimeException</td><td>"Kolom untuk f-code 'fXXX' tidak ditemukan di header Excel."</td></tr>
+  </tbody>
+</table>
+
+<h2>8. Service Provider Binding</h2>
+<pre><code>// app/Providers/RepositoryServiceProvider.php
+$this->app->bind(
+    ExcelReaderServiceInterface::class,
+    ExcelReaderService::class,
+);</code></pre>
+
+<h2>9. Test Result</h2>
+<div class="card">
+  <p>Diverifikasi via <code>php artisan tinker</code> dengan file Excel berisi 5 responden dan 86+ kolom:</p>
+  <ul>
+    <li><span class="check">&#10003;</span> 13 parameter terbaca lengkap</li>
+    <li><span class="check">&#10003;</span> F-code mapping akurat untuk semua kolom</li>
+    <li><span class="check">&#10003;</span> Parameter #7 dan #8 share kolom BP/f505 — keduanya terbaca</li>
+    <li><span class="check">&#10003;</span> Parameter #13 kemampuan_diri: 7 kompetensi × 2 kolom = 14 kolom terbaca</li>
+    <li><span class="check">&#10003;</span> Cell kosong/null di-skip dari hasil</li>
+    <li><span class="check">&#10003;</span> Compatible dengan PhpSpreadsheet 5.x (getCell array notation)</li>
+  </ul>
+</div>
+
+<h2>10. Tahap Selanjutnya</h2>
+<p><strong>Stage 18 — StatisticsService</strong>: Implementasi service untuk menghitung statistik dari data mentah (frequency, mean, median, sum, index) sesuai <code>statistic_type</code> di konfigurasi parameter.</p>
