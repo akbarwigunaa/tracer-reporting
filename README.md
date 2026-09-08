@@ -4,6 +4,23 @@ Aplikasi web untuk mengolah data **Tracer Study** dari file Excel (format DIKTI)
 
 Sistem membaca Excel apa adanya tanpa cleaning, menghitung statistik untuk **13 parameter analisis**, menghasilkan narasi otomatis, memvisualisasikan hasil dalam grafik Chart.js, dan mengekspor laporan formal dalam format Word.
 
+## Screenshots
+
+### Dashboard
+![Dashboard](screenshots/01-dashboard.png)
+
+### Upload Data
+![Upload](screenshots/02-upload.png)
+
+### Hasil Analisis
+![Analysis List](screenshots/03-analysis-list.png)
+
+### Detail Analisis (Statistik + Chart)
+![Analysis Detail](screenshots/04-analysis-detail.png)
+
+### Laporan
+![Reports](screenshots/05-reports.png)
+
 ## Features
 
 - **Upload Excel** — Upload file Excel format DIKTI dengan meta info (institusi, prodi, jenjang, tahun). Drag & drop dengan validasi format dan duplikasi.
