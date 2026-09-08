@@ -1,0 +1,206 @@
+<title>StatisticsService</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #64748b;
+    --accent: #2563eb; --accent-light: #eff6ff;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --border: #e2e8f0; --card-bg: #ffffff;
+    --code-bg: #f1f5f9; --code-fg: #334155;
+    --table-stripe: #f8fafc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --accent: #60a5fa; --accent-light: #1e293b;
+      --success: #4ade80; --success-light: #0f2a1a;
+      --border: #334155; --card-bg: #1e293b;
+      --code-bg: #1e293b; --code-fg: #cbd5e1;
+      --table-stripe: #1a2536;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+    --accent: #60a5fa; --accent-light: #1e293b;
+    --success: #4ade80; --success-light: #0f2a1a;
+    --border: #334155; --card-bg: #1e293b;
+    --code-bg: #1e293b; --code-fg: #cbd5e1;
+    --table-stripe: #1a2536;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .meta-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; margin-top: 0.15rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+  code { background: var(--code-bg); color: var(--code-fg); padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 0; }
+  .file-tree { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.8; }
+  .file-tree .new { color: var(--success); font-weight: 600; }
+  .file-tree .mod { color: var(--accent); font-weight: 600; }
+  .check { color: var(--success); }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  a { color: var(--accent); text-decoration: none; }
+  @media (max-width: 600px) { body { padding: 1rem; } .meta-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<h1>Tahap 18 — StatisticsService</h1>
+<p class="subtitle">Sprint 2 &middot; Service Layer &middot; <span class="badge badge-green">Selesai</span></p>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Stage</div>
+    <div class="meta-value">18 / 27</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Sprint</div>
+    <div class="meta-value">Sprint 2</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Tipe Statistik</div>
+    <div class="meta-value">6 tipe</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Commit</div>
+    <div class="meta-value"><code>8037893</code></div>
+  </div>
+</div>
+
+<h2>1. Ringkasan</h2>
+<p>StatisticsService menghitung statistik dari data mentah yang dihasilkan ExcelReaderService. Mendukung 6 tipe kalkulasi: frequency, mean_median, mean, sum, display, dan index. Setiap tipe menghasilkan output terstruktur yang sesuai dengan placeholder di narrative templates (<code>config/narratives.php</code>).</p>
+
+<h2>2. File yang Dibuat/Dimodifikasi</h2>
+<div class="file-tree card">
+  <span class="new">+ app/Services/Interfaces/StatisticsServiceInterface.php</span><br>
+  <span class="new">+ app/Services/StatisticsService.php</span> — 195 lines<br>
+  <span class="mod">~ app/Providers/RepositoryServiceProvider.php</span> — Binding
+</div>
+
+<h2>3. Interface</h2>
+<pre><code>interface StatisticsServiceInterface
+{
+    public function calculate(string $parameterKey, array $config, array $rawData): array;
+}</code></pre>
+
+<h2>4. Tipe Statistik</h2>
+
+<h3>4.1 frequency</h3>
+<p>Digunakan oleh: Parameter 1–6, 8</p>
+<table>
+  <thead><tr><th>Output Key</th><th>Tipe</th><th>Deskripsi</th></tr></thead>
+  <tbody>
+    <tr><td><code>total</code></td><td>int</td><td>Total responden yang masuk kategori</td></tr>
+    <tr><td><code>frequencies</code></td><td>array</td><td>Array sorted desc: key, label, count, percentage</td></tr>
+    <tr><td><code>top_category</code></td><td>string</td><td>Kategori dengan count tertinggi</td></tr>
+    <tr><td><code>top_count</code></td><td>int</td><td>Jumlah top category</td></tr>
+    <tr><td><code>top_pct</code></td><td>float</td><td>Persentase top category</td></tr>
+    <tr><td><code>second_category/count/pct</code></td><td>mixed</td><td>Runner-up category</td></tr>
+  </tbody>
+</table>
+<p><strong>Special:</strong> Parameter <code>penghasilan_lulusan</code> (#8) menggunakan <code>category_ranges</code> untuk bucket nilai numerik ke kategori income range.</p>
+
+<h3>4.2 mean_median</h3>
+<p>Digunakan oleh: Parameter 7 (Pendapatan Pertama)</p>
+<table>
+  <thead><tr><th>Output Key</th><th>Deskripsi</th></tr></thead>
+  <tbody>
+    <tr><td><code>mean</code></td><td>Rata-rata (rounded to 0 decimal)</td></tr>
+    <tr><td><code>median</code></td><td>Nilai tengah</td></tr>
+    <tr><td><code>min</code></td><td>Nilai minimum</td></tr>
+    <tr><td><code>max</code></td><td>Nilai maksimum</td></tr>
+    <tr><td><code>count</code></td><td>Jumlah data valid</td></tr>
+  </tbody>
+</table>
+
+<h3>4.3 mean</h3>
+<p>Digunakan oleh: Parameter 9 (Mulai Mencari Pekerjaan)</p>
+<table>
+  <thead><tr><th>Output Key</th><th>Deskripsi</th></tr></thead>
+  <tbody>
+    <tr><td><code>mean</code></td><td>Rata-rata (1 decimal)</td></tr>
+    <tr><td><code>count</code></td><td>Jumlah data valid</td></tr>
+  </tbody>
+</table>
+
+<h3>4.4 sum</h3>
+<p>Digunakan oleh: Parameter 10–11 (Melamar Pekerjaan, Diundang Wawancara)</p>
+<table>
+  <thead><tr><th>Output Key</th><th>Deskripsi</th></tr></thead>
+  <tbody>
+    <tr><td><code>total_sum</code></td><td>Jumlah total</td></tr>
+    <tr><td><code>mean</code></td><td>Rata-rata per orang (1 decimal)</td></tr>
+    <tr><td><code>count</code></td><td>Jumlah responden</td></tr>
+  </tbody>
+</table>
+
+<h3>4.5 display</h3>
+<p>Digunakan oleh: Parameter 12 (Tempat Pendidikan Lanjut)</p>
+<table>
+  <thead><tr><th>Output Key</th><th>Deskripsi</th></tr></thead>
+  <tbody>
+    <tr><td><code>values</code></td><td>Array string non-empty</td></tr>
+    <tr><td><code>count</code></td><td>Jumlah entri</td></tr>
+  </tbody>
+</table>
+
+<h3>4.6 index</h3>
+<p>Digunakan oleh: Parameter 13 (Kemampuan Diri)</p>
+<table>
+  <thead><tr><th>Output Key</th><th>Deskripsi</th></tr></thead>
+  <tbody>
+    <tr><td><code>competencies</code></td><td>Array per kompetensi: name, index_a, index_b, gap, count_a, count_b</td></tr>
+    <tr><td><code>top_competency</code></td><td>Kompetensi dengan index_a tertinggi</td></tr>
+    <tr><td><code>top_index_a</code></td><td>Nilai index_a tertinggi</td></tr>
+    <tr><td><code>gap_competency</code></td><td>Kompetensi dengan gap terbesar (abs)</td></tr>
+    <tr><td><code>gap_value</code></td><td>Nilai gap (B - A)</td></tr>
+  </tbody>
+</table>
+
+<h2>5. Parameter → Tipe Mapping</h2>
+<table>
+  <thead><tr><th>#</th><th>Parameter</th><th>Tipe</th><th>Catatan</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>status_setelah_lulus</td><td>frequency</td><td>5 kategori</td></tr>
+    <tr><td>2</td><td>lama_mendapatkan_pekerjaan</td><td>frequency</td><td>3 kategori</td></tr>
+    <tr><td>3</td><td>tingkat_tempat_kerja</td><td>frequency</td><td>3 kategori</td></tr>
+    <tr><td>4</td><td>bidang_kerja_lulusan</td><td>frequency</td><td>7 kategori</td></tr>
+    <tr><td>5</td><td>kesesuaian_bidang_studi</td><td>frequency</td><td>5 kategori</td></tr>
+    <tr><td>6</td><td>tingkat_pendidikan_pekerjaan</td><td>frequency</td><td>4 kategori</td></tr>
+    <tr><td>7</td><td>pendapatan_pertama</td><td>mean_median</td><td>Rupiah, rounded to 0</td></tr>
+    <tr><td>8</td><td>penghasilan_lulusan</td><td>frequency</td><td>4 range, category_ranges</td></tr>
+    <tr><td>9</td><td>mulai_mencari_pekerjaan</td><td>mean</td><td>Bulan</td></tr>
+    <tr><td>10</td><td>melamar_pekerjaan</td><td>sum</td><td>Lamaran</td></tr>
+    <tr><td>11</td><td>diundang_wawancara</td><td>sum</td><td>Undangan</td></tr>
+    <tr><td>12</td><td>tempat_pendidikan_lanjut</td><td>display</td><td>Daftar nama PT</td></tr>
+    <tr><td>13</td><td>kemampuan_diri</td><td>index</td><td>7 kompetensi × 2 kolom</td></tr>
+  </tbody>
+</table>
+
+<h2>6. Test Results</h2>
+<div class="card">
+  <p>Diverifikasi via <code>php artisan tinker</code> dengan data sampel:</p>
+  <ul>
+    <li><span class="check">&#10003;</span> <strong>frequency:</strong> total=5, top=Bekerja(2/40%), 5 kategori sorted desc</li>
+    <li><span class="check">&#10003;</span> <strong>freq+ranges:</strong> 4 income values → 3-5 juta(2), 1-3 juta(1), >5 juta(1)</li>
+    <li><span class="check">&#10003;</span> <strong>mean_median:</strong> mean=4,050,000, median=3,850,000, min=2,500,000, max=6,000,000</li>
+    <li><span class="check">&#10003;</span> <strong>mean:</strong> mean=5.3, count=4</li>
+    <li><span class="check">&#10003;</span> <strong>sum:</strong> total_sum=38, mean=9.5</li>
+    <li><span class="check">&#10003;</span> <strong>display:</strong> 2 values, preserved as-is</li>
+    <li><span class="check">&#10003;</span> <strong>index:</strong> top=Etika(4.2), gap=Keahlian Bidang(-0.6), 3 competencies calculated</li>
+  </ul>
+</div>
+
+<h2>7. Tahap Selanjutnya</h2>
+<p><strong>Stage 19 — NarrativeService</strong>: Menghasilkan teks narasi otomatis dari hasil statistik menggunakan template di <code>config/narratives.php</code>, mengganti placeholder dengan data aktual.</p>
