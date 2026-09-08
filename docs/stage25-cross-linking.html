@@ -1,0 +1,126 @@
+<title>Cross-linking &amp; Polish</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #64748b;
+    --accent: #2563eb; --accent-light: #eff6ff;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --border: #e2e8f0; --card-bg: #ffffff;
+    --code-bg: #f1f5f9; --code-fg: #334155;
+    --table-stripe: #f8fafc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --accent: #60a5fa; --accent-light: #1e293b;
+      --success: #4ade80; --success-light: #0f2a1a;
+      --border: #334155; --card-bg: #1e293b;
+      --code-bg: #1e293b; --code-fg: #cbd5e1;
+      --table-stripe: #1a2536;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+    --accent: #60a5fa; --accent-light: #1e293b;
+    --success: #4ade80; --success-light: #0f2a1a;
+    --border: #334155; --card-bg: #1e293b;
+    --code-bg: #1e293b; --code-fg: #cbd5e1;
+    --table-stripe: #1a2536;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .meta-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; margin-top: 0.15rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+  code { background: var(--code-bg); color: var(--code-fg); padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 0; }
+  .check { color: var(--success); }
+  ul { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  @media (max-width: 600px) { body { padding: 1rem; } .meta-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+
+<h1>Tahap 25 — Cross-linking &amp; UI Polish</h1>
+<p class="subtitle">Sprint 3 &middot; Integration &middot; <span class="badge badge-green">Selesai</span></p>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Stage</div>
+    <div class="meta-value">25 / 27</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Sprint</div>
+    <div class="meta-value">Sprint 3</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Files Modified</div>
+    <div class="meta-value">4 files</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Commit</div>
+    <div class="meta-value"><code>d7a9632</code></div>
+  </div>
+</div>
+
+<h2>1. Ringkasan</h2>
+<p>Menghubungkan semua halaman dengan navigasi dan aksi yang konsisten: tombol generate/download laporan di halaman analysis detail, tombol generate di dashboard, dan summary card "Total Laporan".</p>
+
+<h2>2. Perubahan</h2>
+
+<table>
+  <thead><tr><th>File</th><th>Perubahan</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>AnalysisController</code></td>
+      <td>Inject ReportRepository, pass <code>$latestReport</code> ke view show</td>
+    </tr>
+    <tr>
+      <td><code>DashboardController</code></td>
+      <td>Pass <code>$totalReports</code> ke view dashboard</td>
+    </tr>
+    <tr>
+      <td><code>analysis/show.blade.php</code></td>
+      <td>
+        Action bar atas: "Download Laporan (.docx)" + "Generate Ulang" (jika report ada) atau "Generate Laporan" (jika belum)<br>
+        Action bar bawah: "Download Laporan" atau "Generate Laporan"
+      </td>
+    </tr>
+    <tr>
+      <td><code>dashboard.blade.php</code></td>
+      <td>
+        Summary card ke-4: "Total Laporan" (mengganti "Rata-rata Response Rate")<br>
+        Aksi tabel: tambah tombol Generate Laporan (icon Word, hijau) di samping View Analysis<br>
+        Kolom aksi diperlebar: 120px → 160px
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>3. Navigation Flow</h2>
+<div class="card">
+  <p><strong>Dashboard</strong> → [Lihat Analisis] → <strong>Analysis Detail</strong> → [Generate/Download Laporan] → <strong>Reports</strong></p>
+  <p><strong>Dashboard</strong> → [Generate Laporan] → <strong>Reports</strong> (langsung dari tabel)</p>
+  <p><strong>Sidebar</strong>: Dashboard | Upload Data | Hasil Analisis | Laporan</p>
+</div>
+
+<h2>4. Verifikasi Browser</h2>
+<div class="card">
+  <ul>
+    <li><span class="check">&#10003;</span> Dashboard: 4th card shows "Total Laporan: 1"</li>
+    <li><span class="check">&#10003;</span> Dashboard: 3 action buttons (analysis, report, delete)</li>
+    <li><span class="check">&#10003;</span> Analysis detail: "Download Laporan (.docx)" + "Generate Ulang" buttons visible</li>
+    <li><span class="check">&#10003;</span> All navigation links functional between pages</li>
+  </ul>
+</div>
+
+<h2>5. Tahap Selanjutnya</h2>
+<p><strong>Stage 26 — Testing &amp; QA</strong>: End-to-end testing of the full workflow: upload → analysis → view → report → download.</p>
