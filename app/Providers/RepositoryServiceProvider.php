@@ -14,8 +14,10 @@ use App\Services\ChartConfigService;
 use App\Services\Interfaces\ChartConfigServiceInterface;
 use App\Services\Interfaces\NarrativeServiceInterface;
 use App\Services\Interfaces\StatisticsServiceInterface;
+use App\Services\Interfaces\TracerAnalysisServiceInterface;
 use App\Services\NarrativeService;
 use App\Services\StatisticsService;
+use App\Services\TracerAnalysisService;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -30,5 +32,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(StatisticsServiceInterface::class, StatisticsService::class);
         $this->app->bind(NarrativeServiceInterface::class, NarrativeService::class);
         $this->app->bind(ChartConfigServiceInterface::class, ChartConfigService::class);
+        $this->app->bind(TracerAnalysisServiceInterface::class, TracerAnalysisService::class);
     }
 }
