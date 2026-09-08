@@ -10,6 +10,8 @@ use App\Repositories\Interfaces\ReportRepositoryInterface;
 use App\Repositories\Interfaces\TracerStudyRepositoryInterface;
 use App\Services\ExcelReaderService;
 use App\Services\Interfaces\ExcelReaderServiceInterface;
+use App\Services\ChartConfigService;
+use App\Services\Interfaces\ChartConfigServiceInterface;
 use App\Services\Interfaces\NarrativeServiceInterface;
 use App\Services\Interfaces\StatisticsServiceInterface;
 use App\Services\NarrativeService;
@@ -27,5 +29,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ExcelReaderServiceInterface::class, ExcelReaderService::class);
         $this->app->bind(StatisticsServiceInterface::class, StatisticsService::class);
         $this->app->bind(NarrativeServiceInterface::class, NarrativeService::class);
+        $this->app->bind(ChartConfigServiceInterface::class, ChartConfigService::class);
     }
 }
