@@ -1,0 +1,437 @@
+<title>Project Initialization</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --green: #059669; --green-bg: #ecfdf5;
+    --red: #dc2626; --red-bg: #fef2f2;
+    --amber: #d97706; --amber-bg: #fffbeb;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --green: #34d399; --green-bg: #0d2818;
+      --red: #f87171; --red-bg: #2a1010;
+      --amber: #fbbf24; --amber-bg: #2a2010;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --green: #34d399; --green-bg: #0d2818;
+    --red: #f87171; --red-bg: #2a1010;
+    --amber: #fbbf24; --amber-bg: #2a2010;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  h3 { font-size: 0.92rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text); }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  .tag { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 3px; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+  .tag-ok { color: var(--green); background: var(--green-bg); }
+  .tag-warn { color: var(--amber); background: var(--amber-bg); }
+  .tag-info { color: var(--accent); background: var(--accent-light); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.5rem 0.65rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 0.5rem 0.65rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .code-block { background: var(--surface-dim); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.7; color: var(--text-secondary); overflow-x: auto; margin-bottom: 1.25rem; white-space: pre; }
+  .code-block .comment { color: var(--text-tertiary); }
+  .code-block .cmd { color: var(--accent); }
+  .code-block .output { color: var(--green); }
+
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.82rem; color: var(--text-secondary); }
+  .checklist .check { flex-shrink: 0; width: 1.1rem; height: 1.1rem; border-radius: 4px; background: var(--green-bg); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; margin-top: 0.1rem; }
+
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.85rem; margin-bottom: 1.25rem; }
+  .summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem; box-shadow: var(--shadow-sm); }
+  .summary-card .label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-tertiary); margin-bottom: 0.3rem; }
+  .summary-card .value { font-size: 1rem; font-weight: 700; color: var(--text); }
+  .summary-card .detail { font-size: 0.72rem; color: var(--text-tertiary); margin-top: 0.15rem; }
+
+  .tree { font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.8; color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; overflow-x: auto; margin-bottom: 1.25rem; white-space: pre; }
+  .tree .dir { color: var(--accent); font-weight: 600; }
+  .tree .file { color: var(--text-secondary); }
+  .tree .new { color: var(--green); font-weight: 600; }
+  .tree .removed { color: var(--red); text-decoration: line-through; opacity: 0.6; }
+
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Project Initialization</h1>
+  <p class="doc-subtitle">Setup proyek Laravel lengkap dengan semua dependensi, konfigurasi database, frontend assets, dan initial commit.</p>
+  <div class="doc-meta">
+    <span>Tahap 12 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>12</strong> / 27 &mdash; Init</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- ENVIRONMENT -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">12.1</span>
+    <h2>Environment Setup</h2>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="label">PHP</div>
+      <div class="value">8.5.10</div>
+      <div class="detail">via Homebrew</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Composer</div>
+      <div class="value">2.10.3</div>
+      <div class="detail">via Homebrew</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">MySQL</div>
+      <div class="value">26.7.0</div>
+      <div class="detail">via Homebrew, running</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Node.js</div>
+      <div class="value">26.3.0</div>
+      <div class="detail">pre-installed</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Laravel</div>
+      <div class="value">13.30.1</div>
+      <div class="detail">via Composer</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Vite</div>
+      <div class="value">8.2.2</div>
+      <div class="detail">via npm</div>
+    </div>
+  </div>
+
+  <p>Semua tools terinstall via Homebrew (PHP, Composer, MySQL). MySQL service aktif dan database <code>tracer_reporting</code> sudah dibuat dengan charset utf8mb4.</p>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- DEPENDENCIES -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">12.2</span>
+    <h2>Dependencies</h2>
+  </div>
+
+  <h3>Composer (PHP)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Package</th><th>Versi</th><th>Fungsi</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>laravel/framework</td>
+          <td>^13.0</td>
+          <td>Core framework</td>
+          <td><span class="tag tag-ok">Installed</span></td>
+        </tr>
+        <tr>
+          <td>phpoffice/phpspreadsheet</td>
+          <td>^5.9</td>
+          <td>Excel file reader (.xlsx)</td>
+          <td><span class="tag tag-ok">Installed</span></td>
+        </tr>
+        <tr>
+          <td>phpoffice/phpword</td>
+          <td>^1.4</td>
+          <td>Word document generator (.docx)</td>
+          <td><span class="tag tag-ok">Installed</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>NPM (Frontend)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Package</th><th>Fungsi</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>admin-lte@4</td>
+          <td>Admin dashboard template + Bootstrap 5</td>
+          <td><span class="tag tag-ok">Installed</span></td>
+        </tr>
+        <tr>
+          <td>bootstrap</td>
+          <td>CSS framework (peer dep AdminLTE)</td>
+          <td><span class="tag tag-ok">Installed</span></td>
+        </tr>
+        <tr>
+          <td>@popperjs/core</td>
+          <td>Tooltip/dropdown positioning</td>
+          <td><span class="tag tag-ok">Installed</span></td>
+        </tr>
+        <tr>
+          <td>chart.js</td>
+          <td>Chart rendering (pie, bar, grouped bar)</td>
+          <td><span class="tag tag-ok">Installed</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Removed (tidak dipakai)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Package</th><th>Alasan</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>tailwindcss, @tailwindcss/vite</td>
+          <td>Proyek ini menggunakan Bootstrap 5 via AdminLTE 4</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- CONFIGURATION -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">12.3</span>
+    <h2>Configuration</h2>
+  </div>
+
+  <h3>.env</h3>
+  <div class="code-block"><span class="comment"># App</span>
+<span class="cmd">APP_NAME</span>="Tracer Reporting"
+<span class="cmd">APP_LOCALE</span>=id
+<span class="cmd">APP_FAKER_LOCALE</span>=id_ID
+
+<span class="comment"># Database</span>
+<span class="cmd">DB_CONNECTION</span>=mysql
+<span class="cmd">DB_DATABASE</span>=tracer_reporting
+<span class="cmd">DB_USERNAME</span>=root
+<span class="cmd">DB_PASSWORD</span>=
+
+<span class="comment"># Drivers (file-based, no queue)</span>
+<span class="cmd">SESSION_DRIVER</span>=file
+<span class="cmd">CACHE_STORE</span>=file
+<span class="cmd">QUEUE_CONNECTION</span>=sync</div>
+
+  <h3>Vite Config</h3>
+  <div class="code-block"><span class="comment">// vite.config.js — AdminLTE via npm, no Tailwind</span>
+input: ['resources/css/app.css', 'resources/js/app.js']
+
+<span class="comment">// resources/css/app.css</span>
+@import 'admin-lte/dist/css/adminlte.min.css';
+
+<span class="comment">// resources/js/app.js</span>
+import 'bootstrap';
+import 'admin-lte';
+import Chart from 'chart.js/auto';
+window.Chart = Chart;</div>
+
+  <h3>Build Output</h3>
+  <div class="code-block"><span class="output">✓ 66 modules transformed</span>
+public/build/assets/app-*.css  <span class="output">304.21 kB</span>  (AdminLTE + Bootstrap)
+public/build/assets/app-*.js   <span class="output">310.08 kB</span>  (Bootstrap + AdminLTE + Chart.js)
+<span class="output">✓ built in 737ms</span></div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- PROJECT STRUCTURE -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">12.4</span>
+    <h2>Project Structure</h2>
+  </div>
+
+  <p>Struktur saat ini setelah inisialisasi. File yang dihapus ditandai <span style="color: var(--red); text-decoration: line-through;">coret</span>, file yang dimodifikasi ditandai <span style="color: var(--green); font-weight: 600;">hijau</span>.</p>
+
+  <div class="tree"><span class="dir">tracer-reporting/</span>
+├── <span class="new">CLAUDE.md</span>                 (project guide)
+├── <span class="new">.env</span>                      (MySQL config)
+├── <span class="new">.env.example</span>              (template)
+├── <span class="new">.gitignore</span>
+├── <span class="new">composer.json</span>             (+phpspreadsheet, +phpword)
+├── <span class="new">package.json</span>              (+admin-lte, +chart.js)
+├── <span class="new">vite.config.js</span>            (no Tailwind)
+├── <span class="dir">app/</span>
+│   ├── Http/Controllers/Controller.php
+│   └── Providers/AppServiceProvider.php
+│   <span class="removed">└── Models/User.php</span>       (removed — no auth)
+├── <span class="dir">database/</span>
+│   <span class="removed">└── migrations/</span>           (default migrations removed)
+├── <span class="dir">docs/</span>                     (stages 1–12)
+├── <span class="dir">resources/</span>
+│   ├── <span class="new">css/app.css</span>           (AdminLTE import)
+│   └── <span class="new">js/app.js</span>             (Bootstrap + Chart.js)
+│   <span class="removed">└── views/welcome.blade.php</span>
+├── <span class="dir">routes/</span>
+│   └── <span class="new">web.php</span>               (redirect / → dashboard)
+└── <span class="dir">public/build/</span>             (compiled assets)</div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- GIT -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">12.5</span>
+    <h2>Git Repository</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Branch</td><td><code>main</code></td></tr>
+        <tr><td>Initial commit</td><td><code>c258909</code> — feat: initialize Laravel project with AdminLTE + Bootstrap + Chart.js</td></tr>
+        <tr><td>Files tracked</td><td>63 files</td></tr>
+        <tr><td>Convention</td><td>Conventional Commits (feat:, fix:, refactor:, docs:, style:, test:)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- CHECKLIST -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">12.6</span>
+    <h2>Acceptance Checklist (US-01)</h2>
+  </div>
+
+  <ul class="checklist">
+    <li><span class="check">&#10003;</span> Laravel 13 fresh install di tracer-reporting/</li>
+    <li><span class="check">&#10003;</span> Composer require: phpoffice/phpspreadsheet, phpoffice/phpword</li>
+    <li><span class="check">&#10003;</span> AdminLTE 4 + Bootstrap 5 + Chart.js terintegrasi (npm + Vite build OK)</li>
+    <li><span class="check">&#10003;</span> .env terkonfigurasi untuk MySQL lokal (tracer_reporting DB created)</li>
+    <li><span class="check">&#10003;</span> Git init + .gitignore + initial commit (main branch)</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- DECISIONS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">12.7</span>
+    <h2>Keputusan Implementasi</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Keputusan</th><th>Alasan</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Laravel 13 (bukan 12)</td>
+          <td>Versi terbaru saat instalasi, backward-compatible, semua fitur yang direncanakan di arsitektur tetap berlaku</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>PHP 8.5 (bukan 8.4)</td>
+          <td>Homebrew menyediakan PHP terbaru. Semua fitur PHP 8.4 tersedia, plus improvement tambahan</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Session &amp; cache: file driver</td>
+          <td>Tidak perlu database driver — single user, tidak butuh shared state, menghindari tabel tambahan</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Queue: sync</td>
+          <td>File Excel ≤5000 baris diproses &lt;30 detik — tidak perlu async queue</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Hapus default migrations, User model</td>
+          <td>Proyek tanpa authentication — tabel users, cache, jobs tidak dibutuhkan</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>AdminLTE via npm + Vite</td>
+          <td>Modern build pipeline, tree-shaking, HMR saat development</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Chart.js exposed as window.Chart</td>
+          <td>Chart config datang dari Blade (JSON), dirender di inline &lt;script&gt; per parameter card</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 12 &mdash; Project Init: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 13: Database Migration &amp; Models</span>
+</div>
