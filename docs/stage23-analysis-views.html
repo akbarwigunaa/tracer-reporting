@@ -1,0 +1,154 @@
+<title>Analysis Views</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #64748b;
+    --accent: #2563eb; --accent-light: #eff6ff;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --border: #e2e8f0; --card-bg: #ffffff;
+    --code-bg: #f1f5f9; --code-fg: #334155;
+    --table-stripe: #f8fafc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --accent: #60a5fa; --accent-light: #1e293b;
+      --success: #4ade80; --success-light: #0f2a1a;
+      --border: #334155; --card-bg: #1e293b;
+      --code-bg: #1e293b; --code-fg: #cbd5e1;
+      --table-stripe: #1a2536;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+    --accent: #60a5fa; --accent-light: #1e293b;
+    --success: #4ade80; --success-light: #0f2a1a;
+    --border: #334155; --card-bg: #1e293b;
+    --code-bg: #1e293b; --code-fg: #cbd5e1;
+    --table-stripe: #1a2536;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .meta-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; margin-top: 0.15rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+  code { background: var(--code-bg); color: var(--code-fg); padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 0; }
+  .check { color: var(--success); }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  @media (max-width: 600px) { body { padding: 1rem; } .meta-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<h1>Tahap 23 — Analysis Views</h1>
+<p class="subtitle">Sprint 3 &middot; Presentation Layer &middot; <span class="badge badge-green">Selesai</span></p>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Stage</div>
+    <div class="meta-value">23 / 27</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Sprint</div>
+    <div class="meta-value">Sprint 3</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Charts</div>
+    <div class="meta-value">8 Chart.js instances</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Commit</div>
+    <div class="meta-value"><code>9b31897</code></div>
+  </div>
+</div>
+
+<h2>1. Ringkasan</h2>
+<p>Implementasi dua view utama untuk modul analisis: halaman daftar (<code>analysis/index</code>) dan halaman detail (<code>analysis/show</code>). Halaman detail menampilkan 13 parameter analisis dengan narasi otomatis, tabel statistik per tipe, dan chart Chart.js untuk 8 parameter yang memiliki visualisasi.</p>
+
+<h2>2. File yang Dimodifikasi</h2>
+<div class="card">
+  <code>resources/views/analysis/index.blade.php</code> — Daftar tracer study dengan tabel + tombol Lihat<br>
+  <code>resources/views/analysis/show.blade.php</code> — Detail 13 parameter + Chart.js (291 lines total)
+</div>
+
+<h2>3. Analysis Index</h2>
+<p>Tabel daftar semua tracer study dengan kolom: Institusi/Prodi, Jenjang, Tahun Lulusan/Tracer, Response Rate, Status (badge), dan Aksi (tombol "Lihat" hanya untuk status completed). Empty state dengan CTA upload.</p>
+
+<h2>4. Analysis Detail — Struktur</h2>
+
+<h3>4.1 Header Card</h3>
+<p>Info tracer study: nama prodi + institusi, badges (jenjang, tahun lulusan, tahun tracer), dan 3 KPI besar (Responden, Total Lulusan, Response Rate).</p>
+
+<h3>4.2 Quick Navigation</h3>
+<p>Badge navigation bar — 13 anchor links (<code>#param-{key}</code>) untuk scroll ke parameter tertentu.</p>
+
+<h3>4.3 Parameter Cards (×13)</h3>
+<p>Setiap parameter ditampilkan dalam card terpisah dengan:</p>
+<ul>
+  <li><strong>Header:</strong> nomor urut (badge) + nama parameter + tipe statistik</li>
+  <li><strong>Narasi:</strong> teks otomatis dari NarrativeService dalam box bg-body-secondary</li>
+  <li><strong>Tabel statistik:</strong> layout berbeda per tipe (lihat section 5)</li>
+  <li><strong>Chart:</strong> Chart.js canvas di kolom kanan (col-lg-7) jika chart_config ada</li>
+</ul>
+
+<h2>5. Tampilan per Tipe Statistik</h2>
+<table>
+  <thead><tr><th>Tipe</th><th>Tampilan Tabel</th><th>Chart</th><th>Parameter</th></tr></thead>
+  <tbody>
+    <tr><td>frequency</td><td>Kategori / Jumlah / % + total footer, top category highlighted</td><td>Pie atau Bar</td><td>#1–6, #8</td></tr>
+    <tr><td>mean_median</td><td>Mean / Median / Min / Max / Count dengan format Rp</td><td>—</td><td>#7</td></tr>
+    <tr><td>mean</td><td>Rata-rata (+ "bulan") / Count</td><td>—</td><td>#9</td></tr>
+    <tr><td>sum</td><td>Total / Rata-rata / Count</td><td>—</td><td>#10, #11</td></tr>
+    <tr><td>display</td><td>List group values + count</td><td>—</td><td>#12</td></tr>
+    <tr><td>index</td><td>Kompetensi / Dikuasai / Dibutuhkan / Gap (color coded)</td><td>Grouped Bar</td><td>#13</td></tr>
+  </tbody>
+</table>
+
+<h2>6. Chart.js Integration</h2>
+<pre><code>// CDN: Chart.js 4.4.7 UMD via cdnjs
+// Config dari database (chart_config JSON) langsung ke Chart constructor
+// 8 canvas instances: 1 pie + 6 bar + 1 grouped_bar
+// Responsive + maintainAspectRatio: false, height: 320px container
+
+const chartConfigs = @json($results->filter(...)->mapWithKeys(...));
+Object.keys(chartConfigs).forEach(key => {
+    new Chart(canvas, { type, data, options });
+});</code></pre>
+
+<h2>7. Layout</h2>
+<ul>
+  <li>Tabel statistik: <code>col-lg-5</code> (atau <code>col-12</code> jika tanpa chart)</li>
+  <li>Chart canvas: <code>col-lg-7</code> dengan container height 320px</li>
+  <li>Responsive: tabel di atas, chart di bawah pada mobile</li>
+</ul>
+
+<h2>8. Verifikasi Browser</h2>
+<div class="card">
+  <ul>
+    <li><span class="check">&#10003;</span> Analysis index: tabel dengan tombol "Lihat" berfungsi</li>
+    <li><span class="check">&#10003;</span> Header card: info prodi + 3 KPI (10 responden, 200 lulusan, 5.00%)</li>
+    <li><span class="check">&#10003;</span> Quick navigation: 13 badge links</li>
+    <li><span class="check">&#10003;</span> 13 parameter cards rendered — DOM verified</li>
+    <li><span class="check">&#10003;</span> 8 canvas elements with Chart.js instances</li>
+    <li><span class="check">&#10003;</span> Pie chart: Status Setelah Lulus (Bekerja 60%)</li>
+    <li><span class="check">&#10003;</span> Bar charts: 6 frequency parameters</li>
+    <li><span class="check">&#10003;</span> Grouped bar: Kemampuan Diri (7 kompetensi × 2 datasets)</li>
+    <li><span class="check">&#10003;</span> Non-chart parameters: mean_median (Rp), mean, sum, display, index — all correct</li>
+    <li><span class="check">&#10003;</span> Navigation buttons at bottom (Kembali + Dashboard)</li>
+  </ul>
+</div>
+
+<h2>9. Tahap Selanjutnya</h2>
+<p><strong>Stage 24 — Report Generation (Word Export)</strong>: Implementasi PHPWord service untuk menghasilkan laporan .docx dari data analisis.</p>
