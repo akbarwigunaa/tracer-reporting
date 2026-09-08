@@ -1,0 +1,175 @@
+<title>TracerAnalysisService</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #64748b;
+    --accent: #2563eb; --accent-light: #eff6ff;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --border: #e2e8f0; --card-bg: #ffffff;
+    --code-bg: #f1f5f9; --code-fg: #334155;
+    --table-stripe: #f8fafc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --accent: #60a5fa; --accent-light: #1e293b;
+      --success: #4ade80; --success-light: #0f2a1a;
+      --border: #334155; --card-bg: #1e293b;
+      --code-bg: #1e293b; --code-fg: #cbd5e1;
+      --table-stripe: #1a2536;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+    --accent: #60a5fa; --accent-light: #1e293b;
+    --success: #4ade80; --success-light: #0f2a1a;
+    --border: #334155; --card-bg: #1e293b;
+    --code-bg: #1e293b; --code-fg: #cbd5e1;
+    --table-stripe: #1a2536;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .meta-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; margin-top: 0.15rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+  code { background: var(--code-bg); color: var(--code-fg); padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 0; }
+  .file-tree { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.8; }
+  .file-tree .new { color: var(--success); font-weight: 600; }
+  .file-tree .mod { color: var(--accent); font-weight: 600; }
+  .check { color: var(--success); }
+  .flow-step { display: flex; align-items: flex-start; gap: 0.75rem; margin: 0.5rem 0; }
+  .flow-num { background: var(--accent); color: white; width: 1.5rem; height: 1.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; margin-top: 0.15rem; }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  @media (max-width: 600px) { body { padding: 1rem; } .meta-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<h1>Tahap 21 — TracerAnalysisService</h1>
+<p class="subtitle">Sprint 2 &middot; Orchestrator &middot; <span class="badge badge-green">Selesai</span></p>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Stage</div>
+    <div class="meta-value">21 / 27</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Sprint</div>
+    <div class="meta-value">Sprint 2</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Services Used</div>
+    <div class="meta-value">4 sub-services</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Commit</div>
+    <div class="meta-value"><code>9b195ac</code></div>
+  </div>
+</div>
+
+<h2>1. Ringkasan</h2>
+<p>TracerAnalysisService adalah orchestrator utama yang mengorkestrasi seluruh pipeline analisis tracer study: menyimpan file Excel → membuat record TracerStudy → membaca data → menghitung statistik → menghasilkan narasi → membangun konfigurasi chart → menyimpan hasil analisis → mengupdate status. Service ini juga diintegrasikan ke <code>UploadController.store()</code>.</p>
+
+<h2>2. File yang Dibuat/Dimodifikasi</h2>
+<div class="file-tree card">
+  <span class="new">+ app/Services/Interfaces/TracerAnalysisServiceInterface.php</span><br>
+  <span class="new">+ app/Services/TracerAnalysisService.php</span> — 103 lines<br>
+  <span class="mod">~ app/Http/Controllers/UploadController.php</span> — DI + store() integration<br>
+  <span class="mod">~ app/Providers/RepositoryServiceProvider.php</span> — Binding
+</div>
+
+<h2>3. Pipeline Flow</h2>
+<div class="card">
+  <div class="flow-step"><div class="flow-num">1</div><div><strong>Store file</strong> — <code>$file->store('tracer-files', 'local')</code> → <code>storage/app/private/tracer-files/</code></div></div>
+  <div class="flow-step"><div class="flow-num">2</div><div><strong>Create TracerStudy</strong> — status='processing', meta fields, file_path</div></div>
+  <div class="flow-step"><div class="flow-num">3</div><div><strong>Read Excel</strong> — ExcelReaderService → raw data per 13 parameter</div></div>
+  <div class="flow-step"><div class="flow-num">4</div><div><strong>Count responden</strong> — dari jumlah baris parameter pertama; hitung response_rate</div></div>
+  <div class="flow-step"><div class="flow-num">5</div><div><strong>Update TracerStudy</strong> — total_responden + response_rate</div></div>
+  <div class="flow-step"><div class="flow-num">6</div><div><strong>Loop 13 parameter:</strong>
+    <ul>
+      <li>StatisticsService.calculate() → result_data</li>
+      <li>NarrativeService.generate() → narrative text</li>
+      <li>ChartConfigService.generate() → chart_config (or null)</li>
+      <li>AnalysisResultRepository.create() → simpan ke DB</li>
+    </ul>
+  </div></div>
+  <div class="flow-step"><div class="flow-num">7</div><div><strong>Update status</strong> — 'completed' (sukses) atau 'failed' (RuntimeException)</div></div>
+</div>
+
+<h2>4. Dependency Injection</h2>
+<pre><code>public function __construct(
+    private TracerStudyRepositoryInterface $tracerStudyRepository,
+    private AnalysisResultRepositoryInterface $analysisResultRepository,
+    private ExcelReaderServiceInterface $excelReader,
+    private StatisticsServiceInterface $statistics,
+    private NarrativeServiceInterface $narrative,
+    private ChartConfigServiceInterface $chartConfig,
+) {}</code></pre>
+
+<h2>5. UploadController Integration</h2>
+<pre><code>try {
+    $tracerStudy = $this->tracerAnalysisService->process(
+        $request->safe()->except('file'),
+        $request->file('file'),
+    );
+    return redirect()->route('analysis.show', $tracerStudy)
+        ->with('success', 'Data tracer berhasil diupload dan dianalisis.');
+} catch (RuntimeException $e) {
+    return back()->withInput()
+        ->with('error', 'Gagal memproses file: ' . $e->getMessage());
+}</code></pre>
+
+<h2>6. Error Handling</h2>
+<table>
+  <thead><tr><th>Kondisi</th><th>Aksi</th></tr></thead>
+  <tbody>
+    <tr><td>Sheet tidak ditemukan</td><td>Status → 'failed', RuntimeException di-throw, redirect back + error message</td></tr>
+    <tr><td>F-code tidak ditemukan</td><td>Status → 'failed', RuntimeException di-throw</td></tr>
+    <tr><td>Tipe statistik tidak dikenali</td><td>Status → 'failed', RuntimeException di-throw</td></tr>
+    <tr><td>Duplicate prodi+tahun</td><td>Ditangkap di controller sebelum process()</td></tr>
+  </tbody>
+</table>
+
+<h2>7. Laravel 13 Fix</h2>
+<p>Laravel 13 mengubah root <code>local</code> disk dari <code>storage/app/</code> ke <code>storage/app/private/</code>. File path di-resolve menggunakan <code>Storage::disk('local')->path($filePath)</code> bukan <code>storage_path("app/{$filePath}")</code>.</p>
+
+<h2>8. Test Results</h2>
+<div class="card">
+  <p>End-to-end test via Tinker dengan 10 responden:</p>
+  <ul>
+    <li><span class="check">&#10003;</span> TracerStudy created: ID=6, status=completed</li>
+    <li><span class="check">&#10003;</span> Responden: 10/200, response rate: 5.00%</li>
+    <li><span class="check">&#10003;</span> 13 AnalysisResult records tersimpan</li>
+    <li><span class="check">&#10003;</span> 8 parameter dengan chart_config (pie=1, bar=6, grouped_bar=1)</li>
+    <li><span class="check">&#10003;</span> 5 parameter tanpa chart (mean_median, mean, sum×2, display)</li>
+    <li><span class="check">&#10003;</span> Semua narasi ter-generate dengan data aktual</li>
+    <li><span class="check">&#10003;</span> File tersimpan di storage/app/private/tracer-files/</li>
+  </ul>
+</div>
+
+<h2>9. Service Architecture Summary</h2>
+<table>
+  <thead><tr><th>Service</th><th>Stage</th><th>Fungsi</th></tr></thead>
+  <tbody>
+    <tr><td>ExcelReaderService</td><td>17</td><td>Baca Excel → raw data per parameter</td></tr>
+    <tr><td>StatisticsService</td><td>18</td><td>Raw data → statistik terstruktur</td></tr>
+    <tr><td>NarrativeService</td><td>19</td><td>Statistik → teks narasi</td></tr>
+    <tr><td>ChartConfigService</td><td>20</td><td>Statistik → Chart.js config</td></tr>
+    <tr><td><strong>TracerAnalysisService</strong></td><td><strong>21</strong></td><td><strong>Orchestrator — pipeline lengkap</strong></td></tr>
+  </tbody>
+</table>
+
+<h2>10. Tahap Selanjutnya</h2>
+<p><strong>Stage 22 — Dashboard View</strong>: Implementasi halaman dashboard dengan daftar tracer study, statistik ringkasan, dan navigasi ke hasil analisis.</p>
