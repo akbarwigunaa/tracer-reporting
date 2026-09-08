@@ -45,15 +45,11 @@
     <div class="col-lg-3 col-6">
         <div class="small-box text-bg-warning">
             <div class="inner">
-                @php
-                    $completed = $tracerStudies->where('status', 'completed');
-                    $avgRate = $completed->count() > 0 ? $completed->avg('response_rate') : 0;
-                @endphp
-                <h3>{{ number_format($avgRate, 1) }}%</h3>
-                <p>Rata-rata Response Rate</p>
+                <h3>{{ $totalReports }}</h3>
+                <p>Total Laporan</p>
             </div>
             <div class="small-box-icon">
-                <i class="bi bi-graph-up"></i>
+                <i class="bi bi-file-earmark-word"></i>
             </div>
         </div>
     </div>
@@ -89,7 +85,7 @@
                             <th class="text-end">Responden</th>
                             <th class="text-end">Response Rate</th>
                             <th class="text-center">Status</th>
-                            <th class="text-center" style="width: 120px">Aksi</th>
+                            <th class="text-center" style="width: 160px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -130,9 +126,15 @@
                                 </td>
                                 <td class="text-center text-nowrap">
                                     @if($ts->isCompleted())
-                                        <a href="{{ route('analysis.show', $ts) }}" class="btn btn-outline-primary btn-sm me-1" title="Lihat Analisis">
+                                        <a href="{{ route('analysis.show', $ts) }}" class="btn btn-outline-primary btn-sm" title="Lihat Analisis">
                                             <i class="bi bi-bar-chart-line"></i>
                                         </a>
+                                        <form action="{{ route('reports.generate', $ts) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-success btn-sm" title="Generate Laporan">
+                                                <i class="bi bi-file-earmark-word"></i>
+                                            </button>
+                                        </form>
                                     @endif
                                     <form action="{{ route('tracer-studies.destroy', $ts) }}" method="POST" class="d-inline"
                                           onsubmit="return confirm('Hapus data tracer study {{ $ts->nama_prodi }} ({{ $ts->tahun_lulusan }})?')">

@@ -41,6 +41,21 @@
     </div>
 </div>
 
+{{-- Action Bar --}}
+<div class="d-flex justify-content-end gap-2 mb-4">
+    @if($latestReport)
+        <a href="{{ route('reports.download', $latestReport) }}" class="btn btn-success btn-sm">
+            <i class="bi bi-download me-1"></i> Download Laporan (.docx)
+        </a>
+    @endif
+    <form action="{{ route('reports.generate', $tracerStudy) }}" method="POST" class="d-inline">
+        @csrf
+        <button type="submit" class="btn btn-primary btn-sm">
+            <i class="bi bi-file-earmark-word me-1"></i> {{ $latestReport ? 'Generate Ulang' : 'Generate Laporan' }}
+        </button>
+    </form>
+</div>
+
 {{-- Quick Navigation --}}
 <div class="card mb-4">
     <div class="card-body py-2">
@@ -197,9 +212,20 @@
     <a href="{{ route('analysis.index') }}" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar
     </a>
-    <a href="{{ route('dashboard') }}" class="btn btn-outline-primary">
-        <i class="bi bi-speedometer2 me-1"></i> Dashboard
-    </a>
+    <div class="d-flex gap-2">
+        @if($latestReport)
+            <a href="{{ route('reports.download', $latestReport) }}" class="btn btn-success">
+                <i class="bi bi-download me-1"></i> Download Laporan
+            </a>
+        @else
+            <form action="{{ route('reports.generate', $tracerStudy) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-file-earmark-word me-1"></i> Generate Laporan
+                </button>
+            </form>
+        @endif
+    </div>
 </div>
 @endsection
 

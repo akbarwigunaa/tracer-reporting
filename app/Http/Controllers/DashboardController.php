@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Report;
 use App\Models\TracerStudy;
 use App\Repositories\Interfaces\TracerStudyRepositoryInterface;
 use Illuminate\Http\RedirectResponse;
@@ -16,8 +17,9 @@ class DashboardController extends Controller
     public function index(): View
     {
         $tracerStudies = $this->tracerStudyRepository->all();
+        $totalReports = Report::count();
 
-        return view('dashboard', compact('tracerStudies'));
+        return view('dashboard', compact('tracerStudies', 'totalReports'));
     }
 
     public function destroy(TracerStudy $tracerStudy): RedirectResponse
