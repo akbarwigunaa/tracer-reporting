@@ -1,0 +1,171 @@
+<title>NarrativeService</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #64748b;
+    --accent: #2563eb; --accent-light: #eff6ff;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --border: #e2e8f0; --card-bg: #ffffff;
+    --code-bg: #f1f5f9; --code-fg: #334155;
+    --table-stripe: #f8fafc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --accent: #60a5fa; --accent-light: #1e293b;
+      --success: #4ade80; --success-light: #0f2a1a;
+      --border: #334155; --card-bg: #1e293b;
+      --code-bg: #1e293b; --code-fg: #cbd5e1;
+      --table-stripe: #1a2536;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+    --accent: #60a5fa; --accent-light: #1e293b;
+    --success: #4ade80; --success-light: #0f2a1a;
+    --border: #334155; --card-bg: #1e293b;
+    --code-bg: #1e293b; --code-fg: #cbd5e1;
+    --table-stripe: #1a2536;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .meta-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; margin-top: 0.15rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+  code { background: var(--code-bg); color: var(--code-fg); padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 0; }
+  .file-tree { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.8; }
+  .file-tree .new { color: var(--success); font-weight: 600; }
+  .file-tree .mod { color: var(--accent); font-weight: 600; }
+  .check { color: var(--success); }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  a { color: var(--accent); text-decoration: none; }
+  .sample { background: var(--accent-light); border-left: 3px solid var(--accent); padding: 0.75rem 1rem; border-radius: 0 0.25rem 0.25rem 0; margin: 0.5rem 0; font-style: italic; }
+  @media (max-width: 600px) { body { padding: 1rem; } .meta-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<h1>Tahap 19 — NarrativeService</h1>
+<p class="subtitle">Sprint 2 &middot; Service Layer &middot; <span class="badge badge-green">Selesai</span></p>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Stage</div>
+    <div class="meta-value">19 / 27</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Sprint</div>
+    <div class="meta-value">Sprint 2</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Templates</div>
+    <div class="meta-value">13 + 1 helper</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Commit</div>
+    <div class="meta-value"><code>f777008</code></div>
+  </div>
+</div>
+
+<h2>1. Ringkasan</h2>
+<p>NarrativeService menghasilkan teks narasi otomatis dari hasil statistik menggunakan template di <code>config/narratives.php</code>. Service mengganti placeholder dengan data aktual, memformat angka Rupiah, dan menghandle <code>second_text_template</code> untuk runner-up category.</p>
+
+<h2>2. File yang Dibuat/Dimodifikasi</h2>
+<div class="file-tree card">
+  <span class="new">+ app/Services/Interfaces/NarrativeServiceInterface.php</span><br>
+  <span class="new">+ app/Services/NarrativeService.php</span> — 107 lines<br>
+  <span class="mod">~ app/Providers/RepositoryServiceProvider.php</span> — Binding
+</div>
+
+<h2>3. Interface</h2>
+<pre><code>interface NarrativeServiceInterface
+{
+    public function generate(
+        string $parameterKey,
+        array $statisticsResult,
+        array $meta = [],
+    ): string;
+}</code></pre>
+
+<h2>4. Flow Proses</h2>
+<div class="card">
+  <ol>
+    <li>Ambil template dari <code>config("narratives.{$parameterKey}")</code></li>
+    <li>Build replacements dari 3 sumber: meta info, stats result, second_text</li>
+    <li>Sort keys by length descending (prevent <code>:total</code> matching before <code>:total_sum</code>)</li>
+    <li><code>str_replace</code> semua <code>:placeholder</code> dengan nilai</li>
+  </ol>
+</div>
+
+<h2>5. Placeholder yang Didukung</h2>
+
+<h3>5.1 Meta Placeholders</h3>
+<table>
+  <thead><tr><th>Placeholder</th><th>Sumber</th></tr></thead>
+  <tbody>
+    <tr><td><code>:prodi</code></td><td>$meta['prodi'] — nama program studi</td></tr>
+    <tr><td><code>:jenjang</code></td><td>$meta['jenjang'] — D3/D4/S1/S2/S3</td></tr>
+    <tr><td><code>:tahun_lulusan</code></td><td>$meta['tahun_lulusan'] — tahun lulusan</td></tr>
+  </tbody>
+</table>
+
+<h3>5.2 Statistics Placeholders</h3>
+<table>
+  <thead><tr><th>Placeholder</th><th>Tipe Statistik</th><th>Format</th></tr></thead>
+  <tbody>
+    <tr><td><code>:total</code></td><td>frequency</td><td>integer</td></tr>
+    <tr><td><code>:top_category</code>, <code>:top_count</code>, <code>:top_pct</code></td><td>frequency</td><td>string, int, float</td></tr>
+    <tr><td><code>:second_category</code>, <code>:second_count</code>, <code>:second_pct</code></td><td>frequency</td><td>string, int, float</td></tr>
+    <tr><td><code>:second_text</code></td><td>frequency</td><td>Generated from helper template</td></tr>
+    <tr><td><code>:mean</code></td><td>mean_median, mean, sum</td><td>Rp format if &gt; 10.000</td></tr>
+    <tr><td><code>:median</code>, <code>:min</code>, <code>:max</code></td><td>mean_median</td><td>Rp format (number_format)</td></tr>
+    <tr><td><code>:total_sum</code></td><td>sum</td><td>number_format</td></tr>
+    <tr><td><code>:top_competency</code>, <code>:top_index_a</code></td><td>index</td><td>string, float</td></tr>
+    <tr><td><code>:gap_competency</code>, <code>:gap_value</code></td><td>index</td><td>string, float</td></tr>
+  </tbody>
+</table>
+
+<h2>6. Fitur Khusus</h2>
+
+<h3>6.1 Currency Formatting</h3>
+<p>Nilai <code>:mean</code> &gt; 10.000 otomatis diformat sebagai Rupiah (titik ribuan):</p>
+<div class="sample">Rp 4.050.000</div>
+
+<h3>6.2 Second Text Template</h3>
+<p>Placeholder <code>:second_text</code> di-generate dari <code>second_text_template</code> hanya jika second_count &gt; 0:</p>
+<div class="sample">Sementara Wirausaha sebanyak 1 orang (20%).</div>
+
+<h3>6.3 Key Length Sorting</h3>
+<p>Replacement keys disort descending by length untuk mencegah partial match — contoh: <code>:total_sum</code> harus tergantikan sebelum <code>:total</code>.</p>
+
+<h2>7. Contoh Output</h2>
+
+<h3>frequency (status_setelah_lulus)</h3>
+<div class="sample">Dari 5 responden lulusan Teknik Informatika S1 tahun 2023, mayoritas berstatus Bekerja sebanyak 2 orang (40%). Sementara Wirausaha sebanyak 1 orang (20%).</div>
+
+<h3>mean_median (pendapatan_pertama)</h3>
+<div class="sample">Rata-rata pendapatan pertama lulusan setelah bekerja adalah Rp 4.050.000 per bulan, dengan nilai tengah (median) sebesar Rp 3.850.000. Pendapatan terendah tercatat Rp 2.500.000 dan tertinggi Rp 6.000.000.</div>
+
+<h3>sum (melamar_pekerjaan)</h3>
+<div class="sample">Total lamaran pekerjaan yang dikirimkan oleh seluruh responden adalah 38 lamaran, dengan rata-rata 9.5 lamaran per orang.</div>
+
+<h3>index (kemampuan_diri)</h3>
+<div class="sample">Penilaian kemampuan diri lulusan mencakup 7 kompetensi. Kompetensi Etika memiliki indeks dikuasai tertinggi (4.2), sementara kompetensi Keahlian Bidang menunjukkan gap terbesar antara yang dibutuhkan dan yang dikuasai (-0.6).</div>
+
+<h2>8. Bug Fix</h2>
+<p>Ditemukan dan diperbaiki selama development: <code>:total</code> secara greedy mengganti sebagian dari <code>:total_sum</code>, menghasilkan output "4_sum" bukan "38". Fix: <code>uksort()</code> replacement keys by <code>strlen</code> descending sebelum <code>str_replace()</code>.</p>
+
+<h2>9. Tahap Selanjutnya</h2>
+<p><strong>Stage 20 — ChartConfigService</strong>: Menghasilkan konfigurasi Chart.js untuk setiap parameter yang memiliki <code>chart_type</code> (pie, bar, grouped_bar).</p>
