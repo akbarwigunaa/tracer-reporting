@@ -1,0 +1,148 @@
+<title>Dashboard View</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #64748b;
+    --accent: #2563eb; --accent-light: #eff6ff;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --border: #e2e8f0; --card-bg: #ffffff;
+    --code-bg: #f1f5f9; --code-fg: #334155;
+    --table-stripe: #f8fafc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --accent: #60a5fa; --accent-light: #1e293b;
+      --success: #4ade80; --success-light: #0f2a1a;
+      --border: #334155; --card-bg: #1e293b;
+      --code-bg: #1e293b; --code-fg: #cbd5e1;
+      --table-stripe: #1a2536;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+    --accent: #60a5fa; --accent-light: #1e293b;
+    --success: #4ade80; --success-light: #0f2a1a;
+    --border: #334155; --card-bg: #1e293b;
+    --code-bg: #1e293b; --code-fg: #cbd5e1;
+    --table-stripe: #1a2536;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .meta-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; margin-top: 0.15rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+  code { background: var(--code-bg); color: var(--code-fg); padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 0; }
+  .check { color: var(--success); }
+  ul { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  @media (max-width: 600px) { body { padding: 1rem; } .meta-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<h1>Tahap 22 — Dashboard View</h1>
+<p class="subtitle">Sprint 3 &middot; Presentation Layer &middot; <span class="badge badge-green">Selesai</span></p>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Stage</div>
+    <div class="meta-value">22 / 27</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Sprint</div>
+    <div class="meta-value">Sprint 3</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Layer</div>
+    <div class="meta-value">Presentation</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Commit</div>
+    <div class="meta-value"><code>aa9a398</code></div>
+  </div>
+</div>
+
+<h2>1. Ringkasan</h2>
+<p>Implementasi halaman Dashboard utama — landing page aplikasi. Menampilkan 4 summary cards (KPI) dan tabel daftar semua tracer study beserta status, statistik, dan aksi (lihat analisis / hapus). Menggunakan komponen AdminLTE 4 <code>small-box</code> untuk summary cards dan Bootstrap 5 table.</p>
+
+<h2>2. File yang Dimodifikasi</h2>
+<div class="card">
+  <code>resources/views/dashboard.blade.php</code> — dari placeholder menjadi full implementation (147 lines)
+</div>
+
+<h2>3. Komponen UI</h2>
+
+<h3>3.1 Summary Cards (4 KPI)</h3>
+<table>
+  <thead><tr><th>Card</th><th>Warna</th><th>Data</th><th>Ikon</th></tr></thead>
+  <tbody>
+    <tr><td>Total Tracer Study</td><td>Primary (biru)</td><td><code>$tracerStudies->count()</code></td><td>bi-database</td></tr>
+    <tr><td>Analisis Selesai</td><td>Success (hijau)</td><td><code>->where('status', 'completed')->count()</code></td><td>bi-check-circle</td></tr>
+    <tr><td>Total Responden</td><td>Info (cyan)</td><td><code>->sum('total_responden')</code></td><td>bi-people</td></tr>
+    <tr><td>Rata-rata Response Rate</td><td>Warning (kuning)</td><td><code>->avg('response_rate')</code> dari completed</td><td>bi-graph-up</td></tr>
+  </tbody>
+</table>
+
+<h3>3.2 Tabel Tracer Study</h3>
+<table>
+  <thead><tr><th>Kolom</th><th>Deskripsi</th></tr></thead>
+  <tbody>
+    <tr><td>#</td><td>Nomor urut</td></tr>
+    <tr><td>Institusi / Prodi</td><td>Nama prodi (bold) + nama institusi (small muted)</td></tr>
+    <tr><td>Jenjang</td><td>D3/D4/S1/S2/S3</td></tr>
+    <tr><td>Tahun Lulusan</td><td>Center aligned</td></tr>
+    <tr><td>Tahun Tracer</td><td>Center aligned</td></tr>
+    <tr><td>Responden</td><td>Format: responden / total_lulusan</td></tr>
+    <tr><td>Response Rate</td><td>Persentase dengan 2 desimal</td></tr>
+    <tr><td>Status</td><td>Badge: Selesai (hijau), Proses (kuning), Gagal (merah)</td></tr>
+    <tr><td>Aksi</td><td>Lihat Analisis (jika completed) + Hapus (confirm dialog)</td></tr>
+  </tbody>
+</table>
+
+<h3>3.3 Empty State</h3>
+<p>Ketika belum ada data: tampil ikon inbox besar, pesan "Belum ada data tracer study", dan tombol "Upload Data Pertama".</p>
+
+<h2>4. Data Flow</h2>
+<pre><code>DashboardController::index()
+  → TracerStudyRepository::all()  // latest() order
+  → view('dashboard', compact('tracerStudies'))
+    → Summary cards: computed from Collection methods
+    → Table: @foreach loop with status badges + action buttons</code></pre>
+
+<h2>5. Aksi Pengguna</h2>
+<table>
+  <thead><tr><th>Aksi</th><th>Route</th><th>Keterangan</th></tr></thead>
+  <tbody>
+    <tr><td>Upload Baru</td><td><code>upload.create</code></td><td>Button di card header</td></tr>
+    <tr><td>Lihat Analisis</td><td><code>analysis.show</code></td><td>Hanya muncul jika status=completed</td></tr>
+    <tr><td>Hapus</td><td><code>tracer-studies.destroy</code></td><td>DELETE form + confirm dialog</td></tr>
+  </tbody>
+</table>
+
+<h2>6. Verifikasi Browser</h2>
+<div class="card">
+  <ul>
+    <li><span class="check">&#10003;</span> Summary cards menampilkan data real (1 study, 1 selesai, 10 responden, 5.0%)</li>
+    <li><span class="check">&#10003;</span> Tabel menampilkan tracer study dengan semua kolom terisi</li>
+    <li><span class="check">&#10003;</span> Badge status "Selesai" berwarna hijau</li>
+    <li><span class="check">&#10003;</span> Tombol Lihat Analisis navigasi ke <code>/analysis/6</code></li>
+    <li><span class="check">&#10003;</span> Tombol Hapus memunculkan confirm dialog</li>
+    <li><span class="check">&#10003;</span> AdminLTE 4 small-box styling diterapkan</li>
+    <li><span class="check">&#10003;</span> Responsive layout (col-lg-3 col-6 untuk cards)</li>
+  </ul>
+</div>
+
+<h2>7. Tahap Selanjutnya</h2>
+<p><strong>Stage 23 — Analysis Detail View</strong>: Implementasi halaman detail analisis per tracer study — menampilkan 13 parameter dengan narasi, tabel statistik, dan Chart.js charts.</p>
