@@ -1,0 +1,415 @@
+<title>Repository Pattern</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --green: #059669; --green-bg: #ecfdf5;
+    --purple: #7c3aed; --purple-bg: #f5f3ff;
+    --amber: #d97706; --amber-bg: #fffbeb;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --green: #34d399; --green-bg: #0d2818;
+      --purple: #a78bfa; --purple-bg: #1e1838;
+      --amber: #fbbf24; --amber-bg: #2a2010;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --green: #34d399; --green-bg: #0d2818;
+    --purple: #a78bfa; --purple-bg: #1e1838;
+    --amber: #fbbf24; --amber-bg: #2a2010;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  h3 { font-size: 0.92rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text); }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  .tag { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 3px; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+  .tag-ok { color: var(--green); background: var(--green-bg); }
+  .tag-iface { color: var(--purple); background: var(--purple-bg); }
+  .tag-impl { color: var(--accent); background: var(--accent-light); }
+  .tag-provider { color: var(--amber); background: var(--amber-bg); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.5rem 0.65rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 0.5rem 0.65rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .code-block { background: var(--surface-dim); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.7; color: var(--text-secondary); overflow-x: auto; margin-bottom: 1.25rem; white-space: pre; }
+  .code-block .kw { color: var(--accent); font-weight: 600; }
+  .code-block .type { color: var(--purple); }
+  .code-block .fn { color: var(--green); }
+  .code-block .str { color: var(--amber); }
+  .code-block .comment { color: var(--text-tertiary); }
+
+  .iface-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); overflow: hidden; }
+  .iface-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.65rem 0.85rem; background: var(--surface-dim); border-bottom: 1px solid var(--border); }
+  .iface-header .name { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--text); }
+  .iface-header .layer { font-size: 0.72rem; color: var(--text-tertiary); margin-left: auto; }
+  .iface-body { padding: 0.75rem 0.85rem; }
+  .method-list { list-style: none; padding: 0; margin: 0; }
+  .method-list li { font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.8; color: var(--text-secondary); padding: 0.15rem 0; border-bottom: 1px solid var(--border); }
+  .method-list li:last-child { border-bottom: none; }
+  .method-list .ret { color: var(--purple); }
+  .method-list .mname { color: var(--green); font-weight: 600; }
+  .method-list .param { color: var(--text-tertiary); }
+
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.82rem; color: var(--text-secondary); }
+  .checklist .check { flex-shrink: 0; width: 1.1rem; height: 1.1rem; border-radius: 4px; background: var(--green-bg); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; margin-top: 0.1rem; }
+
+  .dep-flow { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 1.5rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .dep-box { padding: 0.5rem 0.85rem; border-radius: 6px; font-size: 0.72rem; font-weight: 600; text-align: center; white-space: nowrap; }
+  .dep-box.controller { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent); }
+  .dep-box.service { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber); }
+  .dep-box.iface { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple); }
+  .dep-box.repo { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+  .dep-arrow { color: var(--text-tertiary); font-size: 1rem; }
+
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .dep-flow { flex-direction: column; }
+    .dep-arrow { transform: rotate(90deg); }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Repository Pattern &amp; Service Provider</h1>
+  <p class="doc-subtitle">Implementasi 3 repository interfaces, 3 Eloquent implementations, dan RepositoryServiceProvider untuk dependency injection.</p>
+  <div class="doc-meta">
+    <span>Tahap 14 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>14</strong> / 27 &mdash; Repository</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- DEPENDENCY FLOW -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">14.1</span>
+    <h2>Dependency Flow</h2>
+  </div>
+
+  <p>Controller dan Service hanya bergantung pada Interface (abstraksi), bukan implementasi konkret. Service Provider yang menghubungkan keduanya saat runtime.</p>
+
+  <div class="dep-flow">
+    <div class="dep-box controller">Controller</div>
+    <span class="dep-arrow">&rarr;</span>
+    <div class="dep-box service">Service</div>
+    <span class="dep-arrow">&rarr;</span>
+    <div class="dep-box iface">Interface</div>
+    <span class="dep-arrow">&larr;</span>
+    <div class="dep-box repo">Eloquent Repo</div>
+  </div>
+
+  <div class="code-block"><span class="comment">// bootstrap/providers.php</span>
+<span class="kw">return</span> [
+    <span class="type">AppServiceProvider</span>::class,
+    <span class="type">RepositoryServiceProvider</span>::class,  <span class="comment">// ← added</span>
+];</div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- INTERFACES -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">14.2</span>
+    <h2>Repository Interfaces (Domain Layer)</h2>
+  </div>
+
+  <div class="iface-card">
+    <div class="iface-header">
+      <span class="tag tag-iface">Interface</span>
+      <span class="name">TracerStudyRepositoryInterface</span>
+      <span class="layer">app/Repositories/Interfaces/</span>
+    </div>
+    <div class="iface-body">
+      <ul class="method-list">
+        <li><span class="mname">all</span>(): <span class="ret">Collection</span></li>
+        <li><span class="mname">find</span>(<span class="param">int $id</span>): <span class="ret">?TracerStudy</span></li>
+        <li><span class="mname">findOrFail</span>(<span class="param">int $id</span>): <span class="ret">TracerStudy</span></li>
+        <li><span class="mname">create</span>(<span class="param">array $data</span>): <span class="ret">TracerStudy</span></li>
+        <li><span class="mname">update</span>(<span class="param">TracerStudy $tracerStudy, array $data</span>): <span class="ret">TracerStudy</span></li>
+        <li><span class="mname">delete</span>(<span class="param">TracerStudy $tracerStudy</span>): <span class="ret">bool</span></li>
+        <li><span class="mname">findByProdiAndTahun</span>(<span class="param">string $prodi, string $tahunLulusan, string $tahunTracer</span>): <span class="ret">?TracerStudy</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="iface-card">
+    <div class="iface-header">
+      <span class="tag tag-iface">Interface</span>
+      <span class="name">AnalysisResultRepositoryInterface</span>
+      <span class="layer">app/Repositories/Interfaces/</span>
+    </div>
+    <div class="iface-body">
+      <ul class="method-list">
+        <li><span class="mname">findByTracerStudy</span>(<span class="param">int $tracerStudyId</span>): <span class="ret">Collection</span></li>
+        <li><span class="mname">findByTracerStudyAndKey</span>(<span class="param">int $tracerStudyId, string $parameterKey</span>): <span class="ret">?AnalysisResult</span></li>
+        <li><span class="mname">create</span>(<span class="param">array $data</span>): <span class="ret">AnalysisResult</span></li>
+        <li><span class="mname">deleteByTracerStudy</span>(<span class="param">int $tracerStudyId</span>): <span class="ret">int</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="iface-card">
+    <div class="iface-header">
+      <span class="tag tag-iface">Interface</span>
+      <span class="name">ReportRepositoryInterface</span>
+      <span class="layer">app/Repositories/Interfaces/</span>
+    </div>
+    <div class="iface-body">
+      <ul class="method-list">
+        <li><span class="mname">findByTracerStudy</span>(<span class="param">int $tracerStudyId</span>): <span class="ret">Collection</span></li>
+        <li><span class="mname">find</span>(<span class="param">int $id</span>): <span class="ret">?Report</span></li>
+        <li><span class="mname">create</span>(<span class="param">array $data</span>): <span class="ret">Report</span></li>
+        <li><span class="mname">delete</span>(<span class="param">Report $report</span>): <span class="ret">bool</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- IMPLEMENTATIONS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">14.3</span>
+    <h2>Eloquent Implementations (Infrastructure Layer)</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Interface</th><th>Implementation</th><th>Methods</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;font-weight:600;color:var(--purple);">TracerStudyRepositoryInterface</td>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;font-weight:600;color:var(--green);">EloquentTracerStudyRepository</td>
+          <td style="text-align:center;">7</td>
+          <td>all() returns latest() first; findByProdiAndTahun uses 3-column where</td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;font-weight:600;color:var(--purple);">AnalysisResultRepositoryInterface</td>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;font-weight:600;color:var(--green);">EloquentAnalysisResultRepository</td>
+          <td style="text-align:center;">4</td>
+          <td>findByTracerStudy orders by 'order' column; deleteByTracerStudy returns affected rows</td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;font-weight:600;color:var(--purple);">ReportRepositoryInterface</td>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;font-weight:600;color:var(--green);">EloquentReportRepository</td>
+          <td style="text-align:center;">4</td>
+          <td>findByTracerStudy returns latest() first</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- SERVICE PROVIDER -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">14.4</span>
+    <h2>RepositoryServiceProvider</h2>
+  </div>
+
+  <div class="code-block"><span class="comment">// app/Providers/RepositoryServiceProvider.php</span>
+<span class="kw">class</span> <span class="type">RepositoryServiceProvider</span> <span class="kw">extends</span> ServiceProvider
+{
+    <span class="kw">public function</span> <span class="fn">register</span>(): void
+    {
+        $this->app-><span class="fn">bind</span>(
+            <span class="type">TracerStudyRepositoryInterface</span>::class,
+            <span class="type">EloquentTracerStudyRepository</span>::class
+        );
+        $this->app-><span class="fn">bind</span>(
+            <span class="type">AnalysisResultRepositoryInterface</span>::class,
+            <span class="type">EloquentAnalysisResultRepository</span>::class
+        );
+        $this->app-><span class="fn">bind</span>(
+            <span class="type">ReportRepositoryInterface</span>::class,
+            <span class="type">EloquentReportRepository</span>::class
+        );
+    }
+}</div>
+
+  <p>Binding menggunakan <code>bind()</code> (bukan <code>singleton()</code>) — setiap resolve mendapat instance baru. Repository stateless, jadi tidak perlu singleton.</p>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- VERIFICATION -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">14.5</span>
+    <h2>Verification</h2>
+  </div>
+
+  <div class="code-block"><span class="comment"># Tinker — DI resolution test</span>
+TracerStudy repo: <span class="fn">App\Repositories\Eloquent\EloquentTracerStudyRepository</span>
+AnalysisResult repo: <span class="fn">App\Repositories\Eloquent\EloquentAnalysisResultRepository</span>
+Report repo: <span class="fn">App\Repositories\Eloquent\EloquentReportRepository</span>
+
+<span class="comment"># Repository method tests</span>
+all() count: <span class="fn">0</span>
+Created via repo: <span class="fn">Teknik Elektro (id=2)</span>
+findOrFail: <span class="fn">Teknik Elektro</span>
+findByProdiAndTahun: <span class="fn">found</span>
+Updated status: <span class="fn">completed</span>
+Analysis created: <span class="fn">status_pekerjaan</span>
+findByTracerStudy count: <span class="fn">1</span>
+findByKey: <span class="fn">found</span>
+Report created: <span class="fn">test.docx</span>
+deleteByTracerStudy: analysis count = <span class="fn">0</span>
+<span class="fn">ALL REPOSITORY TESTS PASSED</span></div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- CHECKLIST -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">14.6</span>
+    <h2>Acceptance Checklist (US-03)</h2>
+  </div>
+
+  <ul class="checklist">
+    <li><span class="check">&#10003;</span> 3 Interface: TracerStudy (7 methods), AnalysisResult (4), Report (4)</li>
+    <li><span class="check">&#10003;</span> 3 Eloquent Repository implementations</li>
+    <li><span class="check">&#10003;</span> RepositoryServiceProvider binding Interface → Implementation</li>
+    <li><span class="check">&#10003;</span> Provider terdaftar di bootstrap/providers.php</li>
+    <li><span class="check">&#10003;</span> Constructor injection berfungsi (DI resolve verified via Tinker)</li>
+    <li><span class="check">&#10003;</span> Semua repository methods tested: create, find, update, delete, custom queries</li>
+  </ul>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- FILES -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">14.7</span>
+    <h2>Files Created</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Layer</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;">app/Repositories/Interfaces/TracerStudyRepositoryInterface.php</td>
+          <td>Domain</td>
+          <td><span class="tag tag-iface">Interface</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;">app/Repositories/Interfaces/AnalysisResultRepositoryInterface.php</td>
+          <td>Domain</td>
+          <td><span class="tag tag-iface">Interface</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;">app/Repositories/Interfaces/ReportRepositoryInterface.php</td>
+          <td>Domain</td>
+          <td><span class="tag tag-iface">Interface</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;">app/Repositories/Eloquent/EloquentTracerStudyRepository.php</td>
+          <td>Infrastructure</td>
+          <td><span class="tag tag-impl">Implementation</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;">app/Repositories/Eloquent/EloquentAnalysisResultRepository.php</td>
+          <td>Infrastructure</td>
+          <td><span class="tag tag-impl">Implementation</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;">app/Repositories/Eloquent/EloquentReportRepository.php</td>
+          <td>Infrastructure</td>
+          <td><span class="tag tag-impl">Implementation</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;">app/Providers/RepositoryServiceProvider.php</td>
+          <td>Infrastructure</td>
+          <td><span class="tag tag-provider">Provider</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:0.72rem;">bootstrap/providers.php</td>
+          <td>Bootstrap</td>
+          <td>Modified — added RepositoryServiceProvider</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 14 &mdash; Repository Pattern: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 15: Config Files &amp; Layout</span>
+</div>
