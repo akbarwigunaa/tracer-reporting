@@ -1,0 +1,371 @@
+<title>Database &amp; Models</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --green: #059669; --green-bg: #ecfdf5;
+    --red: #dc2626; --red-bg: #fef2f2;
+    --amber: #d97706; --amber-bg: #fffbeb;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --green: #34d399; --green-bg: #0d2818;
+      --red: #f87171; --red-bg: #2a1010;
+      --amber: #fbbf24; --amber-bg: #2a2010;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --green: #34d399; --green-bg: #0d2818;
+    --red: #f87171; --red-bg: #2a1010;
+    --amber: #fbbf24; --amber-bg: #2a2010;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  h3 { font-size: 0.92rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text); }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  .tag { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 3px; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+  .tag-ok { color: var(--green); background: var(--green-bg); }
+  .tag-type { color: var(--accent); background: var(--accent-light); }
+  .tag-fk { color: var(--amber); background: var(--amber-bg); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.5rem 0.65rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 0.5rem 0.65rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.col-name { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+  td.col-type { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); white-space: nowrap; }
+
+  .code-block { background: var(--surface-dim); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.7; color: var(--text-secondary); overflow-x: auto; margin-bottom: 1.25rem; white-space: pre; }
+  .code-block .kw { color: var(--accent); font-weight: 600; }
+  .code-block .fn { color: var(--green); }
+  .code-block .str { color: var(--amber); }
+  .code-block .comment { color: var(--text-tertiary); }
+
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.82rem; color: var(--text-secondary); }
+  .checklist .check { flex-shrink: 0; width: 1.1rem; height: 1.1rem; border-radius: 4px; background: var(--green-bg); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; margin-top: 0.1rem; }
+
+  .tbl-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.85rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px 8px 0 0; border-bottom: 2px solid var(--accent); }
+  .tbl-header .name { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--text); }
+  .tbl-header .info { font-size: 0.72rem; color: var(--text-tertiary); margin-left: auto; }
+
+  .model-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); }
+  .model-card .model-name { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; }
+  .model-card .model-detail { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 0.25rem; }
+  .model-card .model-detail strong { color: var(--text); font-weight: 600; }
+
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Database Migration &amp; Models</h1>
+  <p class="doc-subtitle">Implementasi 3 migration files dan 3 Eloquent models dengan relasi, casts, indexes, dan cascade delete — sesuai ERD Tahap 4.</p>
+  <div class="doc-meta">
+    <span>Tahap 13 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>13</strong> / 27 &mdash; DB &amp; Models</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- MIGRATION 1: tracer_studies -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">13.1</span>
+    <h2>Migration: tracer_studies</h2>
+  </div>
+
+  <div class="tbl-header">
+    <span class="name">tracer_studies</span>
+    <span class="info">13 columns &bull; 24.30ms</span>
+  </div>
+  <div class="table-wrap" style="border-top: none; border-radius: 0 0 8px 8px;">
+    <table>
+      <thead><tr><th>Column</th><th>Type</th><th>Constraint</th><th>Default</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">id</td><td class="col-type">bigint unsigned</td><td>PK, auto-increment</td><td></td></tr>
+        <tr><td class="col-name">nama_institusi</td><td class="col-type">varchar(255)</td><td>NOT NULL</td><td></td></tr>
+        <tr><td class="col-name">nama_prodi</td><td class="col-type">varchar(255)</td><td>NOT NULL, unique*</td><td></td></tr>
+        <tr><td class="col-name">jenjang</td><td class="col-type">varchar(20)</td><td>NOT NULL</td><td></td></tr>
+        <tr><td class="col-name">tahun_lulusan</td><td class="col-type">varchar(4)</td><td>NOT NULL, unique*</td><td></td></tr>
+        <tr><td class="col-name">tahun_tracer</td><td class="col-type">varchar(4)</td><td>NOT NULL, unique*, indexed</td><td></td></tr>
+        <tr><td class="col-name">total_lulusan</td><td class="col-type">int unsigned</td><td>NOT NULL</td><td></td></tr>
+        <tr><td class="col-name">total_responden</td><td class="col-type">int unsigned</td><td>NOT NULL</td><td>0</td></tr>
+        <tr><td class="col-name">response_rate</td><td class="col-type">decimal(5,2)</td><td>NOT NULL</td><td>0.00</td></tr>
+        <tr><td class="col-name">status</td><td class="col-type">varchar(20)</td><td>NOT NULL, indexed</td><td>'processing'</td></tr>
+        <tr><td class="col-name">file_path</td><td class="col-type">varchar(255)</td><td>nullable</td><td>NULL</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">timestamp</td><td>nullable</td><td></td></tr>
+        <tr><td class="col-name">updated_at</td><td class="col-type">timestamp</td><td>nullable</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>*Composite unique index <code>tracer_unique</code> pada (nama_prodi, tahun_lulusan, tahun_tracer) — mencegah duplikasi upload untuk prodi + angkatan + tahun tracer yang sama.</p>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- MIGRATION 2: analysis_results -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">13.2</span>
+    <h2>Migration: analysis_results</h2>
+  </div>
+
+  <div class="tbl-header">
+    <span class="name">analysis_results</span>
+    <span class="info">11 columns &bull; 20.89ms</span>
+  </div>
+  <div class="table-wrap" style="border-top: none; border-radius: 0 0 8px 8px;">
+    <table>
+      <thead><tr><th>Column</th><th>Type</th><th>Constraint</th><th>Default</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">id</td><td class="col-type">bigint unsigned</td><td>PK, auto-increment</td><td></td></tr>
+        <tr><td class="col-name">tracer_study_id</td><td class="col-type">bigint unsigned</td><td><span class="tag tag-fk">FK</span> → tracer_studies.id, CASCADE DELETE</td><td></td></tr>
+        <tr><td class="col-name">parameter_key</td><td class="col-type">varchar(50)</td><td>NOT NULL, unique*</td><td></td></tr>
+        <tr><td class="col-name">parameter_name</td><td class="col-type">varchar(255)</td><td>NOT NULL</td><td></td></tr>
+        <tr><td class="col-name">statistic_type</td><td class="col-type">varchar(20)</td><td>NOT NULL</td><td></td></tr>
+        <tr><td class="col-name">result_data</td><td class="col-type">json</td><td>NOT NULL</td><td></td></tr>
+        <tr><td class="col-name">chart_config</td><td class="col-type">json</td><td>nullable</td><td>NULL</td></tr>
+        <tr><td class="col-name">narrative</td><td class="col-type">text</td><td>nullable</td><td>NULL</td></tr>
+        <tr><td class="col-name">order</td><td class="col-type">tinyint unsigned</td><td>NOT NULL</td><td>0</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">timestamp</td><td>nullable</td><td></td></tr>
+        <tr><td class="col-name">updated_at</td><td class="col-type">timestamp</td><td>nullable</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>*Composite unique index <code>analysis_unique</code> pada (tracer_study_id, parameter_key) — satu hasil analisis per parameter per tracer study.</p>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- MIGRATION 3: reports -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">13.3</span>
+    <h2>Migration: reports</h2>
+  </div>
+
+  <div class="tbl-header">
+    <span class="name">reports</span>
+    <span class="info">7 columns &bull; 13.94ms</span>
+  </div>
+  <div class="table-wrap" style="border-top: none; border-radius: 0 0 8px 8px;">
+    <table>
+      <thead><tr><th>Column</th><th>Type</th><th>Constraint</th><th>Default</th></tr></thead>
+      <tbody>
+        <tr><td class="col-name">id</td><td class="col-type">bigint unsigned</td><td>PK, auto-increment</td><td></td></tr>
+        <tr><td class="col-name">tracer_study_id</td><td class="col-type">bigint unsigned</td><td><span class="tag tag-fk">FK</span> → tracer_studies.id, CASCADE DELETE</td><td></td></tr>
+        <tr><td class="col-name">filename</td><td class="col-type">varchar(255)</td><td>NOT NULL</td><td></td></tr>
+        <tr><td class="col-name">file_path</td><td class="col-type">varchar(255)</td><td>NOT NULL</td><td></td></tr>
+        <tr><td class="col-name">file_size</td><td class="col-type">int unsigned</td><td>nullable</td><td>NULL</td></tr>
+        <tr><td class="col-name">created_at</td><td class="col-type">timestamp</td><td>nullable</td><td></td></tr>
+        <tr><td class="col-name">updated_at</td><td class="col-type">timestamp</td><td>nullable</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- MODELS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">13.4</span>
+    <h2>Eloquent Models</h2>
+  </div>
+
+  <div class="model-card">
+    <div class="model-name">App\Models\TracerStudy</div>
+    <div class="model-detail"><strong>Table:</strong> tracer_studies</div>
+    <div class="model-detail"><strong>Fillable:</strong> nama_institusi, nama_prodi, jenjang, tahun_lulusan, tahun_tracer, total_lulusan, total_responden, response_rate, status, file_path</div>
+    <div class="model-detail"><strong>Casts:</strong> total_lulusan → integer, total_responden → integer, response_rate → decimal:2</div>
+    <div class="model-detail"><strong>Relations:</strong> hasMany(AnalysisResult) ordered by 'order', hasMany(Report)</div>
+    <div class="model-detail"><strong>Helpers:</strong> isCompleted(), isFailed(), isProcessing()</div>
+  </div>
+
+  <div class="model-card">
+    <div class="model-name">App\Models\AnalysisResult</div>
+    <div class="model-detail"><strong>Table:</strong> analysis_results</div>
+    <div class="model-detail"><strong>Fillable:</strong> tracer_study_id, parameter_key, parameter_name, statistic_type, result_data, chart_config, narrative, order</div>
+    <div class="model-detail"><strong>Casts:</strong> result_data → array, chart_config → array, order → integer</div>
+    <div class="model-detail"><strong>Relations:</strong> belongsTo(TracerStudy)</div>
+  </div>
+
+  <div class="model-card">
+    <div class="model-name">App\Models\Report</div>
+    <div class="model-detail"><strong>Table:</strong> reports</div>
+    <div class="model-detail"><strong>Fillable:</strong> tracer_study_id, filename, file_path, file_size</div>
+    <div class="model-detail"><strong>Casts:</strong> file_size → integer</div>
+    <div class="model-detail"><strong>Relations:</strong> belongsTo(TracerStudy)</div>
+    <div class="model-detail"><strong>Helpers:</strong> formattedFileSize() → "51.2 KB"</div>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- VERIFICATION -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">13.5</span>
+    <h2>Verification Results</h2>
+  </div>
+
+  <div class="code-block"><span class="comment"># php artisan migrate</span>
+<span class="fn">INFO</span> Running migrations.
+  2026_09_08_000001_create_tracer_studies_table .. <span class="fn">24.30ms DONE</span>
+  2026_09_08_000002_create_analysis_results_table .. <span class="fn">20.89ms DONE</span>
+  2026_09_08_000003_create_reports_table .. <span class="fn">13.94ms DONE</span>
+
+<span class="comment"># Tinker test — create, relate, cascade delete</span>
+TracerStudy: Informatika | status: completed
+isCompleted: <span class="fn">true</span>
+AnalysisResults count: <span class="fn">1</span>
+Reports count: <span class="fn">1</span>
+Result data type: <span class="fn">array</span>          <span class="comment"># JSON → array cast works</span>
+Report size: <span class="fn">51.2 KB</span>             <span class="comment"># formattedFileSize() works</span>
+After delete - AnalysisResults: <span class="fn">0</span>  <span class="comment"># CASCADE DELETE works</span>
+After delete - Reports: <span class="fn">0</span>          <span class="comment"># CASCADE DELETE works</span>
+<span class="fn">ALL TESTS PASSED</span></div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- CHECKLIST -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">13.6</span>
+    <h2>Acceptance Checklist (US-02)</h2>
+  </div>
+
+  <ul class="checklist">
+    <li><span class="check">&#10003;</span> Migration: tracer_studies (13 cols, composite unique, 2 indexes)</li>
+    <li><span class="check">&#10003;</span> Migration: analysis_results (11 cols, FK cascade, composite unique)</li>
+    <li><span class="check">&#10003;</span> Migration: reports (7 cols, FK cascade)</li>
+    <li><span class="check">&#10003;</span> Model: TracerStudy dengan relasi + casts + status helpers</li>
+    <li><span class="check">&#10003;</span> Model: AnalysisResult dengan JSON casts (result_data, chart_config)</li>
+    <li><span class="check">&#10003;</span> Model: Report dengan formattedFileSize() helper</li>
+    <li><span class="check">&#10003;</span> php artisan migrate berjalan tanpa error</li>
+    <li><span class="check">&#10003;</span> Foreign key + cascade delete berfungsi (verified via Tinker)</li>
+  </ul>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- FILES -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">13.7</span>
+    <h2>Files Created</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Layer</th><th>Keterangan</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-name">database/migrations/<br>2026_09_08_000001_create_tracer_studies_table.php</td>
+          <td>Infrastructure</td>
+          <td>Tabel utama tracer study + meta info</td>
+        </tr>
+        <tr>
+          <td class="col-name">database/migrations/<br>2026_09_08_000002_create_analysis_results_table.php</td>
+          <td>Infrastructure</td>
+          <td>Hasil analisis 13 parameter (JSON)</td>
+        </tr>
+        <tr>
+          <td class="col-name">database/migrations/<br>2026_09_08_000003_create_reports_table.php</td>
+          <td>Infrastructure</td>
+          <td>Metadata file laporan Word</td>
+        </tr>
+        <tr>
+          <td class="col-name">app/Models/TracerStudy.php</td>
+          <td>Domain</td>
+          <td>10 fillable, 3 casts, 2 relations, 3 helpers</td>
+        </tr>
+        <tr>
+          <td class="col-name">app/Models/AnalysisResult.php</td>
+          <td>Domain</td>
+          <td>8 fillable, 3 casts, 1 relation</td>
+        </tr>
+        <tr>
+          <td class="col-name">app/Models/Report.php</td>
+          <td>Domain</td>
+          <td>4 fillable, 1 cast, 1 relation, 1 helper</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 13 &mdash; Database &amp; Models: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 14: Repository Pattern &amp; Service Provider</span>
+</div>
