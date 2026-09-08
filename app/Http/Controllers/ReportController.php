@@ -5,14 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Report;
 use App\Models\TracerStudy;
 use App\Repositories\Interfaces\ReportRepositoryInterface;
+use App\Services\Interfaces\ReportGeneratorServiceInterface;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ReportController extends Controller
 {
     public function __construct(
         private ReportRepositoryInterface $reportRepository,
+        private ReportGeneratorServiceInterface $reportGenerator,
     ) {}
 
     public function index(): View
@@ -24,24 +28,39 @@ class ReportController extends Controller
 
     public function generate(TracerStudy $tracerStudy): RedirectResponse
     {
-        // Will be implemented in Stage 24 (ReportGeneratorService)
-        return redirect()->route('reports.index');
+        if (!$tracerStudy->isCompleted()) {
+            return redirect()->route('reports.index')
+                ->with('error', 'Analisis belum selesai, tidak dapat membuat laporan.');
+        }
+
+        try {
+            $report = $this->reportGenerator->generate($tracerStudy);
+
+            return redirect()->route('reports.index')
+                ->with('success', 'Laporan berhasil dibuat: ' . $report->filename);
+        } catch (RuntimeException $e) {
+            return redirect()->route('reports.index')
+                ->with('error', 'Gagal membuat laporan: ' . $e->getMessage());
+        }
     }
 
     public function download(Report $report): BinaryFileResponse
     {
-        return response()->download(
-            storage_path('app/' . $report->file_path),
-            $report->filename
-        );
+        $absolutePath = Storage::disk('local')->path($report->file_path);
+
+        if (!file_exists($absolutePath)) {
+            abort(404, 'File laporan tidak ditemukan.');
+        }
+
+        return response()->download($absolutePath, $report->filename);
     }
 
     public function destroy(Report $report): RedirectResponse
     {
-        $filePath = storage_path('app/' . $report->file_path);
+        $absolutePath = Storage::disk('local')->path($report->file_path);
 
-        if (file_exists($filePath)) {
-            unlink($filePath);
+        if (file_exists($absolutePath)) {
+            unlink($absolutePath);
         }
 
         $this->reportRepository->delete($report);

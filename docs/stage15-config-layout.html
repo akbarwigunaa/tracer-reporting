@@ -1,0 +1,440 @@
+<title>Config &amp; Layout</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #ffffff; --surface-dim: #eef0f4; --border: #d8dce6;
+    --text: #1a1d26; --text-secondary: #5a6070; --text-tertiary: #8890a0;
+    --accent: #2d5be3; --accent-light: #e8eefb; --accent-muted: #6b8de8;
+    --green: #059669; --green-bg: #ecfdf5;
+    --purple: #7c3aed; --purple-bg: #f5f3ff;
+    --amber: #d97706; --amber-bg: #fffbeb;
+    --shadow-sm: 0 1px 2px rgba(26,29,38,.05);
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+      --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+      --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+      --green: #34d399; --green-bg: #0d2818;
+      --purple: #a78bfa; --purple-bg: #1e1838;
+      --amber: #fbbf24; --amber-bg: #2a2010;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111318; --surface: #1a1d26; --surface-dim: #22262f; --border: #2e3340;
+    --text: #e4e6ec; --text-secondary: #9ba0b0; --text-tertiary: #6b7080;
+    --accent: #6b8de8; --accent-light: #1e2a4a; --accent-muted: #4a6ec0;
+    --green: #34d399; --green-bg: #0d2818;
+    --purple: #a78bfa; --purple-bg: #1e1838;
+    --amber: #fbbf24; --amber-bg: #2a2010;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.2);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .doc-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+  .doc-eyebrow { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.5rem; }
+  .doc-title { font-size: 1.75rem; font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0 0 0.75rem; }
+  .doc-subtitle { font-size: 0.95rem; color: var(--text-secondary); margin: 0; max-width: 60ch; }
+  .doc-meta { display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .stage-tracker { display: flex; gap: 0.25rem; margin-bottom: 2.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: var(--shadow-sm); }
+  .stage-pip { width: 1.75rem; height: 6px; border-radius: 3px; background: var(--surface-dim); flex-shrink: 0; }
+  .stage-pip.done { background: var(--accent-muted); opacity: .5; }
+  .stage-pip.current { background: var(--accent); }
+  .stage-label { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 0.75rem; white-space: nowrap; align-self: center; }
+  .stage-label strong { color: var(--accent); font-weight: 600; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem; padding-top: 0.5rem; }
+  .section-num { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent-muted); flex-shrink: 0; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  h3 { font-size: 0.92rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text); }
+  p { margin: 0 0 0.85rem; font-size: 0.86rem; color: var(--text-secondary); max-width: 65ch; }
+  code { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.1rem 0.35rem; background: var(--surface-dim); border-radius: 3px; color: var(--accent-muted); }
+
+  .sep { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  .tag { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 3px; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+  .tag-freq { color: var(--accent); background: var(--accent-light); }
+  .tag-mm { color: var(--purple); background: var(--purple-bg); }
+  .tag-mean { color: var(--amber); background: var(--amber-bg); }
+  .tag-sum { color: var(--green); background: var(--green-bg); }
+  .tag-disp { color: var(--text-tertiary); background: var(--surface-dim); }
+  .tag-idx { color: #dc2626; background: #fef2f2; }
+  .tag-ok { color: var(--green); background: var(--green-bg); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+  thead th { background: var(--surface-dim); font-weight: 600; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); padding: 0.5rem 0.65rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 0.5rem 0.65rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.mono { font-family: var(--font-mono); font-size: 0.72rem; }
+
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.82rem; color: var(--text-secondary); }
+  .checklist .check { flex-shrink: 0; width: 1.1rem; height: 1.1rem; border-radius: 4px; background: var(--green-bg); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; margin-top: 0.1rem; }
+
+  .code-block { background: var(--surface-dim); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.7; color: var(--text-secondary); overflow-x: auto; margin-bottom: 1.25rem; white-space: pre; }
+  .code-block .kw { color: var(--accent); font-weight: 600; }
+  .code-block .fn { color: var(--green); }
+  .code-block .str { color: var(--amber); }
+  .code-block .comment { color: var(--text-tertiary); }
+
+  .status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; margin-top: 2.5rem; }
+  .status-bar .label { font-size: 0.82rem; font-weight: 600; color: var(--accent); }
+  .status-bar .next { font-size: 0.78rem; color: var(--text-secondary); }
+
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { .tag-idx { color: #f87171; background: #2a1010; } } }
+  :root[data-theme="dark"] { .tag-idx { color: #f87171; background: #2a1010; } }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem 1rem 3rem; }
+    .doc-title { font-size: 1.35rem; }
+    .doc-meta { flex-direction: column; gap: 0.5rem; }
+    .status-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Web Tracer Reporting System</div>
+  <h1 class="doc-title">Config Files, Layout &amp; Routes</h1>
+  <p class="doc-subtitle">Implementasi config/tracer.php (13 parameter), config/narratives.php, AdminLTE master layout, 4 controllers, dan 11 routes.</p>
+  <div class="doc-meta">
+    <span>Tahap 15 dari 27</span>
+    <span>Versi 1.0</span>
+    <span>8 September 2026</span>
+  </div>
+</header>
+
+<div class="stage-tracker">
+  <div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div><div class="stage-pip done"></div>
+  <div class="stage-pip current"></div>
+  <div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div><div class="stage-pip"></div>
+  <span class="stage-label"><strong>15</strong> / 27 &mdash; Config &amp; Layout</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- PARAMETER MAPPING -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">15.1</span>
+    <h2>config/tracer.php — Parameter Mapping</h2>
+  </div>
+
+  <p>Single source of truth untuk 13 parameter analisis. Setiap service membaca konfigurasi dari file ini.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Key</th><th>Parameter</th><th>Kolom</th><th>f-code</th><th>Statistik</th><th>Chart</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td class="mono">status_setelah_lulus</td>
+          <td>Status Setelah Lulus</td>
+          <td class="mono">M</td>
+          <td class="mono">f8</td>
+          <td><span class="tag tag-freq">frequency</span></td>
+          <td>Pie</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td class="mono">lama_mendapatkan_pekerjaan</td>
+          <td>Lama Mendapatkan Pekerjaan</td>
+          <td class="mono">BX</td>
+          <td class="mono">f502</td>
+          <td><span class="tag tag-freq">frequency</span></td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td class="mono">tingkat_tempat_kerja</td>
+          <td>Tingkat Tempat Kerja</td>
+          <td class="mono">BI</td>
+          <td class="mono">f5d</td>
+          <td><span class="tag tag-freq">frequency</span></td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td class="mono">bidang_kerja_lulusan</td>
+          <td>Bidang Kerja Lulusan</td>
+          <td class="mono">T</td>
+          <td class="mono">f1101</td>
+          <td><span class="tag tag-freq">frequency</span></td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td class="mono">kesesuaian_bidang_studi</td>
+          <td>Kesesuaian Bidang Studi</td>
+          <td class="mono">BC</td>
+          <td class="mono">f14</td>
+          <td><span class="tag tag-freq">frequency</span></td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td class="mono">tingkat_pendidikan_pekerjaan</td>
+          <td>Tingkat Pendidikan Pekerjaan</td>
+          <td class="mono">AM</td>
+          <td class="mono">f15</td>
+          <td><span class="tag tag-freq">frequency</span></td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td class="mono">pendapatan_pertama</td>
+          <td>Pendapatan Pertama Lulusan</td>
+          <td class="mono">BP</td>
+          <td class="mono">f505</td>
+          <td><span class="tag tag-mm">mean_median</span></td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td class="mono">penghasilan_lulusan</td>
+          <td>Penghasilan Lulusan</td>
+          <td class="mono">BP</td>
+          <td class="mono">f505</td>
+          <td><span class="tag tag-freq">frequency</span></td>
+          <td>Bar</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td class="mono">mulai_mencari_pekerjaan</td>
+          <td>Mulai Mencari Pekerjaan</td>
+          <td class="mono">AY</td>
+          <td class="mono">f301</td>
+          <td><span class="tag tag-mean">mean</span></td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td class="mono">melamar_pekerjaan</td>
+          <td>Melamar Pekerjaan</td>
+          <td class="mono">CG</td>
+          <td class="mono">f6</td>
+          <td><span class="tag tag-sum">sum</span></td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td class="mono">diundang_wawancara</td>
+          <td>Diundang Wawancara</td>
+          <td class="mono">BD</td>
+          <td class="mono">f7a</td>
+          <td><span class="tag tag-sum">sum</span></td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td class="mono">tempat_pendidikan_lanjut</td>
+          <td>Tempat Melanjutkan Pendidikan</td>
+          <td class="mono">AK</td>
+          <td class="mono">f18c</td>
+          <td><span class="tag tag-disp">display</span></td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td class="mono">kemampuan_diri</td>
+          <td>Penilaian Kemampuan Diri</td>
+          <td class="mono">*</td>
+          <td class="mono">f1761–f1774</td>
+          <td><span class="tag tag-idx">index</span></td>
+          <td>Grouped Bar</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Parameter #7 dan #8 menggunakan kolom yang sama (BP/f505) — #7 menghitung mean+median nilai rupiah, #8 mengkategorikan ke 4 range penghasilan. Parameter #13 memiliki 7 kompetensi &times; 2 dimensi (dikuasai/dibutuhkan) dengan skala Likert 1–5.</p>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- NARRATIVES -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">15.2</span>
+    <h2>config/narratives.php — Template Narasi</h2>
+  </div>
+
+  <p>13 template narasi + 1 helper template. Setiap template menggunakan placeholder yang diganti oleh NarrativeService saat runtime.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tipe Statistik</th><th>Placeholder</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-freq">frequency</span></td>
+          <td class="mono">:total, :top_category, :top_count, :top_pct, :second_category, :second_count, :second_pct, :prodi, :jenjang, :tahun_lulusan</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-mm">mean_median</span></td>
+          <td class="mono">:mean, :median, :min, :max</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-mean">mean</span></td>
+          <td class="mono">:mean</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-sum">sum</span></td>
+          <td class="mono">:total_sum, :mean</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-idx">index</span></td>
+          <td class="mono">:top_competency, :top_index_a, :gap_competency, :gap_value</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- LAYOUT -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">15.3</span>
+    <h2>AdminLTE Master Layout</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Komponen</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono">layouts/app.blade.php</td>
+          <td>Master layout: &lt;html&gt;, Vite assets, CSRF, flash messages, @yield('content')</td>
+        </tr>
+        <tr>
+          <td class="mono">layouts/partials/navbar.blade.php</td>
+          <td>Top navbar: sidebar toggle, app name</td>
+        </tr>
+        <tr>
+          <td class="mono">layouts/partials/sidebar.blade.php</td>
+          <td>Sidebar: 4 menu (Dashboard, Upload, Analisis, Laporan) dengan active state</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Sidebar menggunakan <code>request()->routeIs()</code> untuk menentukan active state. Layout mendukung <code>@yield('title')</code>, <code>@yield('page-title')</code>, <code>@yield('breadcrumb')</code>, <code>@yield('content')</code>, <code>@stack('styles')</code>, dan <code>@stack('scripts')</code>.</p>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- ROUTES -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">15.4</span>
+    <h2>Routes (11 custom + system)</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Method</th><th>URI</th><th>Name</th><th>Controller</th></tr></thead>
+      <tbody>
+        <tr><td>GET</td><td class="mono">/</td><td class="mono">&rarr; redirect dashboard</td><td>&mdash;</td></tr>
+        <tr><td>GET</td><td class="mono">/dashboard</td><td class="mono">dashboard</td><td>DashboardController@index</td></tr>
+        <tr><td>GET</td><td class="mono">/upload</td><td class="mono">upload.create</td><td>UploadController@create</td></tr>
+        <tr><td>POST</td><td class="mono">/upload</td><td class="mono">upload.store</td><td>UploadController@store</td></tr>
+        <tr><td>GET</td><td class="mono">/analysis</td><td class="mono">analysis.index</td><td>AnalysisController@index</td></tr>
+        <tr><td>GET</td><td class="mono">/analysis/{tracerStudy}</td><td class="mono">analysis.show</td><td>AnalysisController@show</td></tr>
+        <tr><td>GET</td><td class="mono">/reports</td><td class="mono">reports.index</td><td>ReportController@index</td></tr>
+        <tr><td>POST</td><td class="mono">/reports/{tracerStudy}/generate</td><td class="mono">reports.generate</td><td>ReportController@generate</td></tr>
+        <tr><td>GET</td><td class="mono">/reports/{report}/download</td><td class="mono">reports.download</td><td>ReportController@download</td></tr>
+        <tr><td>DELETE</td><td class="mono">/reports/{report}</td><td class="mono">reports.destroy</td><td>ReportController@destroy</td></tr>
+        <tr><td>DELETE</td><td class="mono">/tracer-studies/{tracerStudy}</td><td class="mono">tracer-studies.destroy</td><td>DashboardController@destroy</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- CONTROLLERS -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">15.5</span>
+    <h2>Controllers</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Controller</th><th>DI Dependencies</th><th>Methods</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono" style="font-weight:600;">DashboardController</td>
+          <td class="mono">TracerStudyRepositoryInterface</td>
+          <td>index(), destroy()</td>
+          <td><span class="tag tag-ok">Implemented</span></td>
+        </tr>
+        <tr>
+          <td class="mono" style="font-weight:600;">UploadController</td>
+          <td>&mdash;</td>
+          <td>create(), store()</td>
+          <td>store() stub &rarr; Tahap 16–21</td>
+        </tr>
+        <tr>
+          <td class="mono" style="font-weight:600;">AnalysisController</td>
+          <td class="mono">TracerStudyRepo, AnalysisResultRepo</td>
+          <td>index(), show()</td>
+          <td><span class="tag tag-ok">Implemented</span></td>
+        </tr>
+        <tr>
+          <td class="mono" style="font-weight:600;">ReportController</td>
+          <td class="mono">ReportRepositoryInterface</td>
+          <td>index(), generate(), download(), destroy()</td>
+          <td>generate() stub &rarr; Tahap 24</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ============================================================ -->
+<!-- CHECKLIST -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">15.6</span>
+    <h2>Acceptance Checklist (US-04 + US-05)</h2>
+  </div>
+
+  <ul class="checklist">
+    <li><span class="check">&#10003;</span> config/tracer.php: 13 parameter mapping lengkap (nama, f-code, tipe statistik, chart type, kategori)</li>
+    <li><span class="check">&#10003;</span> config/narratives.php: 13 template narasi + 1 helper template</li>
+    <li><span class="check">&#10003;</span> Parameter #13: 7 kompetensi &times; 2 dimensi mapped (f1761–f1774)</li>
+    <li><span class="check">&#10003;</span> config('tracer.parameters') accessible dari Tinker (verified: 13 items)</li>
+    <li><span class="check">&#10003;</span> app.blade.php: AdminLTE 4 layout dengan sidebar, topbar, content area</li>
+    <li><span class="check">&#10003;</span> Sidebar: 4 menu items dengan active state berfungsi</li>
+    <li><span class="check">&#10003;</span> web.php: 11 routes terdefinisi (verified via artisan route:list)</li>
+    <li><span class="check">&#10003;</span> 4 controllers dengan DI injection</li>
+    <li><span class="check">&#10003;</span> Buka / langsung redirect ke dashboard (tanpa login)</li>
+    <li><span class="check">&#10003;</span> Visual verification: layout renders di browser (dev server tested)</li>
+  </ul>
+</div>
+
+<div class="status-bar">
+  <span class="label">Tahap 15 &mdash; Config &amp; Layout: Selesai</span>
+  <span class="next">Selanjutnya &rarr; Tahap 16: Upload Form &amp; Validation (Sprint 2 dimulai)</span>
+</div>
