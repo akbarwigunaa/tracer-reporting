@@ -1,0 +1,188 @@
+<title>ChartConfigService</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #64748b;
+    --accent: #2563eb; --accent-light: #eff6ff;
+    --success: #16a34a; --success-light: #f0fdf4;
+    --border: #e2e8f0; --card-bg: #ffffff;
+    --code-bg: #f1f5f9; --code-fg: #334155;
+    --table-stripe: #f8fafc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+      --accent: #60a5fa; --accent-light: #1e293b;
+      --success: #4ade80; --success-light: #0f2a1a;
+      --border: #334155; --card-bg: #1e293b;
+      --code-bg: #1e293b; --code-fg: #cbd5e1;
+      --table-stripe: #1a2536;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8;
+    --accent: #60a5fa; --accent-light: #1e293b;
+    --success: #4ade80; --success-light: #0f2a1a;
+    --border: #334155; --card-bg: #1e293b;
+    --code-bg: #1e293b; --code-fg: #cbd5e1;
+    --table-stripe: #1a2536;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 0.2em 0.7em; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-green { background: var(--success-light); color: var(--success); }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+  .meta-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .meta-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-value { font-weight: 600; margin-top: 0.15rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+  tr:nth-child(even) td { background: var(--table-stripe); }
+  code { background: var(--code-bg); color: var(--code-fg); padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin: 1rem 0; }
+  .file-tree { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.8; }
+  .file-tree .new { color: var(--success); font-weight: 600; }
+  .file-tree .mod { color: var(--accent); font-weight: 600; }
+  .check { color: var(--success); }
+  .color-swatch { display: inline-block; width: 1em; height: 1em; border-radius: 0.2em; vertical-align: text-bottom; margin-right: 0.3em; }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  @media (max-width: 600px) { body { padding: 1rem; } .meta-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+
+<h1>Tahap 20 — ChartConfigService</h1>
+<p class="subtitle">Sprint 2 &middot; Service Layer &middot; <span class="badge badge-green">Selesai</span></p>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Stage</div>
+    <div class="meta-value">20 / 27</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Sprint</div>
+    <div class="meta-value">Sprint 2</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Chart Types</div>
+    <div class="meta-value">3 (pie, bar, grouped_bar)</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Commit</div>
+    <div class="meta-value"><code>1de73af</code></div>
+  </div>
+</div>
+
+<h2>1. Ringkasan</h2>
+<p>ChartConfigService menghasilkan konfigurasi Chart.js yang disimpan sebagai JSON di kolom <code>chart_config</code> tabel <code>analysis_results</code>, lalu di-render client-side. Mendukung 3 tipe chart: pie, bar, dan grouped_bar. Return <code>null</code> untuk parameter tanpa chart.</p>
+
+<h2>2. File yang Dibuat/Dimodifikasi</h2>
+<div class="file-tree card">
+  <span class="new">+ app/Services/Interfaces/ChartConfigServiceInterface.php</span><br>
+  <span class="new">+ app/Services/ChartConfigService.php</span> — 173 lines<br>
+  <span class="mod">~ app/Providers/RepositoryServiceProvider.php</span> — Binding
+</div>
+
+<h2>3. Interface</h2>
+<pre><code>interface ChartConfigServiceInterface
+{
+    public function generate(
+        string $parameterKey,
+        array $config,
+        array $statisticsResult,
+    ): ?array;
+}</code></pre>
+
+<h2>4. Chart Types</h2>
+
+<h3>4.1 Pie Chart</h3>
+<p>Digunakan oleh: <code>status_setelah_lulus</code> (#1)</p>
+<table>
+  <thead><tr><th>Fitur</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>Data source</td><td><code>frequencies[].label</code> → labels, <code>frequencies[].count</code> → data</td></tr>
+    <tr><td>Legend</td><td>Bottom position</td></tr>
+    <tr><td>Border</td><td>White (#fff), 2px — visual separation antar slice</td></tr>
+    <tr><td>Tooltip</td><td>Callback placeholder untuk percentage display</td></tr>
+  </tbody>
+</table>
+
+<h3>4.2 Bar Chart</h3>
+<p>Digunakan oleh: Parameter 2–6, 8 (6 parameter frequency)</p>
+<table>
+  <thead><tr><th>Fitur</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>Data source</td><td>Same as pie — frequencies sorted desc</td></tr>
+    <tr><td>Dataset label</td><td>"Jumlah Responden"</td></tr>
+    <tr><td>Legend</td><td>Hidden (single dataset)</td></tr>
+    <tr><td>Y-axis</td><td>Begin at zero, integer steps, title "Jumlah"</td></tr>
+    <tr><td>X-axis</td><td>Title = parameter name</td></tr>
+    <tr><td>Border radius</td><td>4px rounded corners</td></tr>
+  </tbody>
+</table>
+
+<h3>4.3 Grouped Bar Chart</h3>
+<p>Digunakan oleh: <code>kemampuan_diri</code> (#13)</p>
+<table>
+  <thead><tr><th>Fitur</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>Data source</td><td><code>competencies[].name</code> → labels, <code>index_a</code>/<code>index_b</code> → 2 datasets</td></tr>
+    <tr><td>Dataset 1</td><td>"Dikuasai Saat Lulus" — <span class="color-swatch" style="background:#4e79a7"></span>#4e79a7</td></tr>
+    <tr><td>Dataset 2</td><td>"Dibutuhkan dalam Pekerjaan" — <span class="color-swatch" style="background:#f28e2b"></span>#f28e2b</td></tr>
+    <tr><td>Y-axis</td><td>0–5 (Likert scale), title "Indeks (1-5)"</td></tr>
+    <tr><td>Legend</td><td>Bottom position</td></tr>
+  </tbody>
+</table>
+
+<h2>5. Color Palette</h2>
+<p>10 warna konsisten digunakan di semua chart, diambil secara sequential:</p>
+<div class="card" style="display:flex;flex-wrap:wrap;gap:0.75rem;">
+  <span><span class="color-swatch" style="background:#4e79a7"></span><code>#4e79a7</code></span>
+  <span><span class="color-swatch" style="background:#f28e2b"></span><code>#f28e2b</code></span>
+  <span><span class="color-swatch" style="background:#e15759"></span><code>#e15759</code></span>
+  <span><span class="color-swatch" style="background:#76b7b2"></span><code>#76b7b2</code></span>
+  <span><span class="color-swatch" style="background:#59a14f"></span><code>#59a14f</code></span>
+  <span><span class="color-swatch" style="background:#edc948"></span><code>#edc948</code></span>
+  <span><span class="color-swatch" style="background:#b07aa1"></span><code>#b07aa1</code></span>
+  <span><span class="color-swatch" style="background:#ff9da7"></span><code>#ff9da7</code></span>
+  <span><span class="color-swatch" style="background:#9c755f"></span><code>#9c755f</code></span>
+  <span><span class="color-swatch" style="background:#bab0ac"></span><code>#bab0ac</code></span>
+</div>
+
+<h2>6. Parameter → Chart Mapping</h2>
+<table>
+  <thead><tr><th>#</th><th>Parameter</th><th>Chart</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>status_setelah_lulus</td><td>pie</td></tr>
+    <tr><td>2</td><td>lama_mendapatkan_pekerjaan</td><td>bar</td></tr>
+    <tr><td>3</td><td>tingkat_tempat_kerja</td><td>bar</td></tr>
+    <tr><td>4</td><td>bidang_kerja_lulusan</td><td>bar</td></tr>
+    <tr><td>5</td><td>kesesuaian_bidang_studi</td><td>bar</td></tr>
+    <tr><td>6</td><td>tingkat_pendidikan_pekerjaan</td><td>bar</td></tr>
+    <tr><td>7</td><td>pendapatan_pertama</td><td><em>null</em></td></tr>
+    <tr><td>8</td><td>penghasilan_lulusan</td><td>bar</td></tr>
+    <tr><td>9</td><td>mulai_mencari_pekerjaan</td><td><em>null</em></td></tr>
+    <tr><td>10</td><td>melamar_pekerjaan</td><td><em>null</em></td></tr>
+    <tr><td>11</td><td>diundang_wawancara</td><td><em>null</em></td></tr>
+    <tr><td>12</td><td>tempat_pendidikan_lanjut</td><td><em>null</em></td></tr>
+    <tr><td>13</td><td>kemampuan_diri</td><td>grouped_bar</td></tr>
+  </tbody>
+</table>
+
+<h2>7. Test Results</h2>
+<div class="card">
+  <ul>
+    <li><span class="check">&#10003;</span> <strong>pie:</strong> type=pie, 5 labels, 5 colors, title + legend bottom</li>
+    <li><span class="check">&#10003;</span> <strong>bar:</strong> type=bar, single dataset "Jumlah Responden", 4 bars</li>
+    <li><span class="check">&#10003;</span> <strong>grouped_bar:</strong> type=bar, 2 datasets (Dikuasai/Dibutuhkan), 3 labels</li>
+    <li><span class="check">&#10003;</span> <strong>null:</strong> pendapatan_pertama → null (no chart_type)</li>
+  </ul>
+</div>
+
+<h2>8. Tahap Selanjutnya</h2>
+<p><strong>Stage 21 — TracerAnalysisService (Orchestrator)</strong>: Service utama yang mengorkestrasi seluruh pipeline: ExcelReader → Statistics → Narrative → ChartConfig → simpan ke database.</p>
