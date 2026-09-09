@@ -33,6 +33,8 @@ class ReportGeneratorService implements ReportGeneratorServiceInterface
             throw new RuntimeException('Tidak ada hasil analisis untuk tracer study ini.');
         }
 
+        $errorLevel = error_reporting(E_ERROR);
+
         $phpWord = new PhpWord();
         $this->setupStyles($phpWord);
 
@@ -70,6 +72,7 @@ class ReportGeneratorService implements ReportGeneratorServiceInterface
         }
 
         $phpWord->save($absolutePath);
+        error_reporting($errorLevel);
         $fileSize = filesize($absolutePath);
 
         return $this->reportRepository->create([
