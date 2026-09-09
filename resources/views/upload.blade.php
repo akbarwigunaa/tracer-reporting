@@ -21,13 +21,8 @@
                     <div class="row mb-3">
                         <div class="col-12">
                             <label for="nama_institusi" class="form-label">Nama Institusi <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('nama_institusi') is-invalid @enderror"
-                                   id="nama_institusi" name="nama_institusi"
-                                   value="{{ old('nama_institusi') }}"
-                                   placeholder="Contoh: Universitas Brawijaya">
-                            @error('nama_institusi')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="text" class="form-control" id="nama_institusi" name="nama_institusi"
+                                   value="Universitas Muhammadiyah Sidoarjo" readonly>
                         </div>
                     </div>
 
