@@ -35,9 +35,9 @@ return [
             'statistic_type' => 'frequency',
             'chart_type' => 'bar',
             'categories' => [
-                1 => '< 6 bulan',
+                1 => 'Kurang dari 6 bulan',
                 2 => '6–12 bulan',
-                3 => '> 12 bulan',
+                3 => 'Lebih dari 12 bulan',
             ],
             'group' => 'bekerja',
         ],
@@ -128,10 +128,10 @@ return [
             'statistic_type' => 'frequency',
             'chart_type' => 'bar',
             'categories' => [
-                1 => '< 1 juta',
+                1 => 'Kurang dari 1 juta',
                 2 => '1–3 juta',
                 3 => '3–5 juta',
-                4 => '> 5 juta',
+                4 => 'Lebih dari 5 juta',
             ],
             'category_ranges' => [
                 1 => [0, 999999],
@@ -175,8 +175,19 @@ return [
             'group' => 'mencari_kerja',
         ],
 
-        'tempat_pendidikan_lanjut' => [
+        'tempat_pekerjaan' => [
             'order' => 12,
+            'name' => 'Tempat Pekerjaan',
+            'column' => 'X',
+            'f_code' => 'f1101_5',
+            'statistic_type' => 'display',
+            'chart_type' => null,
+            'categories' => null,
+            'group' => 'bekerja',
+        ],
+
+        'tempat_pendidikan_lanjut' => [
+            'order' => 13,
             'name' => 'Tempat Melanjutkan Pendidikan',
             'column' => 'AK',
             'f_code' => 'f18c',
@@ -187,7 +198,7 @@ return [
         ],
 
         'kemampuan_diri' => [
-            'order' => 13,
+            'order' => 14,
             'name' => 'Penilaian Kemampuan Diri',
             'f_code' => 'f1761-f1774',
             'statistic_type' => 'index',
