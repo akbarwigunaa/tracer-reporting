@@ -26,7 +26,7 @@ class DashboardController extends Controller
     {
         $this->tracerStudyRepository->delete($tracerStudy);
 
-        return redirect()->route('dashboard')
+        return redirect()->back()
             ->with('success', 'Data tracer study berhasil dihapus.');
     }
 }

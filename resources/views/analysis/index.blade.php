@@ -63,13 +63,21 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    @if($ts->isCompleted())
-                                        <a href="{{ route('analysis.show', $ts) }}" class="btn btn-primary btn-sm">
-                                            <i class="bi bi-eye me-1"></i> Lihat
-                                        </a>
-                                    @else
-                                        <span class="text-muted">—</span>
-                                    @endif
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        @if($ts->isCompleted())
+                                            <a href="{{ route('analysis.show', $ts) }}" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-eye me-1"></i> Lihat
+                                            </a>
+                                        @endif
+                                        <form action="{{ route('tracer-studies.destroy', $ts) }}" method="POST"
+                                              onsubmit="return confirm('Hapus data {{ $ts->nama_prodi }} ({{ $ts->tahun_lulusan }})? Semua analisis dan laporan terkait juga akan dihapus.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
