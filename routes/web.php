@@ -22,3 +22,5 @@ Route::get('/reports/{report}/download', [ReportController::class, 'download'])-
 Route::delete('/reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
 
 Route::delete('/tracer-studies/{tracerStudy}', [DashboardController::class, 'destroy'])->name('tracer-studies.destroy');
+
+Route::get('/panduan', fn () => view('guide'))->name('guide');

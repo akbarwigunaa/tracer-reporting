@@ -32,6 +32,13 @@
                         <p>Laporan</p>
                     </a>
                 </li>
+                <li class="nav-header">BANTUAN</li>
+                <li class="nav-item">
+                    <a href="{{ route('guide') }}" class="nav-link {{ request()->routeIs('guide') ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-book"></i>
+                        <p>Panduan Penggunaan</p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>
